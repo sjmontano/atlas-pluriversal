@@ -9,10 +9,10 @@ export const POI_THEME: PoiTheme = {
   iconBg: '#0081a9',
   pulse: { durationMs: 2200, maxScale: 1.9, opacity: 0.55 },
   gota: {
-    url: '/assets/interface/icons/line/svg/location.svg',
+    url: '/assets/pois/markers/location.svg',
     height: 21,
   },
-  tooltipBg: '/assets/tooltip/fondo-tooltip.webp',
+  tooltipBg: '/assets/ui/tooltips/fondo-tooltip.webp',
   minZoom: 6,
   maxZoom: 14,
   minScale: 0.8,

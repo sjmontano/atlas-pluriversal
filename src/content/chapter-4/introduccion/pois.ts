@@ -1,6 +1,6 @@
 import type { Poi } from '../../../types/poi'
 
-const POPUP_NODE = '/assets/iconsCap4/popupNode.svg'
+const POPUP_NODE = '/assets/pois/markers/popup-node.svg'
 const ARROW_COLOR = '#3D80A5'
 
 const nodo = (id: string, name: string, capa: string, coords: [number, number], angle: number): Poi => ({
