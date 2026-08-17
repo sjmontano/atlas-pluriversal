@@ -191,9 +191,31 @@ export function expandBounds(
   bounds: GeographicBounds,
   factor: number,
 ): GeographicBounds {
+  return expandBoundsPerAxis(bounds, factor, factor)
+}
+
+/**
+ * Expande unos bounds por un factor fraccionario en cada lado, con factores
+ * independientes por eje. Útil para crear viewportMaxBounds con margen
+ * alrededor de la imagen, controlando izquierda/derecha (H) y
+ * arriba/abajo (V) por separado.
+ *
+ * @param bounds - Bounds originales
+ * @param marginH - Fracción a expandir horizontalmente (0.15 = 15% por lado izq/der)
+ * @param marginV - Fracción a expandir verticalmente (0.15 = 15% por lado arriba/abajo)
+ *
+ * @example
+ * expandBoundsPerAxis([-78.9, -0.3, -65.7, 6.4], 0.1, 0.2)
+ * // west −10% del span lon, east +10%; south −20% del span lat, north +20%
+ */
+export function expandBoundsPerAxis(
+  bounds: GeographicBounds,
+  marginH: number,
+  marginV: number,
+): GeographicBounds {
   const [west, south, east, north] = bounds
-  const lonPad = (east - west) * factor
-  const latPad = (north - south) * factor
+  const lonPad = (east - west) * marginH
+  const latPad = (north - south) * marginV
   return [
     west - lonPad,
     south - latPad,

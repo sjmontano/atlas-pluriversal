@@ -5,6 +5,8 @@ export interface CalibrationEntry {
   width: number
   height: number
   viewportMargin?: number
+  viewportMarginH?: number
+  viewportMarginV?: number
 }
 
 export const LAYER_CALIBRATIONS: Record<string, CalibrationEntry> = {}

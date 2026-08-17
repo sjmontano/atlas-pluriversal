@@ -84,8 +84,10 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
   const stepPctRef = useRef(PCT_STEPS[1])
   const [stepPctIdx, setStepPctIdx] = useState(1)
 
-  const viewportMarginOriginalRef = useRef<number>(DEFAULT_VIEWPORT_MARGIN)
-  const [viewportMargin, setViewportMargin] = useState(DEFAULT_VIEWPORT_MARGIN)
+  const viewportMarginsOriginalRef = useRef({ h: DEFAULT_VIEWPORT_MARGIN, v: DEFAULT_VIEWPORT_MARGIN })
+  const [viewportMarginH, setViewportMarginH] = useState(DEFAULT_VIEWPORT_MARGIN)
+  const [viewportMarginV, setViewportMarginV] = useState(DEFAULT_VIEWPORT_MARGIN)
+  const isEcosistemas = mapId === 'chapter1-ecosistemas'
 
   const onLayerIds = useMemo(
     () => (getMapContent(mapId)?.layers ?? []).filter((l) => visibleLayers.has(l.id)).map((l) => l.id),
@@ -162,9 +164,13 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
     setState(s)
     setDirty({ d: false, b: false, c: false, f: false, width: false, height: false })
     setMoveMode(false)
-    const margin = getMapContent(mapId)?.config.viewportMargin ?? DEFAULT_VIEWPORT_MARGIN
-    viewportMarginOriginalRef.current = margin
-    setViewportMargin(margin)
+    const config = getMapContent(mapId)?.config
+    const margin = config?.viewportMargin ?? DEFAULT_VIEWPORT_MARGIN
+    const h = config?.viewportMarginH ?? margin
+    const v = config?.viewportMarginV ?? margin
+    viewportMarginsOriginalRef.current = { h, v }
+    setViewportMarginH(h)
+    setViewportMarginV(v)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapId])
 
@@ -340,9 +346,21 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
 
   const onViewportMarginChange = useCallback((pct: number) => {
     const margin = pct / 100
-    setViewportMargin(margin)
-    controllerRef.current?.updateViewportMargin(margin)
+    setViewportMarginH(margin)
+    setViewportMarginV(margin)
+    controllerRef.current?.updateViewportMargins(margin, margin)
   }, [controllerRef])
+
+  const onViewportMarginsChange = useCallback((axis: 'H' | 'V', pct: number) => {
+    const margin = pct / 100
+    if (axis === 'H') {
+      setViewportMarginH(margin)
+      controllerRef.current?.updateViewportMargins(margin, viewportMarginV)
+    } else {
+      setViewportMarginV(margin)
+      controllerRef.current?.updateViewportMargins(viewportMarginH, margin)
+    }
+  }, [controllerRef, viewportMarginH, viewportMarginV])
 
   const onSizeScale = useCallback((pct: number) => {    if (target.kind === 'layers' && target.layerIds.length > 0) {
       setState((prev) => {
@@ -381,9 +399,10 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
   }, [applyAndUpdate, target, activeLayerIdx])
 
   const reset = useCallback(() => {
-    const margin = viewportMarginOriginalRef.current
-    setViewportMargin(margin)
-    controllerRef.current?.updateViewportMargin(margin)
+    const origMargins = viewportMarginsOriginalRef.current
+    setViewportMarginH(origMargins.h)
+    setViewportMarginV(origMargins.v)
+    controllerRef.current?.updateViewportMargins(origMargins.h, origMargins.v)
     if (target.kind === 'layers' && target.layerIds.length > 0) {
       for (const layerId of target.layerIds) {
         const entry = layerStatesRef.current.get(layerId)
@@ -440,22 +459,31 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
           entry.original = entry.current
         }
       } else {
+        const origMargins = viewportMarginsOriginalRef.current
+        const marginsChanged = viewportMarginH !== origMargins.h || viewportMarginV !== origMargins.v
         await saveCalibration({
           mapId,
           pgw: stateToPGW(state),
           width: state.width,
           height: state.height,
-          viewportMargin: viewportMargin !== viewportMarginOriginalRef.current ? viewportMargin : undefined,
+          ...(isEcosistemas
+            ? {
+                viewportMarginH: viewportMarginH !== origMargins.h ? viewportMarginH : undefined,
+                viewportMarginV: viewportMarginV !== origMargins.v ? viewportMarginV : undefined,
+              }
+            : {
+                viewportMargin: marginsChanged ? viewportMarginH : undefined,
+              }),
         })
         originalRef.current = state
-        viewportMarginOriginalRef.current = viewportMargin
+        viewportMarginsOriginalRef.current = { h: viewportMarginH, v: viewportMarginV }
       }
       setDirty({ d: false, b: false, c: false, f: false, width: false, height: false })
       onRebuild?.()
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : String(err))
     }
-  }, [state, mapId, onRebuild, target, viewportMargin])
+  }, [state, mapId, onRebuild, target, viewportMarginH, viewportMarginV, isEcosistemas])
 
   function selectLayer(idx: number) {
     if (target.kind !== 'layers' || target.layerIds.length === 0) return
@@ -703,33 +731,92 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
             <span className={styles.displayValue}>%</span>
           </div>
 
-          <div className={styles.paramRow}>
-            <label className={styles.paramLabel}>Margen viewport</label>
-            <input
-              className={styles.sizeSlider}
-              type="range"
-              min={VIEWPORT_MARGIN_MIN_PCT}
-              max={100}
-              step={1}
-              value={Math.round(viewportMargin * 100)}
-              onChange={(e) => onViewportMarginChange(Number(e.target.value))}
-              title="Margen del viewportMaxBounds alrededor de la imagen (por lado). Negativo = encoger el límite dentro de la imagen."
-            />
-            <input
-              className={styles.sizePctInput}
-              type="number"
-              min={VIEWPORT_MARGIN_MIN_PCT}
-              max={100}
-              step={1}
-              value={Math.round(viewportMargin * 100)}
-              onChange={(e) => {
-                const v = parseInt(e.target.value, 10)
-                if (Number.isFinite(v)) onViewportMarginChange(v)
-              }}
-              title="Escribir margen manualmente"
-            />
-            <span className={styles.displayValue}>%</span>
-          </div>
+          {isEcosistemas ? (
+            <>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Escala H (izq/der) %</label>
+                <input
+                  className={styles.sizeSlider}
+                  type="range"
+                  min={VIEWPORT_MARGIN_MIN_PCT}
+                  max={100}
+                  step={1}
+                  value={Math.round(viewportMarginH * 100)}
+                  onChange={(e) => onViewportMarginsChange('H', Number(e.target.value))}
+                  title="Margen horizontal del viewportMaxBounds (izq/der por igual). Negativo = recortar el pan dentro de la imagen."
+                />
+                <input
+                  className={styles.sizePctInput}
+                  type="number"
+                  min={VIEWPORT_MARGIN_MIN_PCT}
+                  max={100}
+                  step={1}
+                  value={Math.round(viewportMarginH * 100)}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value, 10)
+                    if (Number.isFinite(v)) onViewportMarginsChange('H', v)
+                  }}
+                  title="Escala horizontal (porcentaje)"
+                />
+                <span className={styles.displayValue}>%</span>
+              </div>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Escala V (arriba/abajo) %</label>
+                <input
+                  className={styles.sizeSlider}
+                  type="range"
+                  min={VIEWPORT_MARGIN_MIN_PCT}
+                  max={100}
+                  step={1}
+                  value={Math.round(viewportMarginV * 100)}
+                  onChange={(e) => onViewportMarginsChange('V', Number(e.target.value))}
+                  title="Margen vertical del viewportMaxBounds (arriba/abajo por igual). Negativo = recortar el pan dentro de la imagen."
+                />
+                <input
+                  className={styles.sizePctInput}
+                  type="number"
+                  min={VIEWPORT_MARGIN_MIN_PCT}
+                  max={100}
+                  step={1}
+                  value={Math.round(viewportMarginV * 100)}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value, 10)
+                    if (Number.isFinite(v)) onViewportMarginsChange('V', v)
+                  }}
+                  title="Escala vertical (porcentaje)"
+                />
+                <span className={styles.displayValue}>%</span>
+              </div>
+            </>
+          ) : (
+            <div className={styles.paramRow}>
+              <label className={styles.paramLabel}>Margen viewport</label>
+              <input
+                className={styles.sizeSlider}
+                type="range"
+                min={VIEWPORT_MARGIN_MIN_PCT}
+                max={100}
+                step={1}
+                value={Math.round(viewportMarginH * 100)}
+                onChange={(e) => onViewportMarginChange(Number(e.target.value))}
+                title="Margen del viewportMaxBounds alrededor de la imagen (por lado). Negativo = encoger el límite dentro de la imagen."
+              />
+              <input
+                className={styles.sizePctInput}
+                type="number"
+                min={VIEWPORT_MARGIN_MIN_PCT}
+                max={100}
+                step={1}
+                value={Math.round(viewportMarginH * 100)}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value, 10)
+                  if (Number.isFinite(v)) onViewportMarginChange(v)
+                }}
+                title="Escribir margen manualmente"
+              />
+              <span className={styles.displayValue}>%</span>
+            </div>
+          )}
 
           <div className={styles.separator} />
 

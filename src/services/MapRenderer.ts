@@ -15,7 +15,7 @@
 
 import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { processBounds, expandBounds, type PGWData, type BoundsResult, type ImageCoordinates, type GeographicBounds } from './BoundsCalculator'
+import { processBounds, expandBoundsPerAxis, type PGWData, type BoundsResult, type ImageCoordinates, type GeographicBounds } from './BoundsCalculator'
 import { createBearingAwareConstrain } from './TransformConstrain'
 import { logger } from './MapLogger'
 import { useMapStore } from '@stores/mapStore'
@@ -92,6 +92,7 @@ function isNonDegenerate(coordinates: ImageCoordinates): boolean {
 export interface MapController {
   map: maplibregl.Map
   updateBounds(pgw: PGWData, width: number, height: number): BoundsResult
+  updateViewportMargins(marginH: number, marginV: number): void
   updateViewportMargin(margin: number): void
 }
 
@@ -136,8 +137,10 @@ export async function buildGeoreferencedMap(
   }
 
   const viewportMargin = config.viewportMargin ?? DEFAULT_VMB_EXPAND_FACTOR
-  const vmb = expandBounds(bounds, viewportMargin)
-  logger.debug(CATEGORY, 'build:bounds', { mapId, bounds, center, vmb, viewportMargin })
+  const viewportMarginH = config.viewportMarginH ?? viewportMargin
+  const viewportMarginV = config.viewportMarginV ?? viewportMargin
+  const vmb = expandBoundsPerAxis(bounds, viewportMarginH, viewportMarginV)
+  logger.debug(CATEGORY, 'build:bounds', { mapId, bounds, center, vmb, viewportMargin, viewportMarginH, viewportMarginV })
 
   // ── 2. Instancia MapLibre ───────────────────────────────────────────────
   const mapOptions: maplibregl.MapOptions = {
@@ -295,9 +298,9 @@ export async function buildGeoreferencedMap(
       }
       return result
     },
-    updateViewportMargin(margin: number): void {
+    updateViewportMargins(marginH: number, marginV: number): void {
       if (!config.useTransformConstrain) return
-      const newVmb = expandBounds(bounds, margin)
+      const newVmb = expandBoundsPerAxis(bounds, marginH, marginV)
       map.setTransformConstrain(
         createBearingAwareConstrain(
           () => container,
@@ -305,7 +308,10 @@ export async function buildGeoreferencedMap(
           config.initialBearing,
         ),
       )
-      logger.debug(CATEGORY, `viewportMargin actualizado: ${mapId}`, { margin })
+      logger.debug(CATEGORY, `viewportMargins actualizado: ${mapId}`, { marginH, marginV })
+    },
+    updateViewportMargin(margin: number): void {
+      this.updateViewportMargins(margin, margin)
     },
   }
 

@@ -18,7 +18,7 @@ export default {
     minZoom: 9,
     maxZoom: 16,
     initialBearing: 180,
-    useTransformConstrain: false,
+    useTransformConstrain: true,
     viewportMaxBounds: null,
     dragPan: true,
     scrollZoom: true,

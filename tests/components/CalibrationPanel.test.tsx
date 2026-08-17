@@ -62,25 +62,45 @@ describe('CalibrationPanel multi-layer', () => {
         dragPan: { disable: vi.fn(), enable: vi.fn() },
       },
       updateBounds: vi.fn(() => ({ coordinates: [[-77, 2]], bounds: [-77, 1, -76, 2] })),
-      updateViewportMargin: vi.fn(),
+      updateViewportMargins: vi.fn(),
     }
     return { ctrl, listeners, sources }
   }
 
   it('shows target selector with Mapa base selected by default', () => {
-    const ctrl = { map: { getSource: vi.fn(), getLayer: vi.fn(), getStyle: vi.fn(() => ({ layers: [], sources: {} })), on: vi.fn(), off: vi.fn(), getCanvas: vi.fn(() => ({})), getContainer: vi.fn(() => ({ getBoundingClientRect: () => ({ left: 0, top: 0 }) })), unproject: vi.fn(() => ({ lng: 0, lat: 0 })), dragPan: { disable: vi.fn(), enable: vi.fn() } }, updateBounds: vi.fn(() => ({ coordinates: [[-77,2],[-76,2],[-76,1],[-77,1]], bounds: [-77,1,-76,2], center: [-76.5,1.5], isValid: true })), updateViewportMargin: vi.fn() }
+    const ctrl = { map: { getSource: vi.fn(), getLayer: vi.fn(), getStyle: vi.fn(() => ({ layers: [], sources: {} })), on: vi.fn(), off: vi.fn(), getCanvas: vi.fn(() => ({})), getContainer: vi.fn(() => ({ getBoundingClientRect: () => ({ left: 0, top: 0 }) })), unproject: vi.fn(() => ({ lng: 0, lat: 0 })), dragPan: { disable: vi.fn(), enable: vi.fn() } }, updateBounds: vi.fn(() => ({ coordinates: [[-77,2],[-76,2],[-76,1],[-77,1]], bounds: [-77,1,-76,2], center: [-76.5,1.5], isValid: true })), updateViewportMargins: vi.fn() }
     render(<CalibrationPanel mapId="chapter1-ecosistemas" controllerRef={{ current: ctrl }} />)
     expect(screen.getByText('🗺 Mapa base')).toBeDefined()
   })
 
   it('switches to layers mode when button clicked', () => {
     useLayerStore.getState().toggleLayer('layer-x')
-    const ctrl = { map: { getSource: vi.fn(), getLayer: vi.fn(), getStyle: vi.fn(() => ({ layers: [], sources: {} })), on: vi.fn(), off: vi.fn(), getCanvas: vi.fn(() => ({})), getContainer: vi.fn(() => ({ getBoundingClientRect: () => ({ left: 0, top: 0 }) })), unproject: vi.fn(() => ({ lng: 0, lat: 0 })), dragPan: { disable: vi.fn(), enable: vi.fn() } }, updateBounds: vi.fn(() => ({ coordinates: [[-77,2],[-76,2],[-76,1],[-77,1]], bounds: [-77,1,-76,2], center: [-76.5,1.5], isValid: true })), updateViewportMargin: vi.fn() }
+    const ctrl = { map: { getSource: vi.fn(), getLayer: vi.fn(), getStyle: vi.fn(() => ({ layers: [], sources: {} })), on: vi.fn(), off: vi.fn(), getCanvas: vi.fn(() => ({})), getContainer: vi.fn(() => ({ getBoundingClientRect: () => ({ left: 0, top: 0 }) })), unproject: vi.fn(() => ({ lng: 0, lat: 0 })), dragPan: { disable: vi.fn(), enable: vi.fn() } }, updateBounds: vi.fn(() => ({ coordinates: [[-77,2],[-76,2],[-76,1],[-77,1]], bounds: [-77,1,-76,2], center: [-76.5,1.5], isValid: true })), updateViewportMargins: vi.fn() }
     render(<CalibrationPanel mapId="chapter1-ecosistemas" controllerRef={{ current: ctrl }} />)
     const layersBtn = screen.getByText(/📐 Capas/)
     fireEvent.click(layersBtn!)
     expect(useLayerStore.getState().visibleLayers.has('layer-x')).toBe(true)
     expect(screen.getByText(/1\/1/)).toBeDefined()
+  })
+
+  it('shows viewport H/V sliders (Escala H/V) in ecosistemas, replacing the single Margen', () => {
+    useLayerStore.getState().toggleLayer('layer-x')
+    const ctrl = { map: { getSource: vi.fn(), getLayer: vi.fn(), getStyle: vi.fn(() => ({ layers: [], sources: {} })), on: vi.fn(), off: vi.fn(), getCanvas: vi.fn(() => ({})), getContainer: vi.fn(() => ({ getBoundingClientRect: () => ({ left: 0, top: 0 }) })), unproject: vi.fn(() => ({ lng: 0, lat: 0 })), dragPan: { disable: vi.fn(), enable: vi.fn() } }, updateBounds: vi.fn(() => ({ coordinates: [[-77,2],[-76,2],[-76,1],[-77,1]], bounds: [-77,1,-76,2], center: [-76.5,1.5], isValid: true })), updateViewportMargins: vi.fn() }
+    render(<CalibrationPanel mapId="chapter1-ecosistemas" controllerRef={{ current: ctrl }} />)
+    expect(screen.queryByText(/Escala H/)).toBeNull()
+
+    fireEvent.click(screen.getByTitle('Mostrar panel'))
+    expect(screen.getByText(/Escala H \(izq\/der\)/)).toBeDefined()
+    expect(screen.getByText(/Escala V \(arriba\/abajo\)/)).toBeDefined()
+    expect(screen.queryByText(/Margen viewport/)).toBeNull()
+  })
+
+  it('shows a single Margen viewport slider in non-ecosistemas maps', () => {
+    const ctrl = { map: { getSource: vi.fn(), getLayer: vi.fn(), getStyle: vi.fn(() => ({ layers: [], sources: {} })), on: vi.fn(), off: vi.fn(), getCanvas: vi.fn(() => ({})), getContainer: vi.fn(() => ({ getBoundingClientRect: () => ({ left: 0, top: 0 }) })), unproject: vi.fn(() => ({ lng: 0, lat: 0 })), dragPan: { disable: vi.fn(), enable: vi.fn() } }, updateBounds: vi.fn(() => ({ coordinates: [[-77,2],[-76,2],[-76,1],[-77,1]], bounds: [-77,1,-76,2], center: [-76.5,1.5], isValid: true })), updateViewportMargins: vi.fn() }
+    render(<CalibrationPanel mapId="chapter1-ciudades" controllerRef={{ current: ctrl }} />)
+    fireEvent.click(screen.getByTitle('Mostrar panel'))
+    expect(screen.getByText(/Margen viewport/)).toBeDefined()
+    expect(screen.queryByText(/Escala H/)).toBeNull()
   })
 
   it('drags the layer (Mover) by shifting layer origin, not the base map', () => {

@@ -4,6 +4,7 @@ import {
   stateToPGW,
   shiftOrigin,
   scaleParam,
+  scaleLayerSymmetric,
   clampCalibration,
   type CalibrationState,
 } from '@services/MapCalibration'
@@ -142,6 +143,74 @@ describe('MapCalibration', () => {
       const clamped = clampCalibration(state)
       expect(clamped.c).toBe(-180)
       expect(clamped.f).toBe(90)
+    })
+  })
+
+  describe('scaleLayerSymmetric', () => {
+    // PGW del composite de ecosistemas (axis-aligned, lados opuestos paralelos)
+    const PGW_ECO: PGWData = [0.0018443379684604639, 0, 0, -0.0018447264954608695, -76.358193, 3.319397]
+    const W_ECO = 1374
+    const H_ECO = 2443
+
+    function centerOf(pgw: PGWData, width: number, height: number) {
+      const { bounds } = processBounds(pgw, width, height)
+      return {
+        lng: (bounds[0] + bounds[2]) / 2,
+        lat: (bounds[1] + bounds[3]) / 2,
+      }
+    }
+
+    it('devuelve el PGW original si los factores son 1', () => {
+      const out = scaleLayerSymmetric(PGW_ECO, W_ECO, H_ECO, 1, 1)
+      expect(out.pgw).toBe(PGW_ECO)
+      expect(out.width).toBe(W_ECO)
+      expect(out.height).toBe(H_ECO)
+    })
+
+    it('al escalar solo H mantiene el centro geográfico y ajusta solo C', () => {
+      const origCenter = centerOf(PGW_ECO, W_ECO, H_ECO)
+      const pct = 120
+      const out = scaleLayerSymmetric(PGW_ECO, W_ECO, H_ECO, pct / 100, 1)
+      const nextCenter = centerOf(out.pgw, out.width, out.height)
+      expect(out.width).toBe(Math.round(W_ECO * (pct / 100)))
+      expect(out.height).toBe(H_ECO)
+      expect(out.pgw[1]).toBe(PGW_ECO[1])
+      expect(out.pgw[2]).toBe(PGW_ECO[2])
+      expect(out.pgw[3]).toBe(PGW_ECO[3])
+      expect(out.pgw[5]).toBe(PGW_ECO[5])
+      expect(nextCenter.lng).toBeCloseTo(origCenter.lng, 8)
+      expect(nextCenter.lat).toBeCloseTo(origCenter.lat, 8)
+    })
+
+    it('al escalar solo V mantiene el centro geográfico y ajusta solo F', () => {
+      const origCenter = centerOf(PGW_ECO, W_ECO, H_ECO)
+      const pct = 80
+      const out = scaleLayerSymmetric(PGW_ECO, W_ECO, H_ECO, 1, pct / 100)
+      const nextCenter = centerOf(out.pgw, out.width, out.height)
+      expect(out.width).toBe(W_ECO)
+      expect(out.height).toBe(Math.round(H_ECO * (pct / 100)))
+      expect(out.pgw[0]).toBe(PGW_ECO[0])
+      expect(out.pgw[1]).toBe(PGW_ECO[1])
+      expect(out.pgw[2]).toBe(PGW_ECO[2])
+      expect(out.pgw[4]).toBe(PGW_ECO[4])
+      expect(nextCenter.lng).toBeCloseTo(origCenter.lng, 8)
+      expect(nextCenter.lat).toBeCloseTo(origCenter.lat, 8)
+    })
+
+    it('al escalar H y V juntos mantiene el centro geográfico', () => {
+      const origCenter = centerOf(PGW_ECO, W_ECO, H_ECO)
+      const out = scaleLayerSymmetric(PGW_ECO, W_ECO, H_ECO, 1.1, 0.9)
+      const nextCenter = centerOf(out.pgw, out.width, out.height)
+      expect(nextCenter.lng).toBeCloseTo(origCenter.lng, 8)
+      expect(nextCenter.lat).toBeCloseTo(origCenter.lat, 8)
+      expect(out.width).toBe(Math.round(W_ECO * 1.1))
+      expect(out.height).toBe(Math.round(H_ECO * 0.9))
+    })
+
+    it('scope simétrico: sin escala conserva C y F exactos', () => {
+      const out = scaleLayerSymmetric(PGW_ECO, W_ECO, H_ECO, 1, 1)
+      expect(out.pgw[4]).toBe(PGW_ECO[4])
+      expect(out.pgw[5]).toBe(PGW_ECO[5])
     })
   })
 

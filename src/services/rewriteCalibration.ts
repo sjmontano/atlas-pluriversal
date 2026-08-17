@@ -3,6 +3,8 @@ export interface CalibrationEntryData {
   readonly width: number
   readonly height: number
   readonly viewportMargin?: number
+  readonly viewportMarginH?: number
+  readonly viewportMarginV?: number
 }
 
 export function rewriteCalibrationEntry(
@@ -18,6 +20,12 @@ export function rewriteCalibrationEntry(
     `    pgw: [${a}, ${d}, ${b}, ${e}, ${c}, ${f}],`,
     `    width: ${Math.round(data.width)},`,
     `    height: ${Math.round(data.height)},`,
+    data.viewportMarginH !== undefined
+      ? `    viewportMarginH: ${data.viewportMarginH},`
+      : null,
+    data.viewportMarginV !== undefined
+      ? `    viewportMarginV: ${data.viewportMarginV},`
+      : null,
     data.viewportMargin !== undefined
       ? `    viewportMargin: ${data.viewportMargin},`
       : null,

@@ -26,6 +26,8 @@ export default {
     initialBearing: -90,
     useTransformConstrain: true,
     viewportMaxBounds: null,
+    viewportMarginH: -0.03,
+    viewportMarginV: -0.12,
     dragPan: true,
     scrollZoom: true,
   },

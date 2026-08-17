@@ -35,6 +35,39 @@ export function resizeDims(width: number, height: number, dW: number, dH: number
   return { width: width + dW, height: height + dH }
 }
 
+/**
+ * Re-escala la huella de la capa por eje (escalado simétrico: los dos
+ * lados opuestos de un eje se mueven por igual) manteniendo el centro
+ * geográfico fijo. Solo toca los coeficientes translacionales correctos:
+ * para PGW axis-aligned (B=D=0), escalar width ajusta `c` y escalar
+ * height ajusta `f`. Devuelve el PGW original si los factores son 1.
+ */
+export function scaleLayerSymmetric(
+  pgw: PGWData,
+  width: number,
+  height: number,
+  factorH: number,
+  factorV: number,
+): { pgw: PGWData; width: number; height: number } {
+  const [a, d, b, e, c, f] = pgw
+  const nextWidth = Math.max(1, Math.round(width * factorH))
+  const nextHeight = Math.max(1, Math.round(height * factorV))
+
+  if (nextWidth === width && nextHeight === height) return { pgw, width, height }
+
+  const nextC = (() => {
+    const dW = width - nextWidth
+    return Math.abs(a) > 0 ? c + (a * dW) / 2 : c
+  })()
+
+  const nextF = (() => {
+    const dH = height - nextHeight
+    return Math.abs(e) > 0 ? f + (e * dH) / 2 : f
+  })()
+
+  return { pgw: [a, d, b, e, nextC, nextF], width: nextWidth, height: nextHeight }
+}
+
 function clampFinito(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min
   return Math.max(min, Math.min(max, value))

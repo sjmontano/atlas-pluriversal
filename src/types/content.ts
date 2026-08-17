@@ -27,6 +27,10 @@ export interface MapConfig {
   viewportMaxBounds: null | { west: number; south: number; east: number; north: number }
   /** Margen del viewportMaxBounds alrededor de la imagen (fracción por lado). Default: 0.5 */
   viewportMargin?: number
+  /** Margen horizontal (izq/der) por lado. Si existe, sobrescribe viewportMargin en el eje H. */
+  viewportMarginH?: number
+  /** Margen vertical (arriba/abajo) por lado. Si existe, sobrescribe viewportMargin en el eje V. */
+  viewportMarginV?: number
   dragPan: boolean
   scrollZoom: boolean
 }

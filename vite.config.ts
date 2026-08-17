@@ -29,6 +29,8 @@ function calibrationSavePlugin(): Plugin {
               layerIds?: unknown
               entries?: unknown
               viewportMargin?: unknown
+              viewportMarginH?: unknown
+              viewportMarginV?: unknown
             }
             const target = typeof payload.target === 'string' ? payload.target : 'map'
 
@@ -85,6 +87,14 @@ function calibrationSavePlugin(): Plugin {
               typeof payload.viewportMargin === 'number' && Number.isFinite(payload.viewportMargin)
                 ? payload.viewportMargin
                 : undefined
+            const vmH =
+              typeof payload.viewportMarginH === 'number' && Number.isFinite(payload.viewportMarginH)
+                ? payload.viewportMarginH
+                : undefined
+            const vmV =
+              typeof payload.viewportMarginV === 'number' && Number.isFinite(payload.viewportMarginV)
+                ? payload.viewportMarginV
+                : undefined
 
             const src = existsSync(mapCalibrationPath)
               ? readFileSync(mapCalibrationPath, 'utf8')
@@ -94,6 +104,8 @@ function calibrationSavePlugin(): Plugin {
               width: w,
               height: h,
               viewportMargin: vm,
+              viewportMarginH: vmH,
+              viewportMarginV: vmV,
             })
             writeFileSync(mapCalibrationPath, out, 'utf8')
 

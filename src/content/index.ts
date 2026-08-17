@@ -23,9 +23,11 @@ export function getMapContent(mapId: string): MapContent | null {
   return {
     ...content,
     geo: { ...content.geo, pgw: calib.pgw, width: calib.width, height: calib.height },
-    config:
-      calib.viewportMargin !== undefined
-        ? { ...content.config, viewportMargin: calib.viewportMargin }
-        : content.config,
+    config: {
+      ...content.config,
+      ...(calib.viewportMargin !== undefined ? { viewportMargin: calib.viewportMargin } : {}),
+      ...(calib.viewportMarginH !== undefined ? { viewportMarginH: calib.viewportMarginH } : {}),
+      ...(calib.viewportMarginV !== undefined ? { viewportMarginV: calib.viewportMarginV } : {}),
+    },
   }
 }
