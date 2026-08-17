@@ -1,6 +1,6 @@
 import type { LegendItem } from '../../types/layer'
 
-const ICONS = '/assets/iconsCap4'
+const ICONS = '/assets/legends'
 
 export const legenda = (
   id: string,
