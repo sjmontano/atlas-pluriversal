@@ -53,10 +53,12 @@ Funciones puras sin dependencias de framework:
 - `constrainMinZoom(geo, canvasW, canvasH)` → `number`
   Mismo cálculo que el constrain (bearing-aware): el zoom mínimo donde el viewport
   cabe en el bound. (Solo para validación/consistencia, no obligatorio en runtime.)
-- `computeTileRange(geo, mode, canvasW)` → `{ minZoom, maxZoom }`
+- `computeTileRange(geo, initialZoom, mode, canvasW)` → `{ minZoom, maxZoom }`
+  Recibe `geo` y `initialZoom` (de `config`, que sí permanece en el contenido).
   - `mode: 'detail'` → `minZoom = floor(constrainMinZoom)`, `maxZoom = screenCeilingZoom`.
-  - `mode: 'initial-only'` → `minZoom = maxZoom = floor(initialZoom del geo/config)`.
-  - `mode: 'none'` → `null` (sin tiles).
+  - `mode: 'initial-only'` → `minZoom = maxZoom = floor(initialZoom)`.
+  - `mode: 'none'` → `null` (sin tiles). Reservado para futuros mapas; hoy todos los
+    mapas caen en `detail` o `initial-only`.
 
 Usada por: **MapRenderer** (con `canvas.clientWidth` real), **generate-tiles.mjs**
 (con `1920` como referencia de pantalla) y validación del constrain.
@@ -66,7 +68,7 @@ Usada por: **MapRenderer** (con `canvas.clientWidth` real), **generate-tiles.mjs
 - `MAP_TILE_MODES: Record<string, 'detail' | 'initial-only'>`
   Declara el modo por mapa (fuente de verdad de qué mapa tiene detalle).
 - `tileUrlTemplate(mapId)` → `'/assets/maps/tiles/mapas/{mapId}/{z}/{x}/{y}.webp'`
-- `makeTilesConfig(mapId, geo)` → `MapTilesConfig | null`
+- `makeTilesConfig(mapId, geo, initialZoom)` → `MapTilesConfig | null`
   Arma el objeto completo: `urlTemplate`, `tileSize: 256`, `fadeDuration: 300`, y
   `minZoom`/`maxZoom` derivados de `computeTileRange`. Devuelve `null` para
   `mode: 'none'`.
