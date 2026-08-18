@@ -1,21 +1,28 @@
 import type { MapContent } from '../../../types/content'
+import { makeTilesConfig } from '@data/tiles'
+
+const geo = {
+  pgw: [0, 0.002291904891, 0.002292263474, 0, -79.43968707918096, -1.987827190702011] as const,
+  width: 3649,
+  height: 6496,
+} as const
+const config = {
+  initialZoom: 6.06,
+  initialBearing: -90,
+  useTransformConstrain: true,
+  viewportMaxBounds: null,
+  dragPan: false,
+  scrollZoom: false,
+}
 
 export default {
   mapId: 'chapter1-encuadres',
-  geo: {
-    pgw: [0, 0.002291904891, 0.002292263474, 0, -79.441458743296, -1.354624163443] as const,
-    width: 3389,
-    height: 6684,
+  geo,
+  images: {
+    base: '/assets/maps/cap1/encuadres.png',
+    full: '/assets/maps/cap1/encuadres.png',
+    placeholder: '/assets/maps/cap1/encuadres.png',
   },
-  images: { base: '', full: '', placeholder: '' },
-  config: {
-    initialZoom: 6.06,
-    minZoom: 6.06,
-    maxZoom: 6.06,
-    initialBearing: -90,
-    useTransformConstrain: true,
-    viewportMaxBounds: null,
-    dragPan: false,
-    scrollZoom: false,
-  },
+  config,
+  tiles: makeTilesConfig('chapter1-encuadres', geo, config.initialZoom, config.initialBearing),
 } satisfies MapContent

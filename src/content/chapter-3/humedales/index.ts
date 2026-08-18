@@ -1,4 +1,5 @@
 import type { MapContent } from '../../../types/content'
+import { makeTilesConfig } from '@data/tiles'
 import { LAYERS } from './layers'
 import { LEGENDS } from './legends'
 
@@ -7,28 +8,30 @@ const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,
 const base =
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1763847570/geoImages/n4gxlxxpeoqnfma5dylj.webp'
 
+const geo = {
+  pgw: [0, 0.000247614932, 0.000247615558, 0, -77.374311108763, 2.939066887422] as const,
+  width: 5118,
+  height: 9114,
+} as const
+const config = {
+  initialZoom: 8,
+  initialBearing: -90,
+  useTransformConstrain: true,
+  viewportMaxBounds: null,
+  dragPan: true,
+  scrollZoom: true,
+}
+
 export default {
   mapId: 'chapter3-humedales',
-  geo: {
-    pgw: [0, 0.000247614932, 0.000247615558, 0, -77.374311108763, 2.939066887422] as const,
-    width: 5118,
-    height: 9114,
-  },
+  geo,
   images: {
     base,
     full: base,
     placeholder: ph(base),
   },
-  config: {
-    initialZoom: 8,
-    minZoom: 8,
-    maxZoom: 11,
-    initialBearing: -90,
-    useTransformConstrain: true,
-    viewportMaxBounds: null,
-    dragPan: true,
-    scrollZoom: true,
-  },
+  config,
+  tiles: makeTilesConfig('chapter3-humedales', geo, config.initialZoom, config.initialBearing),
   layers: LAYERS,
   legends: LEGENDS,
 } satisfies MapContent
