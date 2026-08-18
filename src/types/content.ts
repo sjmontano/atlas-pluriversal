@@ -20,8 +20,6 @@ export interface MapImageUrls {
 
 export interface MapConfig {
   initialZoom: number
-  minZoom: number
-  maxZoom: number
   initialBearing: number
   useTransformConstrain: boolean
   viewportMaxBounds: null | { west: number; south: number; east: number; north: number }
