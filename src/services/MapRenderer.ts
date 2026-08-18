@@ -17,6 +17,7 @@ import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { processBounds, expandBoundsPerAxis, type PGWData, type BoundsResult, type ImageCoordinates, type GeographicBounds } from './BoundsCalculator'
 import { createBearingAwareConstrain } from './TransformConstrain'
+import { screenCeilingZoom } from '@utils/tileZoom'
 import { logger } from './MapLogger'
 import { useMapStore } from '@stores/mapStore'
 import type { MapContent } from '../types/content'
@@ -149,10 +150,13 @@ export async function buildGeoreferencedMap(
     center,
     zoom: config.initialZoom,
     bearing: config.initialBearing,
-    minZoom: config.minZoom,
-    // Si hay tiles de mayor zoom que la imagen base, permitir zoom hasta el
-    // nivel de tiles para aprovechar la resolución extra.
-    maxZoom: Math.max(config.maxZoom, entry.tiles?.maxZoom ?? config.maxZoom),
+    minZoom: 0,
+    // Techo de detalle: el zoom donde el mapa llena el ancho REAL del contenedor.
+    // Si hay tiles, no superar su maxZoom (los tiles no se generan más allá).
+    maxZoom: Math.max(
+      Math.floor(config.initialZoom),
+      Math.min(screenCeilingZoom(geo, container.clientWidth), entry.tiles?.maxZoom ?? Infinity),
+    ),
     dragPan: config.dragPan,
     scrollZoom: config.scrollZoom,
     dragRotate: false,
