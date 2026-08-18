@@ -3,18 +3,21 @@
 // ==================================================
 //
 // Genera tiles XYZ de alta resolución para un mapa usando los binarios CLI de
-// GDAL (gdal_translate + gdalwarp). El footprint geográfico se deriva de
-// geo.js replicando la lógica de BoundsCalculator.processBounds, de modo que
-// los tiles quedan alineados exactamente con la capa base ImageSource.
+// GDAL (gdal_translate + gdalwarp). El footprint geográfico se deriva del PGW
+// de cada content module (src/content/*), de modo que los tiles quedan
+// alineados exactamente con la capa base ImageSource.
 //
 // Requisitos:
 //   - GDAL con driver WEBP (Windows: C:\Program Files\GDAL, o GDAL_BIN=<dir>)
-//   - La imagen "full" del mapa debe estar disponible en images.js (Cloudinary)
+//   - ffmpeg para convertir AVIF → WebP (GDAL 3.12 no lee AVIF):
+//     C:\Herramientas\ffmpeg\bin, o FFMPEG_BIN=<dir>
+//   - Ejecutar con tsx (resuelve imports .ts y aliases @):
+//     tsx --tsconfig tsconfig.app.json scripts/generate-tiles.mjs
 //
 // Uso:
-//   node scripts/generate-tiles.mjs               # mapas con config en tiles.js
-//   node scripts/generate-tiles.mjs chapter1-ecosistemas
-//   node scripts/generate-tiles.mjs chapter1-ecosistemas --force
+//   pnpm tiles                                  # todos los mapas con tiles
+//   pnpm tiles chapter1-ecosistemas             # un mapa
+//   pnpm tiles chapter1-ecosistemas --force     # regenerar tiles existentes
 //
 // Salida:
 //   public/assets/maps/tiles/mapas/{mapId}/{z}/{x}/{y}.webp   (mapas base)
@@ -22,15 +25,13 @@
 //   (NO versionar en git — regenerar con `pnpm tiles`)
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { mkdirSync, existsSync, writeFileSync } from 'node:fs'
+import { mkdirSync, existsSync, writeFileSync, copyFileSync, readdirSync, rmSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
-import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join, dirname, extname } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { MAP_GEO } from '../src/data/maps/geo.ts'
-import { MAP_IMAGES } from '../src/data/maps/images.ts'
-import { MAP_CONFIGS } from '../src/data/maps/configs.ts'
-import { MAP_TILES } from '../src/data/maps/tiles.ts'
+import { MAP_TILE_MODES } from '../src/data/tiles.ts'
+import { processBounds } from '../src/services/BoundsCalculator.ts'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT_ROOT = join(ROOT, 'public', 'assets', 'maps', 'tiles', 'mapas')
@@ -38,12 +39,15 @@ const TMP_ROOT = join(ROOT, '.tmp-tiles')
 
 // ── Entorno GDAL ────────────────────────────────────────────────────────────
 const GDAL_BIN = process.env.GDAL_BIN || 'C:\\Program Files\\GDAL'
+const FFMPEG_BIN = process.env.FFMPEG_BIN || 'C:\\Herramientas\\ffmpeg\\bin'
 const PATH_SEP = process.platform === 'win32' ? ';' : ':'
 const gdalEnv = {
   ...process.env,
-  PATH: GDAL_BIN + PATH_SEP + (process.env.PATH ?? ''),
+  PATH: GDAL_BIN + PATH_SEP + FFMPEG_BIN + PATH_SEP + (process.env.PATH ?? ''),
   GDAL_DATA: process.env.GDAL_DATA || join(GDAL_BIN, 'gdal-data'),
   PROJ_LIB: process.env.PROJ_LIB || join(GDAL_BIN, 'projlib'),
+  // No escribir sidecars .aux.xml
+  GDAL_PAM_ENABLED: 'NO',
 }
 
 function gdal(bin, args, label) {
@@ -55,59 +59,92 @@ function gdal(bin, args, label) {
   }
 }
 
-// ── Georreferenciación (replica BoundsCalculator) ───────────────────────────
-const EPS = 1e-10
-
-function isRotatedPGW(a, e, b, d) {
-  return Math.abs(a) < EPS && Math.abs(e) < EPS && Math.abs(b) > EPS && Math.abs(d) > EPS
-}
-
-function convertRotatedPGW(pgw, height) {
-  const [, d, b, , c, f] = pgw
-  return [d, 0, 0, -b, c, f + b * height]
-}
-
-function calculateImageCoordinates(pgw, width, height) {
-  const [a, d, b, e, c, f] = pgw
-  const x0 = c - 0.5 * a - 0.5 * b
-  const y0 = f - 0.5 * d - 0.5 * e
-  const topLeft = [x0, y0]
-  const topRight = [x0 + a * width, y0 + d * width]
-  const bottomRight = [x0 + a * width + b * height, y0 + d * width + e * height]
-  const bottomLeft = [x0 + b * height, y0 + e * height]
-  return [topLeft, topRight, bottomRight, bottomLeft]
-}
-
-function processBounds(pgw, width, height) {
-  const [a, d, b, e] = pgw
-  const effective = isRotatedPGW(a, e, b, d) ? convertRotatedPGW(pgw, height) : pgw
-  const coords = calculateImageCoordinates(effective, width, height)
-  const lngs = coords.map((c) => c[0])
-  const lats = coords.map((c) => c[1])
-  return [Math.min(...lngs), Math.min(...lats), Math.max(...lngs), Math.max(...lats)]
-}
-
 // ── Web Mercator (EPSG:3857) ────────────────────────────────────────────────
 const R = 6378137
 const WORLD = 20037508.342789244
 const lonToX = (lon) => (R * lon * Math.PI) / 180
 const latToY = (lat) => R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360))
 
+// ── Walk de content (replica src/content/index.ts: glob de 1-2 niveles) ─────
+function walkContent() {
+  const contentRoot = join(ROOT, 'src', 'content')
+  const files = []
+  for (const dir of readdirSync(contentRoot, { withFileTypes: true })) {
+    if (!dir.isDirectory()) continue
+    // ./<dir>/index.ts (intro suelto) y ./<dir>/<sub>/index.ts (capítulos)
+    const direct = join(contentRoot, dir.name, 'index.ts')
+    if (existsSync(direct)) files.push(direct)
+    const sub = join(contentRoot, dir.name)
+    for (const subDir of readdirSync(sub, { withFileTypes: true })) {
+      if (!subDir.isDirectory()) continue
+      const candidate = join(sub, subDir.name, 'index.ts')
+      if (existsSync(candidate)) files.push(candidate)
+    }
+  }
+  return files
+}
+
+// ── Descarga / copia de la imagen full ──────────────────────────────────────
 async function download(url, dest) {
-  if (existsSync(dest)) return
   const res = await fetch(url)
   if (!res.ok) throw new Error(`HTTP ${res.status} descargando ${url}`)
   writeFileSync(dest, Buffer.from(await res.arrayBuffer()))
 }
 
-async function generateMap(mapId, { force = false } = {}) {
-  const geo = MAP_GEO[mapId]
-  const images = MAP_IMAGES[mapId]
-  const config = MAP_CONFIGS[mapId]
-  const tiles = MAP_TILES[mapId]
+/**
+ * Resuelve la imagen full a un archivo legible por GDAL (webp/png).
+ * - URLs Cloudinary: descarga directa.
+ * - Rutas locales (/assets/...): copia desde public/.
+ * - AVIF (GDAL 3.12 no lo lee): convierte con ffmpeg a WebP.
+ */
+async function resolveSource(images, tmpDir) {
+  const full = images.full
+  if (!full) return null
+  const isLocal = full.startsWith('/assets/')
+  let raw
+  if (isLocal) {
+    raw = join(ROOT, 'public', full.replace(/^\//, ''))
+    if (!existsSync(raw)) throw new Error(`imagen local no existe: ${raw}`)
+  } else {
+    const ext = extname(new URL(full).pathname) || '.webp'
+    const srcFile = join(tmpDir, `source${ext}`)
+    await download(full, srcFile)
+    raw = srcFile
+  }
+  if (raw.toLowerCase().endsWith('.avif')) {
+    const webpFile = join(tmpDir, 'source.webp')
+    console.log('   ⚙ ffmpeg: AVIF → WebP…')
+    const res = spawnSync(
+      join(FFMPEG_BIN, 'ffmpeg'),
+      ['-y', '-i', raw, webpFile],
+      { encoding: 'utf8', windowsHide: true },
+    )
+    if (res.status !== 0) {
+      throw new Error(`ffmpeg falló convirtiendo AVIF\n  ${(res.stderr || '').trim().split('\n').slice(-3).join('\n  ')}`)
+    }
+    return webpFile
+  }
+  return raw
+}
 
-  if (!geo || !images || !config || !tiles) {
-    console.log(`⏭️  ${mapId}: sin config de tiles (geo/images/config/tiles)`)
+function cleanupOrphanZooms(outDir, zFrom, zTo) {
+  if (!existsSync(outDir)) return
+  for (const entry of readdirSync(outDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue
+    const z = Number(entry.name)
+    if (Number.isNaN(z)) continue
+    if (z < zFrom || z > zTo) {
+      rmSync(join(outDir, entry.name), { recursive: true, force: true })
+      console.log(`   🧹 eliminando zoom huérfano: z${entry.name}`)
+    }
+  }
+}
+
+async function generateMap(mapId, mod, { force = false } = {}) {
+  const { geo, images, config, tiles } = mod.default
+
+  if (!tiles) {
+    console.log(`⏭️  ${mapId}: sin tiles (makeTilesConfig devolvió null)`)
     return
   }
   if (!images.full) {
@@ -115,46 +152,41 @@ async function generateMap(mapId, { force = false } = {}) {
     return
   }
 
-  const [west, south, east, north] = processBounds(geo.pgw, geo.width, geo.height)
+  const { bounds } = processBounds(geo.pgw, geo.width, geo.height)
+  const [west, south, east, north] = bounds
 
-  // Rango de zoom desde la config de tiles (fuente de verdad de hasta dónde
-  // se generan tiles). El config.maxZoom controla el zoom máximo de vista.
   const zFrom = tiles.minZoom
   const zTo = tiles.maxZoom
 
   const tmpDir = join(TMP_ROOT, mapId)
-  const srcFile = join(tmpDir, 'source.webp')
+  mkdirSync(tmpDir, { recursive: true })
+  const srcFile = await resolveSource(images, tmpDir)
+  if (!srcFile) return
   const tif4326 = join(tmpDir, '4326.tif')
   const tif3857 = join(tmpDir, '3857.tif')
   const outDir = join(OUT_ROOT, mapId)
 
-  mkdirSync(tmpDir, { recursive: true })
+  cleanupOrphanZooms(outDir, zFrom, zTo)
 
   console.log(`\n🗺️  ${mapId}`)
   console.log(`   bounds: [${[west, south, east, north].map((v) => v.toFixed(5)).join(', ')}]`)
   console.log(`   zoom: ${zFrom}..${zTo}`)
 
-  // 1. Descargar imagen full
-  console.log('   ↓ descargando imagen full…')
-  await download(images.full, srcFile)
-
-  // 2. Georreferenciar a EPSG:4326 (mismo footprint que la capa base)
-  console.log('   → georreferenciando 4326…')
+  // 1. Georreferenciar a EPSG:4326 (mismo footprint que la capa base)
   gdal(
     'gdal_translate',
     ['-q', '-of', 'GTiff', '-a_srs', 'EPSG:4326', '-a_ullr', String(west), String(north), String(east), String(south), srcFile, tif4326],
     'gdal_translate 4326',
   )
 
-  // 3. Warp a Web Mercator (proyección de los tiles XYZ)
-  console.log('   → warp 3857…')
+  // 2. Warp a Web Mercator (proyección de los tiles XYZ)
   gdal(
     'gdalwarp',
     ['-q', '-overwrite', '-t_srs', 'EPSG:3857', '-r', 'lanczos', '-dstalpha', '-of', 'GTiff', tif4326, tif3857],
     'gdalwarp 3857',
   )
 
-  // 4. Extraer tiles XYZ (esquema xyz estándar)
+  // 3. Extraer tiles XYZ (esquema xyz estándar)
   const xMin = lonToX(west)
   const xMax = lonToX(east)
   const yMin = latToY(south)
@@ -194,7 +226,8 @@ async function generateMap(mapId, { force = false } = {}) {
     console.log(`   ✔ z${z}: cuadrícula ${xt0}-${xt1}/${yt0}-${yt1} (${(xt1 - xt0 + 1) * (yt1 - yt0 + 1)})`)
   }
 
-  console.log(`   ✅ ${mapId}: ${total} tiles generados → ${outDir}`)
+  console.log(`   ✅ ${mapId}: ${total} tiles → ${outDir}`)
+  return total
 }
 
 async function main() {
@@ -202,16 +235,29 @@ async function main() {
   const force = args.includes('--force')
   const targets = args.filter((a) => !a.startsWith('-'))
 
-  const maps = targets.length > 0 ? targets : Object.keys(MAP_TILES)
+  const modules = []
+  for (const file of walkContent()) {
+    const mod = await import(pathToFileURL(file).href)
+    const mapId = mod.default?.mapId
+    if (mapId && MAP_TILE_MODES[mapId]) {
+      modules.push({ mapId, mod })
+    }
+  }
 
-  for (const mapId of maps) {
+  const wanted = targets.length > 0 ? new Set(targets) : null
+  const todo = wanted ? modules.filter((m) => wanted.has(m.mapId)) : modules
+
+  console.log(`📦 ${modules.length} mapas registrados con tiles (de ${walkContent().length} módulos en content)`)
+
+  let grandTotal = 0
+  for (const { mapId, mod } of todo) {
     try {
-      await generateMap(mapId, { force })
+      grandTotal += (await generateMap(mapId, mod, { force })) ?? 0
     } catch (err) {
       console.error(`❌ ${mapId}: ${err.message}`)
     }
   }
-  console.log('\nListo.')
+  console.log(`\n✅ Total: ${grandTotal} tiles en ${todo.length} mapas`)
 }
 
 main().catch((err) => {
