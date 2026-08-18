@@ -47,12 +47,20 @@ scripts/generate-tiles.mjs   ← actualizado: lee contenido desde src/content/*
 Funciones puras sin dependencias de framework:
 
 - `screenCeilingZoom(geo, canvasW)` → `number`
-  `floor(log2(canvasW · 360 / (512 · lonSpan)))` donde `lonSpan` es el ancho geográfico
+  `round(log2(canvasW · 360 / (256 · lonSpan)))` donde `lonSpan` es el ancho geográfico
   del footprint (del `processBounds`). Es el zoom donde el mapa llena el ancho de
   pantalla; más allá no hay detalle perceptible.
-- `constrainMinZoom(geo, canvasW, canvasH)` → `number`
-  Mismo cálculo que el constrain (bearing-aware): el zoom mínimo donde el viewport
-  cabe en el bound. (Solo para validación/consistencia, no obligatorio en runtime.)
+  > **Ajuste verificado (2026-08-17, bitácora v2):** la fórmula usa `round`/`256`
+  > (mejor ajuste 13/21 contra la tabla aprobada). La variante `floor`/`512` del
+  > borrador NO calza con los ejemplos del propio spec (m-suarez z12, bredunco z9,
+  > cali z15 solo calzan con 256-round).
+- `constrainMinZoom(geo, canvasW, canvasH, bearing)` → `number`
+  Mismo cálculo que el constrain (bearing-aware, quarter-turn intercambia W↔lat /
+  H↔lon): el zoom mínimo donde el viewport cabe en el bound. (Solo para
+  validación/consistencia, no obligatorio en runtime.)
+  > **Ajuste verificado (2026-08-17, bitácora v2):** el bearing ES necesario — en
+  > 26/31 mapas la orientación cambia el `floor` del minZoom en 1 con referencia
+  > 1920×1080. Se recibe `config.initialBearing`.
 - `computeTileRange(geo, initialZoom, mode, canvasW)` → `{ minZoom, maxZoom }`
   Recibe `geo` y `initialZoom` (de `config`, que sí permanece en el contenido).
   - `mode: 'detail'` → `minZoom = floor(constrainMinZoom)`, `maxZoom = screenCeilingZoom`.
@@ -68,7 +76,7 @@ Usada por: **MapRenderer** (con `canvas.clientWidth` real), **generate-tiles.mjs
 - `MAP_TILE_MODES: Record<string, 'detail' | 'initial-only'>`
   Declara el modo por mapa (fuente de verdad de qué mapa tiene detalle).
 - `tileUrlTemplate(mapId)` → `'/assets/maps/tiles/mapas/{mapId}/{z}/{x}/{y}.webp'`
-- `makeTilesConfig(mapId, geo, initialZoom)` → `MapTilesConfig | null`
+- `makeTilesConfig(mapId, geo, initialZoom, initialBearing)` → `MapTilesConfig | null`
   Arma el objeto completo: `urlTemplate`, `tileSize: 256`, `fadeDuration: 300`, y
   `minZoom`/`maxZoom` derivados de `computeTileRange`. Devuelve `null` para
   `mode: 'none'`.
@@ -103,7 +111,7 @@ Usada por: **MapRenderer** (con `canvas.clientWidth` real), **generate-tiles.mjs
 
 ## Resultado esperado
 
-- Total estimado: **~3.600 tiles (~43 MB)** vs 20.313 (~238 MB) del enfoque actual.
+- Total estimado: **~3.538 tiles (~41 MB)** vs 20.313 (~238 MB) del enfoque actual.
 - Ejemplos (techo de pantalla):
   - `m-suarez`: z12 (79 tiles) vs z16 actual (14.458).
   - `bredunco`: z9 (~220) vs z9.5 config (1.082).
