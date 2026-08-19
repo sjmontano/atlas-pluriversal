@@ -18,7 +18,7 @@ Cartografía digital viva del Valle Alto del Río Cauca: 4 capítulos, 31 mapas 
 
 Los 31 mapas están calibrados con **world files (PGW) en formato rotado original** (A=0, E=0, B≠0, D≠0). La rotación la maneja MapLibre nativamente con `bearing: −90`, sin conversión de coordenadas en runtime ni rotación física de imágenes. El clamping del viewport usa `setTransformConstrain` (bearing-aware), nunca `setMaxBounds`.
 
-- PGW data: `src/data/maps/geo.js` (fuente de verdad)
+- PGW data: módulos de contenido en `src/content/chapter-*/<mapa>/index.ts` (fuente de verdad por mapa), con overrides de calibración en `src/content/calibration/map.ts` y `src/content/calibration/layers.ts`
 - Cálculo de bounds: `src/services/BoundsCalculator.ts` — fórmula afín con half-pixel correction
 - Constrain: `src/services/TransformConstrain.ts` — minZoom bearing-aware + clamp de centro
 - Renderer: `src/services/MapRenderer.ts` — ImageSource + pipeline georreferenciado
@@ -27,13 +27,13 @@ Los 31 mapas están calibrados con **world files (PGW) en formato rotado origina
 
 ```
 src/
-├── data/maps/       geo.js, configs.js, images.js  — datos de mapas
-├── data/chapters/   chapters.js                     — jerarquía de capítulos
-├── services/        BoundsCalculator, MapRenderer, TransformConstrain, BasemapManager
-├── stores/          mapStore, chapterStore, layerStore, uiStore
-├── hooks/           useMap.ts
-├── components/map/  AtlasMap.tsx, MapControls.tsx
-└── pages/           DevMenu, TestMapPage
+├── content/       módulos de contenido por mapa (geo, imágenes, tiles, capas, POIs, config)
+├── data/          jerarquía de capítulos (chapters) y config de tiles
+├── services/      BoundsCalculator, MapRenderer, TransformConstrain, BasemapManager, LayerManager, PoiManager
+├── stores/        mapStore, chapterStore, layerStore, uiStore, connectionStore
+├── hooks/         useMap.ts, useTilePrefetch, usePrefetchAdjacent, useAutoLowPower
+├── components/    map/ (AtlasMap, LayerMenu, MapControls, PoiModal, OfflineBanner), calibration/ (CalibrationPanel)
+└── pages/         DevMenu, TestMapPage
 ```
 
 ## Scripts
