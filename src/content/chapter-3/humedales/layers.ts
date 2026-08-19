@@ -1,6 +1,6 @@
 import type { RasterPgwLayer } from '../../../types/layer'
 import { rasterLayer, CLOUD } from '../shared'
-import { SWATCH } from '../../theme/swatches'
+import { SWATCH } from '@content/theme'
 
 // PGW mixto (rotación residual) tal como viene de v17 pgwData.js
 const PGW: readonly [number, number, number, number, number, number] = [

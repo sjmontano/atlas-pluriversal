@@ -1,5 +1,5 @@
 import type { LegendItem } from '../../../types/layer'
-import { SWATCH } from '../../theme/swatches'
+import { SWATCH } from '@content/theme'
 import { TEXTO_MONOCULTIVO } from '../shared'
 
 export const LEGENDS: LegendItem[] = [

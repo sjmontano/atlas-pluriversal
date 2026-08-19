@@ -15,7 +15,6 @@ const geo = {
   height: 3500,
 } as const
 const config = {
-  initialZoom: 9,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -32,7 +31,7 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter3-arcilla', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter3-arcilla', geo, config.initialBearing),
   layers: LAYERS,
   groups: GROUPS,
   legends: LEGENDS,

@@ -1,6 +1,6 @@
 import type { RasterPgwLayer } from '../../../types/layer'
 import { rasterLayer, CLOUD } from '../shared'
-import { SWATCH } from '../../theme/swatches'
+import { SWATCH } from '@content/theme'
 
 const PGW: readonly [number, number, number, number, number, number] = [
   0, 0.000010359711, 0.000010359732, 0, -76.462515214762, 3.159866654268,

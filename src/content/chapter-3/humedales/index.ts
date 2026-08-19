@@ -14,7 +14,6 @@ const geo = {
   height: 9114,
 } as const
 const config = {
-  initialZoom: 8,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -31,7 +30,7 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter3-humedales', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter3-humedales', geo, config.initialBearing),
   layers: LAYERS,
   legends: LEGENDS,
 } satisfies MapContent

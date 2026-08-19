@@ -15,7 +15,6 @@ const geo = {
   height: 8822,
 } as const
 const config = {
-  initialZoom: 7,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -32,7 +31,7 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter3-cali-deseca', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter3-cali-deseca', geo, config.initialBearing),
   layers: LAYERS,
   groups: GROUPS,
   legends: LEGENDS,

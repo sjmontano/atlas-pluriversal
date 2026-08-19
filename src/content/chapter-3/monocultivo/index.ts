@@ -13,7 +13,6 @@ const geo = {
   height: 4989,
 } as const
 const config = {
-  initialZoom: 7.5,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -30,6 +29,6 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter3-monocultivo', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter3-monocultivo', geo, config.initialBearing),
   legends: LEGENDS,
 } satisfies MapContent
