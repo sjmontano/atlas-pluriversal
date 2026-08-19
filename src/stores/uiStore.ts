@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { BasemapStyle } from '@services/BasemapManager.ts'
+import { useConnectionStore } from './connectionStore.ts'
 
 export interface UIStoreState {
   activeModal: unknown
@@ -30,17 +31,6 @@ const isLowPowerDevice =
   typeof navigator !== 'undefined' &&
   (navigator.hardwareConcurrency != null ? navigator.hardwareConcurrency <= 4 : false)
 
-// `navigator.connection` no forma parte de los tipos DOM estándar.
-interface NavigatorWithConnection extends Navigator {
-  connection?: { effectiveType?: string }
-}
-
-const isSlowConnection = () => {
-  if (typeof navigator === 'undefined') return false
-  const conn = (navigator as NavigatorWithConnection).connection
-  return conn?.effectiveType === 'slow-2g' || conn?.effectiveType === '2g'
-}
-
 export const useUIStore = create<UIStoreState>()((set) => ({
   activeModal: null,
   sidebarOpen: false,
@@ -51,7 +41,7 @@ export const useUIStore = create<UIStoreState>()((set) => ({
   imageOpacity: 1,
   tilesVisible: true,
 
-  lowPowerMode: isLowPowerDevice || isSlowConnection(),
+  lowPowerMode: isLowPowerDevice || useConnectionStore.getState().isSlow,
 
   openModal: (modal) => set({ activeModal: modal }),
   closeModal: () => set({ activeModal: null }),
