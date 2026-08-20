@@ -15,16 +15,16 @@
 //     tsx --tsconfig tsconfig.app.json scripts/generate-tiles.mjs
 //
 // Uso:
-//   pnpm tiles                                  # todos los mapas con tiles
-//   pnpm tiles chapter1-ecosistemas             # un mapa
-//   pnpm tiles chapter1-ecosistemas --force     # regenerar tiles existentes
+//   npm run tiles                                  # todos los mapas con tiles
+//   npm run tiles -- chapter1-ecosistemas          # un mapa
+//   npm run tiles -- chapter1-ecosistemas --force  # regenerar tiles existentes
 //
 // Salida:
 //   public/assets/maps/tiles/mapas-standard/{mapId}/{z}/{x}/{y}.webp
 //   public/assets/maps/tiles/mapas-hd/{mapId}/{z}/{x}/{y}.webp
 //   public/assets/maps/previews/{mapId}.webp
 //   public/assets/maps/tiles/capas/{layerId}/{z}/{x}/{y}.webp (capas futuras)
-//   (NO versionar en git — regenerar con `pnpm tiles`)
+//   (NO versionar en git — regenerar con `npm run tiles`)
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { mkdirSync, existsSync, writeFileSync, readdirSync, rmSync } from 'node:fs'

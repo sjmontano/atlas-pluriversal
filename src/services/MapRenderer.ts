@@ -61,6 +61,13 @@ const DEFAULT_VMB_EXPAND_FACTOR = 0
  */
 const MIN_MERCATOR_SPAN = 2 ** -25
 
+/**
+ * Techo de la VISTA: fijo y desacoplado de la generación de tiles. La cámara
+ * puede superar el maxZoom del tileset (MapLibre reutiliza los tiles del
+ * último nivel — overzoom — sin nuevos requests). 22 = techo nativo.
+ */
+const VIEW_MAX_ZOOM = 22
+
 function resolveTileCacheSize(): number {
   if (typeof navigator === 'undefined') return 400
   const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection
@@ -95,6 +102,8 @@ export interface MapController {
   updateBounds(pgw: PGWData, width: number, height: number): BoundsResult
   updateViewportMargins(marginH: number, marginV: number): void
   updateViewportMargin(margin: number): void
+  /** Cambia el perfil de entrega de tiles (standard ↔ hd) sin reconstruir el mapa. */
+  setTileProfile(profile: TileDeliveryProfile): void
 }
 
 export interface BuildMapResult {
@@ -153,12 +162,9 @@ export async function buildGeoreferencedMap(
     container.clientHeight,
     config.initialBearing,
   )
-  // Techo de la VISTA: fijo y desacoplado de la generación de tiles. La cámara
-  // puede superar el maxZoom del tileset (MapLibre reutiliza los tiles del
-  // último nivel — overzoom — sin nuevos requests). 22 = techo nativo.
-  const VIEW_MAX_ZOOM = 22
-  const maxZoom = Math.max(Math.floor(initialZoom), VIEW_MAX_ZOOM)
-  logger.debug(CATEGORY, 'build:zoom', { mapId, initialZoom, maxZoom, clientWidth: container.clientWidth, clientHeight: container.clientHeight })
+  // Techo de la VISTA (constante VIEW_MAX_ZOOM): desacoplado de la generación.
+  const maxZoom = VIEW_MAX_ZOOM
+  logger.debug(CATEGORY, 'build:zoom', { mapId, initialZoom, maxZoom, clientWidth: container.clientWidth, clientHeight: container.clientHeight, tilesRange: entry.tiles ? `${entry.tiles.minZoom}-${entry.tiles.maxZoom}` : null })
 
   // ── 2. Instancia MapLibre ───────────────────────────────────────────────
   const mapOptions: maplibregl.MapOptions = {
@@ -336,6 +342,13 @@ export async function buildGeoreferencedMap(
     updateViewportMargin(margin: number): void {
       this.updateViewportMargins(margin, margin)
     },
+    setTileProfile(profile: TileDeliveryProfile): void {
+      if (!entry.tiles) return
+      addTilesLayer(map, mapId, entry, bounds, {
+        tileProfile: profile,
+        lowPowerMode: opts?.lowPowerMode,
+      })
+    },
   }
 
   return {
@@ -369,6 +382,10 @@ export async function buildGeoreferencedMap(
  * Los tiles aportan nitidez extra en zooms altos (generados con
  * scripts/generate-tiles.mjs). Los bounds del source son el footprint
  * derivado de geo.js, garantizando alineación con la capa base ImageSource.
+ *
+ * Si el source ya existe con otro perfil (standard ↔ hd), se reemplaza por el
+ * perfil pedido SIN tocar la cámara (usado por MapController.setTileProfile
+ * al cambiar la conexión). La telemetría se adjunta una única vez por mapa.
  */
 export function addTilesLayer(
   map: maplibregl.Map,
@@ -384,9 +401,31 @@ export function addTilesLayer(
   }
 
   useMapStore.getState().setTilesStatus('loading')
+  ensureTilesSource(map, tiles, bounds, opts?.tileProfile ?? 'standard', opts?.lowPowerMode)
+  attachTileTelemetry(map, mapId)
+}
+
+/** Perfil aplicado actualmente al source de tiles, por instancia de mapa. */
+const appliedProfileByMap = new WeakMap<maplibregl.Map, TileDeliveryProfile>()
+/** Mapas que ya tienen la telemetría de tiles adjunta (evita listeners duplicados). */
+const telemetryByMap = new WeakSet<maplibregl.Map>()
+
+function ensureTilesSource(
+  map: maplibregl.Map,
+  tiles: NonNullable<MapContent['tiles']>,
+  bounds: GeographicBounds,
+  profile: TileDeliveryProfile,
+  lowPowerMode?: boolean,
+): void {
+  const prevProfile = appliedProfileByMap.get(map)
+  if (prevProfile && prevProfile !== profile) {
+    logger.info(CATEGORY, `Perfil de tiles: ${prevProfile} → ${profile}`, { profile })
+    if (map.getLayer(TILES_LAYER_ID)) map.removeLayer(TILES_LAYER_ID)
+    if (map.getSource(TILES_SOURCE_ID)) map.removeSource(TILES_SOURCE_ID)
+  }
+  appliedProfileByMap.set(map, profile)
 
   if (!map.getSource(TILES_SOURCE_ID)) {
-    const profile = opts?.tileProfile ?? 'standard'
     const urlTemplate = profile === 'hd'
       ? (tiles.urlTemplateHd ?? tiles.urlTemplate)
       : (tiles.urlTemplateStandard ?? tiles.urlTemplate)
@@ -414,19 +453,26 @@ export function addTilesLayer(
       source: TILES_SOURCE_ID,
       paint: {
         // lowPowerMode: sin transición de fade para ahorrar GPU
-        'raster-fade-duration': opts?.lowPowerMode ? 0 : tiles.fadeDuration ?? 300,
+        'raster-fade-duration': lowPowerMode ? 0 : tiles.fadeDuration ?? 300,
         'raster-resampling': 'nearest',
       },
     })
   }
+}
 
-  // ── Telemetría de tiles (nivel info) ────────────────────────────────────
-  // Registra cada request/carga/aborto/error del source XYZ y detecta
-  // duplicados (misma coord pedida 2+ veces sin ser cargada/abortada).
-  // Si ningún tile carga en 15s Y se solicitaron tiles → modo degraded.
-  // Solo se dispara si nRequested > 0 (tiles realmente pedidos); el primer
-  // tile:loaded lo desactiva inmediatamente. Tiempo extendido a 15s porque
-  // en Slow 4G los tiles pueden tardar >8s sin ser caída de conexión.
+/**
+ * Telemetría de tiles (nivel info) — se adjunta UNA vez por mapa.
+ * Registra cada request/carga/aborto/error del source XYZ y detecta
+ * duplicados (misma coord pedida 2+ veces sin ser cargada/abortada).
+ * Si ningún tile carga en 15s Y se solicitaron tiles → modo degraded.
+ * Solo se dispara si nRequested > 0 (tiles realmente pedidos); el primer
+ * tile:loaded lo desactiva inmediatamente. Tiempo extendido a 15s porque
+ * en Slow 4G los tiles pueden tardar >8s sin ser caída de conexión.
+ */
+function attachTileTelemetry(map: maplibregl.Map, mapId: string): void {
+  if (telemetryByMap.has(map)) return
+  telemetryByMap.add(map)
+
   const inFlight = new Set<string>()
   let nRequested = 0
   let nLoaded = 0

@@ -7,7 +7,8 @@
  * cuando MapLibre los solicita, se sirven al instante.
  *
  * ¿Por qué solo z6-z8?
- *   - z6 = 2 tiles, z7 = 6 tiles, z8 = 12 tiles → 20 tiles (~320 KB)
+ *   - z6 = 2 tiles, z7 = 6 tiles, z8 = 12 tiles → 20 tiles
+ *     (con la pirámide HD: 1024px en z6-z7 y 512px en z8+)
  *   - Son los niveles visibles al cargar el mapa (cubren toda el área).
  *   - z9 en adelante son demasiados tiles para precarga útil (>100).
  *
@@ -37,7 +38,7 @@ export function resolveAdaptivePrefetchMaxZoom(baseMaxZoom: number): number | nu
   if (!isOnline) return null
   if (isSlow) return Math.min(capped, 6) // solo z6 en 2G
 
-  // Conexión normal: hasta z8 (20 tiles, ~320 KB)
+  // Conexión normal: hasta z8 (20 tiles)
   return capped
 }
 

@@ -3,8 +3,6 @@ import type { TileDeliveryProfile } from '../types/content'
 
 interface ConnectionInfo {
   effectiveType?: string
-  rtt: number
-  downlink: number
   isSlow: boolean
   saveData: boolean
   isConstrained: boolean
@@ -20,8 +18,6 @@ export interface ConnectionStoreState extends ConnectionInfo {
 interface NavigatorWithConnection extends Navigator {
   connection?: {
     effectiveType?: string
-    rtt?: number
-    downlink?: number
     saveData?: boolean
     addEventListener?: (type: string, listener: () => void) => void
   }
@@ -38,8 +34,6 @@ const getConnectionInfo = (): Partial<ConnectionInfo> => {
   const isConstrained = saveData || isSlow || conn?.effectiveType === '3g'
   return {
     effectiveType: conn?.effectiveType ?? undefined,
-    rtt: conn?.rtt ?? 0,
-    downlink: conn?.downlink ?? 0,
     isSlow,
     saveData,
     isConstrained,

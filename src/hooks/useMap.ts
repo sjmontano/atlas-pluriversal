@@ -44,6 +44,7 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
   const [error, setError] = useState<string | null>(null)
 
   const setMapBuilt = useMapStore((s) => s.setMapBuilt)
+  const mapBuilt = useMapStore((s) => s.mapBuilt)
   const setLoading = useMapStore((s) => s.setLoading)
   const setStoreError = useMapStore((s) => s.setError)
   const lowPowerMode = useUIStore((s) => s.lowPowerMode)
@@ -114,9 +115,23 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
       setMapBuilt(false)
       logger.debug(CATEGORY, 'effect:cleanup', { mapId })
     }
-    // containerRef es estable (ref de React); mapId + lowPowerMode disparan rebuild
+    // containerRef es estable (ref de React); mapId + lowPowerMode disparan rebuild.
+    // tileProfile NO va aquí: su cambio se aplica en vivo (effect de swap abajo).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapId, lowPowerMode, tileProfile])
+  }, [mapId, lowPowerMode])
+
+  // ── swap de perfil sin reconstruir ─────────────────────────────────────────
+  // tileProfile cambia (standard ↔ hd) al cambiar la conexión. En lugar de
+  // reconstruir el mapa (costoso), se reemplaza el source de tiles en vivo
+  // vía MapController.setTileProfile. El mapa se construye con el perfil
+  // inicial (primer render); este effect solo aplica los cambios posteriores.
+  useEffect(() => {
+    if (!mapBuilt) return
+    const controller = controllerRef?.current
+    if (!controller) return
+    logger.debug(CATEGORY, 'effect:profile-swap', { tileProfile })
+    controller.setTileProfile(tileProfile)
+  }, [tileProfile, mapBuilt, controllerRef])
 
   return { mapRef, error }
 }
