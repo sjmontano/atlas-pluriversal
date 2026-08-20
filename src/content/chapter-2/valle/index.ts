@@ -14,7 +14,6 @@ const geo = {
   height: 12472,
 } as const
 const config = {
-  initialZoom: 6,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -31,7 +30,7 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter2-valle', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter2-valle', geo, config.initialBearing),
   layers: LAYERS,
   pois: POIS,
 } satisfies MapContent

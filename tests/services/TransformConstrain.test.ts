@@ -52,6 +52,26 @@ describe('TransformConstrain', () => {
     })
   })
 
+  describe('createBearingAwareConstrain con maxZoom', () => {
+    const constrain = createBearingAwareConstrain(getCanvas, VMB, -90, 9)
+
+    it('clampea un zoom por encima del techo al maxZoom', () => {
+      const result = constrain(new LngLat(-72, 3), 14)
+      expect(result.zoom).toBe(9)
+    })
+
+    it('respeta un zoom dentro del rango [minZoom, maxZoom]', () => {
+      const result = constrain(new LngLat(-72, 3), 8.5)
+      expect(result.zoom).toBeCloseTo(8.5, 6)
+    })
+
+    it('sigue elevando el zoom por debajo del minZoom', () => {
+      const result = constrain(new LngLat(-72, 3), 2)
+      expect(result.zoom).toBeGreaterThan(6)
+      expect(result.zoom).toBeLessThanOrEqual(9)
+    })
+  })
+
   describe('createBearingAwareConstrain con bearing 0', () => {
     const constrain = createBearingAwareConstrain(getCanvas, VMB, 0)
 

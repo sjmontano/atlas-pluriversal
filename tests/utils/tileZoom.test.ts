@@ -22,6 +22,11 @@ const INTRO = {
   width: 5649,
   height: 11141,
 }
+const ENCUADRES = {
+  pgw: [0, 0.002291904891, 0.002292263474, 0, -79.43968707918096, -1.987827190702011] as const,
+  width: 3649,
+  height: 6496,
+}
 
 describe('tileZoom', () => {
   describe('screenCeilingZoom', () => {
@@ -54,29 +59,37 @@ describe('tileZoom', () => {
   })
 
   describe('computeTileRange', () => {
-    it('detail: ecosistemas z8-10 con bearing -90 (bitácora v2)', () => {
-      const range = computeTileRange(ECOSISTEMAS, 6.4, 'detail', 1920, 1080, -90)
+    it('initial-cover: encuadres sirve el nivel visible al abrir z6', () => {
+      const range = computeTileRange(ENCUADRES, 'initial-cover', 1920, 1080, -90)
+      expect(range).toEqual({ minZoom: 6, maxZoom: 6 })
+    })
+
+    it('detail: ecosistemas sirve desde el nivel inicial hasta el techo', () => {
+      const range = computeTileRange(ECOSISTEMAS, 'detail', 1920, 1080, -90)
       expect(range).toEqual({ minZoom: 8, maxZoom: 10 })
     })
 
     it('detail: m-suarez z10-12 con bearing 180 (bitácora v2)', () => {
-      const range = computeTileRange(M_SUAREZ, 9, 'detail', 1920, 1080, 180)
+      const range = computeTileRange(M_SUAREZ, 'detail', 1920, 1080, 180)
       expect(range).toEqual({ minZoom: 10, maxZoom: 12 })
     })
 
-    it('initial-only: intro z6 (bitácora v2)', () => {
-      const range = computeTileRange(INTRO, 6.39, 'initial-only', 1920, 1080, -90)
-      expect(range).toEqual({ minZoom: 6, maxZoom: 6 })
+    it('initial-only: genera en el techo de pantalla (no floor(constrainMinZoom))', () => {
+      // El zoom inicial del runtime (constrainMinZoom ≈ 6.83) SIEMPRE cae por
+      // debajo del techo (z9). Generar en el techo garantiza render ≤1:1.
+      const range = computeTileRange(INTRO, 'initial-only', 1920, 1080, -90)
+      expect(range).toEqual({ minZoom: 9, maxZoom: 9 })
+      expect(range!.minZoom).toBeGreaterThan(Math.floor(constrainMinZoom(INTRO, 1920, 1080, -90)))
     })
 
     it('detail: nunca devuelve rango invertido (minZoom ≤ maxZoom)', () => {
-      const range = computeTileRange(ECOSISTEMAS, 6.4, 'detail', 1920, 1080, -90)
+      const range = computeTileRange(ECOSISTEMAS, 'detail', 1920, 1080, -90)
       expect(range).not.toBeNull()
       expect(range!.minZoom).toBeLessThanOrEqual(range!.maxZoom)
     })
 
     it('none: devuelve null', () => {
-      expect(computeTileRange(ECOSISTEMAS, 6.4, 'none')).toBeNull()
+      expect(computeTileRange(ECOSISTEMAS, 'none')).toBeNull()
     })
   })
 

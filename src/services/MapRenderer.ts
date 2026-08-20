@@ -8,7 +8,7 @@
  *   2. Instancia MapLibre con estilo en blanco + bearing −90
  *   3. fitBounds con bearing: muestra la imagen completa en el viewport
  *   4. transformConstrain: restricción de cámara bearing-aware
- *   5. Carga progresiva: ImageSource con placeholder → upgrade a full
+ *   5. Carga progresiva: preview local → tiles standard/HD
  *
  * Servicio puro (sin React). La orquestación por mapa vive en useMap.
  */
@@ -17,10 +17,10 @@ import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { processBounds, expandBoundsPerAxis, type PGWData, type BoundsResult, type ImageCoordinates, type GeographicBounds } from './BoundsCalculator'
 import { createBearingAwareConstrain } from './TransformConstrain'
-import { screenCeilingZoom } from '@utils/tileZoom'
+import { screenCeilingZoom, constrainMinZoom } from '@utils/tileZoom'
 import { logger } from './MapLogger'
 import { useMapStore } from '@stores/mapStore'
-import type { MapContent } from '../types/content'
+import type { MapContent, TileDeliveryProfile } from '../types/content'
 
 maplibregl.setWorkerUrl('/vendor/maplibre/maplibre-gl-worker.mjs')
 
@@ -106,6 +106,8 @@ export interface BuildMapResult {
 export interface BuildOptions {
   /** Modo bajo consumo: reduce decodificación paralela y fade de tiles */
   lowPowerMode?: boolean
+  /** Perfil de entrega elegido por conexión y dispositivo. */
+  tileProfile?: TileDeliveryProfile
 }
 
 /**
@@ -133,8 +135,8 @@ export async function buildGeoreferencedMap(
     throw new Error(`Bounds inválidos para el mapa: ${mapId}`)
   }
 
-  if (!images.full) {
-    throw new Error(`Sin imagen disponible para el mapa: ${mapId}`)
+  if (config.useImageBase !== false && !images.placeholder && !entry.tiles?.preview) {
+    throw new Error(`Sin preview disponible para el mapa: ${mapId}`)
   }
 
   const viewportMargin = config.viewportMargin ?? DEFAULT_VMB_EXPAND_FACTOR
@@ -143,20 +145,31 @@ export async function buildGeoreferencedMap(
   const vmb = expandBoundsPerAxis(bounds, viewportMarginH, viewportMarginV)
   logger.debug(CATEGORY, 'build:bounds', { mapId, bounds, center, vmb, viewportMargin, viewportMarginH, viewportMarginV })
 
+  // Zoom inicial derivado del footprint: el mínimo donde el mapa completo entra
+  // en el viewport real (bearing-aware). Sustituye al initialZoom de config.
+  const initialZoom = constrainMinZoom(
+    geo,
+    container.clientWidth,
+    container.clientHeight,
+    config.initialBearing,
+  )
+  // Techo de detalle: el zoom donde el mapa llena el ancho REAL del contenedor.
+  // Si hay tiles, no superar su maxZoom (los tiles no se generan más allá).
+  const maxZoom = Math.max(
+    Math.floor(initialZoom),
+    Math.min(screenCeilingZoom(geo, container.clientWidth), entry.tiles?.maxZoom ?? Infinity),
+  )
+  logger.debug(CATEGORY, 'build:zoom', { mapId, initialZoom, maxZoom, clientWidth: container.clientWidth, clientHeight: container.clientHeight })
+
   // ── 2. Instancia MapLibre ───────────────────────────────────────────────
   const mapOptions: maplibregl.MapOptions = {
     container,
     style: BLANK_STYLE,
     center,
-    zoom: config.initialZoom,
+    zoom: initialZoom,
     bearing: config.initialBearing,
     minZoom: 0,
-    // Techo de detalle: el zoom donde el mapa llena el ancho REAL del contenedor.
-    // Si hay tiles, no superar su maxZoom (los tiles no se generan más allá).
-    maxZoom: Math.max(
-      Math.floor(config.initialZoom),
-      Math.min(screenCeilingZoom(geo, container.clientWidth), entry.tiles?.maxZoom ?? Infinity),
-    ),
+    maxZoom,
     dragPan: config.dragPan,
     scrollZoom: config.scrollZoom,
     dragRotate: false,
@@ -176,6 +189,7 @@ export async function buildGeoreferencedMap(
       () => container,
       vmb,
       config.initialBearing,
+      maxZoom,
     )
   }
   const map = new maplibregl.Map(mapOptions)
@@ -212,60 +226,64 @@ export async function buildGeoreferencedMap(
     })
   })
 
-  // ── 3. Encuadre inicial: centro + zoom de config (comportamiento v17) ───
+  // ── 3. Encuadre inicial: centro + zoom derivado del footprint ──────────
   map.jumpTo({
     center,
-    zoom: config.initialZoom,
+    zoom: initialZoom,
     bearing: config.initialBearing,
   })
   logger.trace(CATEGORY, 'map:jumpTo', {
     mapId,
-    zoom: config.initialZoom,
+    zoom: initialZoom,
     bearing: config.initialBearing,
   })
 
   // ── 4. Imagen base: placeholder primero (carga instantánea) ─────────────
-  map.on('data', (e) => {
-    if (e.dataType === 'source' && e.sourceId === IMAGE_SOURCE_ID) {
-      logger.trace(CATEGORY, `base:source-event [${mapId}]`, { type: e.type, sourceDataType: e.sourceDataType, isSourceLoaded: e.isSourceLoaded })
-    }
-  })
+  if (config.useImageBase !== false) {
+    map.on('data', (e) => {
+      if (e.dataType === 'source' && e.sourceId === IMAGE_SOURCE_ID) {
+        logger.trace(CATEGORY, `base:source-event [${mapId}]`, { type: e.type, sourceDataType: e.sourceDataType, isSourceLoaded: e.isSourceLoaded })
+      }
+    })
 
-  map.addSource(IMAGE_SOURCE_ID, {
-    type: 'image',
-    url: images.placeholder,
-    coordinates,
-  })
-  logger.info(CATEGORY, `base:source-added [${mapId}]`, {
-    placeholder: images.placeholder.slice(0, 60),
-    coords: coordinates.map(([lng, lat]) => `${lng.toFixed(4)},${lat.toFixed(4)}`),
-  })
+    map.addSource(IMAGE_SOURCE_ID, {
+      type: 'image',
+      url: entry.tiles?.preview ?? images.placeholder,
+      coordinates,
+    })
+    logger.info(CATEGORY, `base:source-added [${mapId}]`, {
+      preview: (entry.tiles?.preview ?? images.placeholder).slice(0, 60),
+      coords: coordinates.map(([lng, lat]) => `${lng.toFixed(4)},${lat.toFixed(4)}`),
+    })
 
-  map.addLayer({
-    id: IMAGE_LAYER_ID,
-    type: 'raster',
-    source: IMAGE_SOURCE_ID,
-    // Sin fade en la capa base: no tiene tiles hijo, y evita el doble-fade
-    // con la capa de tiles al hacer zoom (ver FACETA_2_TILES_PLAN.md §1).
-    paint: { 'raster-fade-duration': 0 },
-  })
-  logger.trace(CATEGORY, 'base:placeholder', {
-    mapId,
-    placeholder: images.placeholder.slice(0, 80),
-  })
+    map.addLayer({
+      id: IMAGE_LAYER_ID,
+      type: 'raster',
+      source: IMAGE_SOURCE_ID,
+      // Sin fade en la capa base: no tiene tiles hijo, y evita el doble-fade
+      // con la capa de tiles al hacer zoom (ver FACETA_2_TILES_PLAN.md §1).
+      paint: {
+        'raster-fade-duration': 0,
+        'raster-resampling': 'nearest',
+      },
+    })
+    logger.trace(CATEGORY, 'base:placeholder', {
+      mapId,
+      preview: (entry.tiles?.preview ?? images.placeholder).slice(0, 80),
+    })
+  }
 
-  // ── 5. Tiles XYZ de alta resolución (inmediatos, sobre placeholder) ──────
-  // Los tiles se agregan SIN esperar la imagen full. El placeholder (w_1024)
-  // ya da un mapa reconocible, y los tiles aportan detalle a z6-z8.
+  // ── 5. Tiles XYZ (inmediatos, sobre preview local) ─────────────────────────
+  // Los tiles se agregan SIN esperar ninguna imagen full. El preview local
+  // ya da un mapa reconocible, y el perfil elegido aporta la nitidez.
   // Esto evita el bloqueo de 10-20s que causaba `await preloadImage(full)`
   // en conexiones lentas (Slow 4G / 2G rural).
   addTilesLayer(map, mapId, entry, bounds, opts)
 
-  // ── 6. Upgrade a imagen completa (asíncrono, no bloquea) ─────────────────
-  // Se dispara en background. Cuando termina, actualiza el ImageSource
-  // de forma transparente (el usuario ve la transición placeholder→full).
-  // Si falla, el placeholder + tiles ya son funcionales.
-  if (images.full !== images.placeholder) {
+  // ── 6. Imagen full opcional (solo debug/fallback) ─────────────────────────
+  // La ruta normal no descarga images.full: preview + tiles evita duplicar
+  // megabytes y deja que la calidad venga del perfil de tiles elegido.
+  if (config.loadFullImage && config.useImageBase !== false && images.full && images.full !== images.placeholder) {
     logger.trace(CATEGORY, 'full:preload-start', { mapId })
     const t0 = performance.now()
     preloadImage(images.full)
@@ -310,6 +328,7 @@ export async function buildGeoreferencedMap(
           () => container,
           newVmb,
           config.initialBearing,
+          maxZoom,
         ),
       )
       logger.debug(CATEGORY, `viewportMargins actualizado: ${mapId}`, { marginH, marginV })
@@ -367,9 +386,13 @@ export function addTilesLayer(
   useMapStore.getState().setTilesStatus('loading')
 
   if (!map.getSource(TILES_SOURCE_ID)) {
+    const profile = opts?.tileProfile ?? 'standard'
+    const urlTemplate = profile === 'hd'
+      ? (tiles.urlTemplateHd ?? tiles.urlTemplate)
+      : (tiles.urlTemplateStandard ?? tiles.urlTemplate)
     map.addSource(TILES_SOURCE_ID, {
       type: 'raster',
-      tiles: [tiles.urlTemplate],
+      tiles: [urlTemplate],
       tileSize: tiles.tileSize,
       minzoom: tiles.minZoom,
       maxzoom: tiles.maxZoom,
@@ -377,7 +400,9 @@ export function addTilesLayer(
       scheme: 'xyz',
     })
     logger.info(CATEGORY, 'Source de tiles agregado', {
-      urlTemplate: tiles.urlTemplate,
+      profile,
+      urlTemplate,
+      resampling: 'nearest',
       zoomRange: `${tiles.minZoom}-${tiles.maxZoom}`,
     })
   }
@@ -390,6 +415,7 @@ export function addTilesLayer(
       paint: {
         // lowPowerMode: sin transición de fade para ahorrar GPU
         'raster-fade-duration': opts?.lowPowerMode ? 0 : tiles.fadeDuration ?? 300,
+        'raster-resampling': 'nearest',
       },
     })
   }

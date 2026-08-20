@@ -15,7 +15,6 @@ const geo = {
   height: 11141,
 } as const
 const config = {
-  initialZoom: 6.4,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -28,6 +27,6 @@ export default {
   geo,
   images: { base, full, placeholder: ph(base) },
   config,
-  tiles: makeTilesConfig('chapter1-bredunco', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter1-bredunco', geo, config.initialBearing),
   pois: POIS,
 } satisfies MapContent

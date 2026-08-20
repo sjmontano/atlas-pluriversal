@@ -7,8 +7,12 @@
  * cache instantáneamente (ver FACETA_2_TILES_PLAN.md §3.2).
  */
 
-const CACHE_NAME = 'atlas-tiles-v1'
-const TILE_PREFIX = '/assets/maps/tiles/mapas/'
+const CACHE_NAME = 'atlas-map-assets-v2'
+const TILE_PREFIXES = [
+  '/assets/maps/tiles/mapas-standard/',
+  '/assets/maps/tiles/mapas-hd/',
+  '/assets/maps/previews/',
+]
 
 self.addEventListener('install', () => {
   // Skip waiting para activar inmediatamente (nueva versión reemplaza a la anterior)
@@ -32,8 +36,8 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url)
 
   // Solo interceptar tiles del atlas
-  if (!url.pathname.startsWith(TILE_PREFIX)) return
   if (!url.pathname.endsWith('.webp')) return
+  if (!TILE_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))) return
 
   event.respondWith(
     caches.match(event.request).then((cached) => {

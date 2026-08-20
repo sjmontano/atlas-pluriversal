@@ -39,15 +39,13 @@ export function addBasemap(map: maplibregl.Map, style: BasemapStyle): void {
             : '© ESRI',
     })
 
-    map.addLayer(
-      {
-        id: BASEMAP_LAYER_ID,
-        type: 'raster',
-        source: BASEMAP_SOURCE_ID,
-        paint: { 'raster-fade-duration': 0 },
-      },
-      'atlas-base-image-layer',
-    )
+    const beforeLayer = map.getLayer('atlas-base-image-layer') ? 'atlas-base-image-layer' : undefined
+    map.addLayer({
+      id: BASEMAP_LAYER_ID,
+      type: 'raster',
+      source: BASEMAP_SOURCE_ID,
+      paint: { 'raster-fade-duration': 0 },
+    }, beforeLayer)
 
     logger.info(CATEGORY, `Basemap added: ${style}`)
   } catch (e) {

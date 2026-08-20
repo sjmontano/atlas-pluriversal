@@ -22,6 +22,7 @@ import { buildGeoreferencedMap, type MapController } from '@services/MapRenderer
 import { logger } from '@services/MapLogger'
 import { useMapStore } from '@stores/mapStore'
 import { useUIStore } from '@stores/uiStore'
+import { useConnectionStore } from '@stores/connectionStore'
 
 const CATEGORY = 'useMap'
 
@@ -46,6 +47,7 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
   const setLoading = useMapStore((s) => s.setLoading)
   const setStoreError = useMapStore((s) => s.setError)
   const lowPowerMode = useUIStore((s) => s.lowPowerMode)
+  const tileProfile = useConnectionStore((s) => s.tileProfile)
 
   // ── contador de generación (resuelve el doble-build de StrictMode) ────────
   // En StrictMode dev el effect se ejecuta 2 veces seguidas (montar→desmontar→
@@ -74,7 +76,7 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
 
     logger.debug(CATEGORY, 'effect:build-start', { mapId, buildGen })
 
-    buildGeoreferencedMap(container, mapId, entry, { lowPowerMode })
+    buildGeoreferencedMap(container, mapId, entry, { lowPowerMode, tileProfile })
       .then((result) => {
         // ¿Sigue siendo esta la build más reciente?
         if (buildGen !== buildGenRef.current) {
@@ -114,7 +116,7 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
     }
     // containerRef es estable (ref de React); mapId + lowPowerMode disparan rebuild
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapId, lowPowerMode])
+  }, [mapId, lowPowerMode, tileProfile])
 
   return { mapRef, error }
 }

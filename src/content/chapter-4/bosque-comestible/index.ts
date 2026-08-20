@@ -13,7 +13,6 @@ const geo = {
   height: 12472,
 } as const
 const config = {
-  initialZoom: 12,
   initialBearing: 0,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -30,6 +29,6 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter4-bosque-comestible', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter4-bosque-comestible', geo, config.initialBearing),
   legends: LEGENDS,
 } satisfies MapContent

@@ -1,5 +1,5 @@
-import type { MapContent } from '../../../types/content'
 import { makeTilesConfig } from '@data/tiles'
+import type { MapContent } from '../../../types/content'
 
 const geo = {
   pgw: [0, 0.002291904891, 0.002292263474, 0, -79.43968707918096, -1.987827190702011] as const,
@@ -7,12 +7,12 @@ const geo = {
   height: 6496,
 } as const
 const config = {
-  initialZoom: 6.06,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
   dragPan: false,
-  scrollZoom: false,
+  scrollZoom: true,
+  useImageBase: false,
 }
 
 export default {
@@ -24,5 +24,5 @@ export default {
     placeholder: '/assets/maps/cap1/encuadres.png',
   },
   config,
-  tiles: makeTilesConfig('chapter1-encuadres', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter1-encuadres', geo, config.initialBearing),
 } satisfies MapContent

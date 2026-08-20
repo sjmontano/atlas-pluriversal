@@ -4,6 +4,86 @@
 
 ---
 
+## 2026-08-19 — Tiles initial-only borrosos: causa raíz y fix (techo de pantalla)
+
+### Hallazgos (debugging sistemático con chrome-devtools + lap metric)
+
+**Problema:** En la vista inicial de `chapter1-encuadres` los tiles se veían borrosos
+comparados con la imagen base. La verificación previa (2026-08-18) confirmó ALINEACIÓN
+(diff ON/OFF media 35-42) pero NO resolución en pantalla — esa era la brecha.
+
+**Pruebas (nitidez = Laplaciano):**
+
+| Medición | Lap | Interpretación |
+|---|---|---|
+| Tile nativo 18/31 (512px, 100% opaco) | 870 | El tile EN SÍ es nítido |
+| Tile escalado a 1024px (2x) | 72 | Coincide con lo que se veía en pantalla |
+| Canvas en pantalla con tiles z6 ON | 92-168 | Borrosos: upscale ~1.4-2x |
+| Canvas en pantalla con base (tiles OFF) | 1046-1349 | Nítida: downscale 1.9x |
+| Red del navegador | Solo z6 | covering zoom = round(6.18) = 6 |
+
+**Causa raíz:** `computeTileRange('initial-only')` generaba en
+`floor(constrainMinZoom)` (z6 para encuadres). El zoom inicial del runtime es
+`constrainMinZoom` (mapa completo en viewport ≈ 6.5) que SIEMPRE cae por debajo del
+techo de pantalla (`screenCeilingZoom` = z8 para encuadres). El tile z6 de 512px se
+muestra con upscale ~2x en pantalla; la base (3649px) se muestra downscaled. El plan
+2026-08-17 asumió que el zoom inicial = techo, pero son distintos: el techo es el zoom
+donde el mapa llena el ANCHO del viewport, no donde cabe completo.
+
+**Fix:** Para `initial-only`, generar en el techo de pantalla (`screenCeilingZoom`):
+`minZoom = maxZoom = screenCeilingZoom`. Con el source declarado a ese nivel, MapLibre
+clampea el covering zoom al rango [minzoom, maxzoom] y renderiza los tiles a escala ≤1:1
+(downscale) → nítidos, igual que la base.
+
+**Implementado en:**
+- `src/utils/tileZoom.ts:computeTileRange` — initial-only usa `screenCeilingZoom` (antes `floor(constrainMinZoom)`).
+- `tests/utils/tileZoom.test.ts` — test actualizado (intro z6 → z9).
+- `tests/data/tiles.test.ts` — test actualizado (z8 → z10 con geo de ecosistemas).
+
+**Regenerado:** `chapter1-encuadres` (z6 12 tiles/288 KB → **z8 84 tiles/5.2 MB**;
+imagen base PNG = 18.3 MB, un 72% menos). Verificado en navegador (2026-08-19):
+- Solo tiles z8: lap 1969 (antes z6: 92-168) → igual o mejor que la base (1967).
+- Diff tiles ON vs base OFF: media 0.24/765 → prácticamente indistinguibles.
+- `npx tsc -b --noEmit` ✓, `npx oxlint` ✓ (warnings preexistentes), `npx vitest run` ✓ (125 tests).
+
+**Pendiente:** Regenerar los otros 9 mapas `initial-only` (intro + 8 fincas cap4) con
+el nuevo techo; los mapas `detail` no cambian (ya usaban el techo como maxZoom).
+
+---
+
+## 2026-08-19 — Ecosistemas: el minZoom del source NO eleva el covering zoom (corrección)
+
+### Hallazgo (lectura de maplibre-gl 6.0.0 source_cache.ts + medición)
+
+**Corrección a la entrada anterior:** MapLibre **no** "clampea el covering zoom al
+rango [minzoom, maxzoom] del source". En `coveringTiles`, `desiredZ = round(zoom del
+mapa)` y `nominalZ = clamp(desiredZ, 0, maxZoom)`; el `minzoom` del source **solo
+filtra** tiles (`if (it.zoom < minZoom) continue`), nunca sube el nivel pedido.
+Consecuencia práctica: si `round(zoom) < source.minZoom` → **no se pide ningún tile**.
+
+| Config source | Zoom mapa | covering zoom | Resultado |
+|---|---|---|---|
+| minzoom 10, maxzoom 10 (initial-only z10) | 7.8 | 8 | 0 tiles (filtrado) → base |
+| minzoom 8, maxzoom 10 (detail) | 7.8 | 8 | tiles z8 (upscale 1.95x) → borroso |
+
+`tileSize` del source tampoco cambia la resolución terrestre: MapLibre compensa
+re-etiquetando el covering zoom (S=512 → z8, S=1024 → z7; mismas px/°). La imagen
+base full de ecosistemas (5846×10394, ~2168 px/°) supera a TODOS los niveles de tile
+(364 px/° en z8, 1456 px/° en z10).
+
+### Decisión
+
+`chapter1-ecosistemas`: `detail` → `initial-only` (z10). La base full ya da el mejor
+detalle en el zoom inicial y hasta el techo; los tiles z10 aportan nitidez solo al
+acercar (covering zoom llega a 10). Se eliminan z8/z9 (sobran: peores que la base).
+
+**Verificado en navegador:** vista inicial sin requests de tiles (se ve la full, lap
+1954 — antes con tiles z8 ON: 136-202). Al acercar (dblclick): sí pide tiles z10/294-295.
+`tsc` ✓, `oxlint` ✓ (warnings preexistentes), `vitest` ✓ (125 tests).
+Tiles regenerados: `chapter1-ecosistemas` solo z10 (126 tiles).
+
+---
+
 ## Timeline General
 
 | Fecha | Hito | Fuente |
@@ -878,6 +958,178 @@ deshabilitada en la recarga de medición), no un defecto real:
 
 ---
 
+## Tiles XYZ con techo de pantalla — diseño, hallazgos y verificaciones (2026-08-17)
+
+### Contexto
+
+El generador `scripts/generate-tiles.mjs` quedó **roto** tras la migración de
+`src/data/maps/*` → `src/content/*` (commit `f1a743c`): importa de módulos que ya no
+existen. Solo `chapter1-ecosistemas` tiene tiles (2417, ~29 MB). Respetar `config.maxZoom`
+actual generaría **20.313 tiles inútiles (~238 MB)**, inviables para PCs rurales.
+
+Diseño aprobado (A+C híbrido) en `docs/superpowers/specs/2026-08-17-tiles-techo-pantalla-design.md`
+(commits `4f798a5` + `445a1c5`): techo de detalle = pantalla (referencia 1920 px), config
+central de modos por mapa + función compartida de cálculo. Spec + plan aún pendientes de
+ejecutar; el usuario pidió registrar todos los hallazgos en la bitácora antes de continuar.
+
+### Estructura de carpetas acordada (2026-08-17)
+
+Confirmada y aceptada por el usuario — plana por mapId + separación futura para capas:
+
+```
+public/assets/maps/tiles/
+├── mapas/                          ← tiles de mapas base (esquema XYZ por mapa)
+│   └── {mapId}/                    ← ej. chapter1-ecosistemas, chapter2-m-suarez…
+│       └── {z}/{x}/{y}.webp
+└── capas/                          ← (futuro) tiles de capas temáticas
+    └── {layerId}/{z}/{x}/{y}.webp
+```
+
+- `mapId` ya codifica el capítulo (`chapter1-`, `chapter2-`…) → **no anidar por capítulo**
+  (duplicaría la ruta sin aportar nada).
+- `tileUrlTemplate(mapId)` = interpolación 1:1: `` `/assets/maps/tiles/mapas/${mapId}/{z}/{x}/{y}.webp` ``.
+- Separación `mapas/` vs `capas/` ya reserva espacio para capas temáticas futuras (spec §Fuera de alcance).
+
+### Hallazgos técnicos verificados (2026-08-17)
+
+| # | Hallazgo | Detalle |
+|---|----------|---------|
+| 1 | **`node --experimental-strip-types` NO puede importar los content modules** | Usan imports relativos SIN extensión (`'./groups'`, `'../../../types/content'`) → `ERR_MODULE_NOT_FOUND`. `--experimental-specifier-resolution=node` no ayuda. Verificado empíricamente. |
+| 2 | **`tsx` sí resuelve** | Instalado como devDependency (`pnpm add -D tsx` → tsx 4.23.12). Verificado: `tsx -e "import('./src/content/chapter-1/ecosistemas/index.ts')"` → OK. Aviso `ERR_PNPM_IGNORED_BUILDS` (esbuild build script) no bloquea. **El script `"tiles"` debe correr con `tsx`, no strip-types.** |
+| 3 | **GDAL 3.12.1 NO lee AVIF** | `gdalinfo --formats` solo muestra WEBP raster (sin AVIF/HEIF). `intro` y `chapter1-bredunco` usan la **misma** imagen full AVIF de Cloudinary (`zvluewqlzmf9hw9fua6x.avif`). Necesitan conversión previa (ffmpeg `C:\Herramientas\ffmpeg\bin\ffmpeg.exe` o `magick.exe` disponibles). |
+| 4 | **2.417 archivos `.aux.xml` basura** | GDAL escribe un sidecar PAM junto a cada tile WebP (1 por tile). El generador reescrito debe usar `GDAL_PAM_ENABLED=NO` (env o `-config`) para no producirlos. |
+| 5 | **Imágenes locales soportadas** | `chapter1-encuadres` (`/assets/maps/cap1/encuadres.png`) y `chapter2-m-suarez` (`/assets/maps/cap2/modelo-territorial-suarez.png`) usan assets locales en `public/`. El generador debe leer de `public/` cuando `images.full` empiece con `/assets/`. |
+| 6 | **MapRenderer solo usa `config.minZoom`/`config.maxZoom`** | Líneas `MapRenderer.ts:152` (minZoom) y `:155` (maxZoom). `useTilePrefetch.ts:44` usa un `config` local construido de `entry.tiles` (no el de MapConfig) → sin cambios. `PoiManager` usa `POI_THEME.minZoom/maxZoom` (otro tipo) → sin cambios. |
+| 7 | **`getAllMaps()` NO tiene geo** | `src/data/chapters/chapters.ts` devuelve solo `{mapId, title}`. El generador debe importar cada módulo `src/content/*/index.ts` directo (con tsx). |
+| 8 | **`getMapContent()` aplica calibraciones** | `src/content/index.ts` usa `MAP_CALIBRATIONS` (hoy `{}`) para sobreescribir geo/config. El generador debe leer el **módulo crudo** (sin calibración) o `getMapContent` cuando calibre (hoy es transparente). |
+| 9 | **Registro de content usa `import.meta.glob`** | `src/content/index.ts` agrupa `./*/*/index.ts` (capítulos) + `./*/index.ts` (intro suelto). El walk del generador debe replicar ambos niveles. |
+
+### Verificación de la fórmula de techo (2026-08-17)
+
+Computada sobre los 31 mapas reales (importando los content modules con tsx +
+`processBounds` de `BoundsCalculator`). Todas las variantes contra la tabla aprobada de
+"tiles hasta" (21 mapas con detalle):
+
+| Variante | Aciertos | Mejor |
+|----------|----------|-------|
+| `round(log2(1920·360/(256·lonSpan)))` | **13/21** | ✅ mejor ajuste |
+| `floor(log2(1920·360/(256·lonSpan)))` | 5/21 | |
+| `ceil(log2(1920·360/(256·lonSpan)))` | 4/21 | |
+| `512` floor/round/ceil | 1/0/5 de 21 | ❌ peor (el spec dice 512 pero NO calza) |
+
+- **Los 8 desaciertos de `round`/256** (un-rio-cauca, arcilla, cali-deseca, encharcaron,
+  cap3-intro, monocultivo, cap4-intro, problematicas) coinciden EXACTO con el viejo
+  `config.maxZoom` → la tabla aprobada mezcló el techo de pantalla con valores heredados.
+- **El spec (`445a1c5`) dice `512` pero sus propios ejemplos** (m-suarez z12, bredunco z9,
+  cali z15) solo calzan con **256** → hay que ajustar el spec a 256/round durante la
+  implementación. Decisión del usuario: **usar la fórmula del techo (256) sin override por mapa**.
+- Fórmula final a implementar: `Math.round(Math.log2(canvasW·360/(256·lonSpan)))`.
+
+### Conteo definitivo de tiles con la fórmula (2026-08-17, v2 corregida)
+
+Computado importando los 31 content modules reales con tsx + `processBounds` real
+(maneja PGW rotado) + `constrainMinZoom` **bearing-aware** (512, 1920×1080) +
+`maxZoom=round(256)` + **grid Web Mercator exacto** (mismo cálculo de índices xt/yt
+que el generador). **TOTAL: 3.538 tiles (~41 MB @ 12 KB/tile)** vs aprobado ~3.600
+(~43 MB).
+
+> ⚠️ **Hallazgo: el bearing SÍ importa en `constrainMinZoom`** — con referencia
+> 1920×1080, usar la orientación equivocada (no-quarter vs quarter-turn) cambia el
+> `floor` en **26 de 31 mapas** (1 zoom de diferencia). `constrainMinZoom` DEBE recibir
+> el bearing del mapa (`config.initialBearing`) → la firma del spec se ajusta a
+> `constrainMinZoom(geo, canvasW, canvasH, bearing)`.
+
+| Modo | Mapas | Rango típico | Tiles |
+|------|-------|--------------|-------|
+| detail | 21 mapas | z6..z18 (según tamaño geográfico) | 3.492 |
+| initial-only | 10 mapas (fincas cap4 + encuadres + intro) | z6/z11/z14 único | 46 |
+
+Detalle por mapa (grid mercator exacto): intro z6 (12), encuadres z6 (12),
+ecosistemas z8-10 (173), formas-paisaje z6-9 (322), bredunco z6-9 (322),
+mosaicos-del-agua z9-11 (90), un-rio-cauca z6-8 (102), valle z8-10 (124),
+suarez z12-14 (124), cali z13-15 (159), villa-rica z11-13 (124), m-oriente-cali z7-10
+(218), m-villa-rica z11-13 (113), m-suarez z10-12 (75), cap3-introduccion z10-13 (263),
+monocultivo z9-12 (273), encharcaron z12-14 (196), cali-deseca z11-13 (159),
+humedales z9-11 (173), arcilla z14-16 (154), cap4-introduccion z10-12 (151),
+bosque-comestible z16-18 (66), problematicas z15-17 (124), asoyoge z11 (1), el-buhido
+z11 (1), el-paso z11 (1), las-mercedes z11 (1), la-virginia z11 (2),
+centro-agropecuario z11 (1), la-caicedo z11 (1), los-bajios z14 (1).
+
+### Pendiente para el plan de implementación
+
+1. `src/utils/tileZoom.ts` — `screenCeilingZoom(geo, canvasW)`, `constrainMinZoom(geo, canvasW, canvasH, bearing)` (**bearing-aware, confirmado que importa**), `computeTileRange(geo, initialZoom, mode, canvasW, canvasH?, bearing?)`.
+2. `src/data/tiles.ts` — `MAP_TILE_MODES` (32 mapas), `tileUrlTemplate(mapId)`, `makeTilesConfig(mapId, geo, initialZoom, initialBearing)`.
+3. Eliminar `minZoom`/`maxZoom` de `MapConfig` (`src/types/content.ts:21-36`) y de los ~31 content modules; agregar `tiles: makeTilesConfig(...)`.
+4. `MapRenderer.ts:152` → `minZoom: 0`; `:155` → maxZoom derivado (`screenCeilingZoom` con `clientWidth` real, cap en `entry.tiles?.maxZoom`).
+5. Reescribir `scripts/generate-tiles.mjs` (runner tsx, walk de content, soporte imagen local + AVIF vía ffmpeg, `GDAL_PAM_ENABLED=NO`, limpiar zooms huérfanos antes de regrabar). Cambiar `package.json` `"tiles"` → `tsx`.
+6. Test fixture `CalibrationPanel.test.tsx:18` incluye `minZoom`/`maxZoom` en el mock de `config` → hay que quitarlos ahí también.
+
+> **✅ Plan de implementación escrito (2026-08-17):** `docs/superpowers/plans/2026-08-17-tiles-techo-pantalla.md` con 7 tareas: (1) `tileZoom.ts` + tests + corrección del spec; (2) `data/tiles.ts` + tests; (3) tipo `MapConfig` sin min/maxZoom; (4) refactor de 31 content modules; (5) MapRenderer con zoom derivado; (6) reescritura del generador (tsx, local/AVIF, `GDAL_PAM_ENABLED=NO`, limpieza de zooms); (7) verificación + navegador + bitácora. Pendiente: ejecutar.
+
+---
+
+## Ejecución Task 7 — tiles techo de pantalla: hallazgos y correcciones (2026-08-18)
+
+Ejecución del plan `docs/superpowers/plans/2026-08-17-tiles-techo-pantalla.md` (Tasks 1-6
+completas, commits `70823f7`..`f74890d`). Toda la verificación de esta entrada ya está
+analizada aquí — **consultar antes de repetir cualquier diagnóstico.**
+
+### Decisión confirmada por el usuario (no volver a preguntar)
+
+- **Zoom inicial derivado** = `constrainMinZoom(geo, clientW, clientH, bearing)` (NO
+  `screenCeilingZoom`: ese es el techo de detalle y abriría el mapa recortado).
+- **`maxZoom` (techo de detalle)** = `screenCeilingZoom(geo, clientWidth)` con `Math.floor` +
+  cap en `entry.tiles?.maxZoom`. Con `Math.floor(constrainMinZoom)` como mínimo.
+
+### Hallazgo A — Cloudinary sirve imágenes a 1/4 del tamaño declarado
+
+El generador usaba `geo.width/geo.height` (declarados, ej. bosque-comestible 7015×12472)
+para los GCPs, pero la imagen full real que sirve Cloudinary es **1/4** (1754×3118).
+Consecuencia: `gdalwarp` producía un footprint equivocado (~304 m vs ~1216 m esperado) y
+recortaba contenido. MapLibre NO tiene este problema (dibuja la imagen real sobre el
+cuadrilátero sin usar esos tamaños), pero el generador SÍ.
+
+**Fix:** `scripts/generate-tiles.mjs` ahora lee las dimensiones REALES del archivo fuente
+con `gdalinfo` (`rasterSize()`) y las usa para los GCPs:
+`-gcp 0 0 <TL> -gcp <srcW> 0 <TR> -gcp <srcW> <srcH> <BR> -gcp 0 <srcH> <BL>`.
+Verificado: footprint del warp de bosque-comestible ahora coincide con el bbox del
+cuadrilátero rotado (Upper Left -8515200.732/382744.482, Lower Right -8513984.974/382059.180).
+
+### Hallazgo B — Alineación tiles vs imagen base (método de verificación)
+
+**`map.transformConstrain` NO es propiedad pública de Map** — `hasConstrain = !!map.transformConstrain`
+da `false` siempre y NO es fiable. **El canvas WebGL NO es capturable con `toDataURL`**
+(sin `preserveDrawingBuffer` → devuelve vacío, `meanDiff 0` engañoso).
+
+**Método que SÍ funciona:** comparar dos screenshots CDP (compositor, no canvas) con tiles
+ON vs OFF y medir la diferencia de píxeles por muestreo (PowerShell `System.Drawing`):
+- Tiles alineados → media baja + poca fracción de píxeles con diff alta (solo nitidez).
+  Bosque-comestible: `meanDiffRGB 35.9`, `pct>200 0.7%` (de 765 máx) → **ALINEADO**.
+- Tiles rotados → diferencia masiva en casi todos los píxeles.
+
+### Hallazgo C — maxZoom clamp verificado en navegador
+
+`createBearingAwareConstrain(..., maxZoom?)` clampa `zoom ∈ [minZoom, maxZoom]`.
+Verificado en bosque-comestible: `easeTo(zoom 23)` → el zoom queda en **18** (tope).
+El zoom inicial real en el contenedor del dev tool (~16.59) sube hasta el `constrainMinZoom`
+real (contenedor más pequeño que la referencia 1920×1080 → minZoom mayor que el calculado).
+
+### Estado del regenerado
+
+- **Solo `chapter4-bosque-comestible` regenerado con el generador GCP corregido** (66 tiles,
+  z16:6, z17:15, z18:45). **Los otros 30 mapas están pendientes.**
+- **Decisión del usuario:** NO regenerar los 31 de una vez. Depurar/corregir/pulir primero
+  con pocos mapas (Cap 1: `encuadres` + `ecosistemas`) y recién después generar el resto.
+- `rasterSize()` lee `Size is W, H` vía `gdalinfo`; el generador usa la dimensión real.
+
+### Nota operativa pnpm
+
+`pnpm-workspace.yaml` está roto/untracked (válido: no tocarlo). Workaround para correr:
+`pnpm --config.verify-deps-before-run=false run tiles ...`. `tsx` requiere
+`--tsconfig tsconfig.app.json`. Dev server en `http://127.0.0.1:5173`.
+
+---
+
 ## Estado Actual
 
 - **✅ Los mapas renderizan** (validado en navegador). Se cerró la pantalla azul con el fix de altura (`containerH: 0`) + vendor worker v6 + basemap CARTO. Cierre documentado en la crónica de arriba.
@@ -887,7 +1139,7 @@ deshabilitada en la recarga de medición), no un defecto real:
 - **Baja conectividad (rural)**: `connectionStore` (online/offline/slow reactivo), `useAutoLowPower` (lowPower auto al degradar la señal), `usePrefetchAdjacent` (precarga mapas adyacentes tras el build, sin saturar 2G), banner offline + banner degraded (solo en conexión lenta, timeout 15s, `nRequested>0`), `tilesStatus: idle|loading|ready|degraded`.
 - **Carga progresiva**: placeholder `w_512,q_25` (~8 KB) → tiles nítidos de inmediato (F1) → upgrade full asíncrono. Spinner girando mientras `loading || tilesStatus==='loading'` con overlay semitransparente. Cache adaptativo (110-400 tiles), `refreshExpiredTiles:false`, TilePrefetcher z6-z8 en idle, preload de MapLibre a los 1.5s.
 - **Diagnósticos**: `canvas-dimensions`, `style-dump`, telemetría tiles INFO (`tile:request/loaded/duplicate/aborted`), `MapLibre error` listener, timeout degraded. Todos a nivel `?log=trace`.
-- **Tiles (faceta 2)**: piloto `chapter1-ecosistemas` con 2417 tiles WebP (z6-z12, 26.46 MB, QUALITY=95) en `public/assets/maps/tiles/mapas/`; sin over-zoom. `maxZoom` dinámico (max de config y tiles). Runtime con `addTilesLayer` + `tilesServePlugin` inmutable + SW cache-first. Estructura reservada `tiles/capas/`. Fade-in sin doble-fade. `maxParallelImageRequests: 4` (2 en lowPowerMode). `lowPowerMode` con autodetección por `navigator.hardwareConcurrency`.
+- **Tiles (faceta 2)**: generador reescrito (runner `tsx`, walk de content, GCPs de las 4 esquinas REALES con dimensiones reales del archivo, `GDAL_PAM_ENABLED=NO`, techo de pantalla 256/round, modos detail/initial-only). **Verificado en navegador (2026-08-18):** ecosistemas (173 tiles, z8-10) y encuadres (12 tiles, z6) regenerados y **ALINEADOS** con la imagen base (diff tiles ON/OFF: media 35-42, <1% píxeles dif>200); clamp `maxZoom` OK (ecosistemas easeTo 25→10, encuadres →6) y constrain mínimo OK. `chapter4-bosque-comestible` (66 tiles z16-18) también regenerado y alineado. **⚠️ Faltan 28 mapas por regenerar** — el usuario pidió NO generar todos de una vez: depurar/pulir con pocos mapas primero (ver entrada 2026-08-18). Runtime con `addTilesLayer` + `tilesServePlugin` inmutable + SW cache-first. Estructura reservada `tiles/capas/`. Fade-in sin doble-fade. `maxParallelImageRequests: 4` (2 en lowPowerMode).
 - **Originales**: 30/31 mapas PNG organizados por capítulo (`public/assets/maps/{intro,cap1,cap2,cap3,cap4}/`) y renombrados a canónico (falta el original de `chapter1-encuadres`); `GLOSARIO_MAPAS.md` con el mapeo comunidad↔canónico↔ID interno
 - **Mapas**: `chapter2-m-suarez` recalibrado con asset local (`public/assets/maps/cap2/modelo-territorial-suarez.png`) y `initialBearing: 180`; imagen corregida en zona de Suárez
 - **Imágenes**: images.js con 53/53 URLs verificadas (fix 404 de `chapter2-m-villa-rica`)

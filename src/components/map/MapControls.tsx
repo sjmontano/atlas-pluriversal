@@ -8,7 +8,7 @@ const BASEMAP_OPTIONS: { value: BasemapStyle; label: string; icon: string }[] = 
   { value: 'satellite', label: 'Satellite', icon: '🛰️' },
 ]
 
-export function MapControls() {
+export function MapControls({ hasImageBase = true }: { hasImageBase?: boolean }) {
   const basemapVisible = useUIStore((s) => s.basemapVisible)
   const basemapStyle = useUIStore((s) => s.basemapStyle)
   const imageOpacity = useUIStore((s) => s.imageOpacity)
@@ -45,20 +45,22 @@ export function MapControls() {
         ))}
       </div>
 
-      <div className={styles.row}>
-        <label className={styles.sliderLabel}>Imagen</label>
-        <input
-          type="range"
-          className={styles.slider}
-          min="0"
-          max="1"
-          step="0.05"
-          value={imageOpacity}
-          onChange={(e) => setImageOpacity(parseFloat(e.target.value))}
-          title={`Opacidad de imagen: ${Math.round(imageOpacity * 100)}%`}
-        />
-        <span className={styles.sliderValue}>{Math.round(imageOpacity * 100)}%</span>
-      </div>
+      {hasImageBase && (
+        <div className={styles.row}>
+          <label className={styles.sliderLabel}>Imagen</label>
+          <input
+            type="range"
+            className={styles.slider}
+            min="0"
+            max="1"
+            step="0.05"
+            value={imageOpacity}
+            onChange={(e) => setImageOpacity(parseFloat(e.target.value))}
+            title={`Opacidad de imagen: ${Math.round(imageOpacity * 100)}%`}
+          />
+          <span className={styles.sliderValue}>{Math.round(imageOpacity * 100)}%</span>
+        </div>
+      )}
 
       <div className={styles.row}>
         <button

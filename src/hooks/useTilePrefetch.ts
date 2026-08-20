@@ -17,11 +17,12 @@ const CATEGORY = 'useTilePrefetch'
  */
 export function useTilePrefetch(mapId: string) {
   const isOnline = useConnectionStore((s) => s.isOnline)
-  const isSlow = useConnectionStore((s) => s.isSlow)
+  const isConstrained = useConnectionStore((s) => s.isConstrained)
+  const tileProfile = useConnectionStore((s) => s.tileProfile)
   const cancelRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
-    if (!isOnline || isSlow) return
+    if (!isOnline || isConstrained) return
 
     const entry = getMapContent(mapId)
     if (!entry?.tiles) return
@@ -30,11 +31,13 @@ export function useTilePrefetch(mapId: string) {
     if (!bounds) return
 
     const config = {
-      urlTemplate: entry.tiles.urlTemplate,
+      urlTemplate: tileProfile === 'hd'
+        ? (entry.tiles.urlTemplateHd ?? entry.tiles.urlTemplate)
+        : (entry.tiles.urlTemplateStandard ?? entry.tiles.urlTemplate),
       bounds: [bounds[0], bounds[1], bounds[2], bounds[3]] as [number, number, number, number],
       minZoom: entry.tiles.minZoom,
-      maxZoom: entry.tiles.maxZoom,
-      excludeZoom: entry.tiles.minZoom + 1,
+      maxZoom: Math.min(entry.tiles.maxZoom, entry.tiles.minZoom + 1),
+      excludeZoom: entry.tiles.minZoom,
     }
 
     logger.debug(CATEGORY, `Prefetch tiles: ${mapId}`, {
@@ -47,5 +50,5 @@ export function useTilePrefetch(mapId: string) {
       cancelRef.current?.()
       cancelRef.current = null
     }
-  }, [mapId, isOnline, isSlow])
+  }, [mapId, isOnline, isConstrained, tileProfile])
 }

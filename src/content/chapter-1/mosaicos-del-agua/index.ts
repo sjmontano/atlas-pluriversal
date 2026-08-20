@@ -14,7 +14,6 @@ const geo = {
   height: 10393,
 } as const
 const config = {
-  initialZoom: 8.5,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -31,7 +30,7 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter1-mosaicos-del-agua', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter1-mosaicos-del-agua', geo, config.initialBearing),
   layers: LAYERS,
   groups: GROUPS,
 } satisfies MapContent

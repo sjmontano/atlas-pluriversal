@@ -13,11 +13,11 @@ function preloadImage(url: string): void {
 
 export function usePrefetchAdjacent(mapId: string) {
   const isOnline = useConnectionStore((s) => s.isOnline)
-  const isSlow = useConnectionStore((s) => s.isSlow)
+  const isConstrained = useConnectionStore((s) => s.isConstrained)
   const loading = useMapStore((s) => s.loading)
 
   useEffect(() => {
-    if (!mapId || !isOnline || isSlow || loading) return
+    if (!mapId || !isOnline || isConstrained || loading) return
 
     const allMaps = getAllMaps()
     const idx = allMaps.findIndex((m) => m.mapId === mapId)
@@ -28,12 +28,12 @@ export function usePrefetchAdjacent(mapId: string) {
 
       for (const adjId of adjacentIds) {
         const entry = getMapContent(adjId!)
-        if (entry?.images?.full) {
-          preloadImage(entry.images.full)
+        if (entry?.tiles?.preview) {
+          preloadImage(entry.tiles.preview)
         }
       }
     }, 3000)
 
     return () => clearTimeout(timer)
-  }, [mapId, isOnline, isSlow, loading])
+  }, [mapId, isOnline, isConstrained, loading])
 }

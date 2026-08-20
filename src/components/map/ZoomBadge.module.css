@@ -1,0 +1,22 @@
+.badge {
+  position: absolute;
+  right: var(--space-sm);
+  bottom: var(--space-sm);
+  z-index: 20;
+  display: flex;
+  gap: var(--space-sm);
+  padding: 6px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(3, 9, 30, 0.82);
+  color: #fff;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tile {
+  color: #7dd3fc;
+}

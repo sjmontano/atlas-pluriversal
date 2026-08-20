@@ -19,6 +19,7 @@ import { LayerMenu } from './LayerMenu'
 import { PoiModal } from './PoiModal'
 import { CalibrationPanel } from '@components/calibration/CalibrationPanel.tsx'
 import { OfflineBanner } from './OfflineBanner'
+import { ZoomBadge } from './ZoomBadge'
 import styles from './AtlasMap.module.css'
 
 const ENABLE_DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
@@ -127,8 +128,10 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
       )}
 
       {ENABLE_DEV_TOOLS && !loading && !error && (
-        <MapControls />
+        <MapControls hasImageBase={content?.config.useImageBase !== false} />
       )}
+
+      {ENABLE_DEV_TOOLS && !loading && !error && <ZoomBadge map={mapRef.current} />}
 
       {!loading && !error && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} onCalibrate={() => setCalibrationOpen(true)} />}
 

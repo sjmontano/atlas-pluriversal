@@ -1,5 +1,5 @@
-import type { MapContent } from '../../../types/content'
 import { makeTilesConfig } from '@data/tiles'
+import type { MapContent } from '../../../types/content'
 import { GROUPS } from './groups'
 import { LAYERS } from './layers'
 
@@ -14,7 +14,6 @@ const geo = {
   height: 10186,
 } as const
 const config = {
-  initialZoom: 6.4,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -33,7 +32,7 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter1-ecosistemas', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter1-ecosistemas', geo, config.initialBearing),
   layers: LAYERS,
   groups: GROUPS,
 } satisfies MapContent

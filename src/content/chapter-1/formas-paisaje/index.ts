@@ -1,11 +1,11 @@
-import type { MapContent } from '../../../types/content'
 import { makeTilesConfig } from '@data/tiles'
+import type { MapContent } from '../../../types/content'
 import { POIS } from './pois'
 
 const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
 
 const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752359002/geoImages/ki1nmtf1bry5hwfzpauv.webp'
+  '/assets/maps/cap1/formas-del-paisaje.png'
 
 const geo = {
   pgw: [0, 0.002101779729, 0.002098102561, 0, -79.131272642526, -0.005834616506] as const,
@@ -13,7 +13,6 @@ const geo = {
   height: 6023,
 } as const
 const config = {
-  initialZoom: 6,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -26,10 +25,10 @@ export default {
   geo,
   images: {
     base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752359777/geoImages/xyrkeumf4kv6eixtzuoz.webp',
+    full: '/assets/maps/cap1/formas-del-paisaje.png',
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter1-formas-paisaje', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter1-formas-paisaje', geo, config.initialBearing),
   pois: POIS,
 } satisfies MapContent

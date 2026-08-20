@@ -30,11 +30,15 @@ export interface CanvasSizeProvider {
  * @param getCanvas - Devuelve el elemento contenedor del mapa (para leer W/H)
  * @param vmb - viewportMaxBounds [west, south, east, north]
  * @param bearing - Bearing del mapa en grados (ej. -90)
+ * @param maxZoom - Zoom máximo permitido (techo de detalle). MapLibre con
+ *   transformConstrain custom NO clampea el maxZoom nativo, así que este
+ *   clamps lo reemplaza. Opcional: si se omite no hay techo.
  */
 export function createBearingAwareConstrain(
   getCanvas: CanvasSizeProvider,
   vmb: GeographicBounds,
   bearing: number,
+  maxZoom?: number,
 ): TransformConstrainFunction {
   const [west, south, east, north] = vmb
   const normalized = ((bearing % 360) + 360) % 360
@@ -63,7 +67,7 @@ export function createBearingAwareConstrain(
     }
 
     // ── Paso B: clampear zoom ANTES de calcular dpp ──────────────────────
-    const clampedZoom = Math.max(minZoom, zoom)
+    const clampedZoom = Math.max(minZoom, Math.min(maxZoom ?? Infinity, zoom))
 
     // ── Paso C: dpp con zoom ya corregido ────────────────────────────────
     const dpp = 360 / (512 * Math.pow(2, clampedZoom))

@@ -3,9 +3,9 @@ import styles from './OfflineBanner.module.css'
 
 export function OfflineBanner() {
   const isOnline = useConnectionStore((s) => s.isOnline)
-  const isSlow = useConnectionStore((s) => s.isSlow)
+  const isConstrained = useConnectionStore((s) => s.isConstrained)
 
-  if (isOnline && !isSlow) return null
+  if (isOnline && !isConstrained) return null
 
   return (
     <div className={styles.banner}>

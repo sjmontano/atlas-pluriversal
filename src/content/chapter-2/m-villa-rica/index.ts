@@ -13,7 +13,6 @@ const geo = {
   height: 12472,
 } as const
 const config = {
-  initialZoom: 8.5,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -30,6 +29,6 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter2-m-villa-rica', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter2-m-villa-rica', geo, config.initialBearing),
   layers: LAYERS,
 } satisfies MapContent

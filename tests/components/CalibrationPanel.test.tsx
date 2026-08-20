@@ -15,7 +15,7 @@ vi.mock('@content', () => ({
   getMapContent: vi.fn(() => ({
     geo: { pgw: [0, 0.001, 0.001, 0, -77, 2], width: 1000, height: 2000 },
     images: { placeholder: '', full: '' },
-    config: { initialZoom: 5, initialBearing: -90, dragPan: true, scrollZoom: true, useTransformConstrain: false },
+    config: { initialBearing: -90, dragPan: true, scrollZoom: true, useTransformConstrain: false },
     layers: [
       {
         id: 'layer-x',

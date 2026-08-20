@@ -1,7 +1,7 @@
 import { processBounds } from '@services/BoundsCalculator'
 import type { MapGeoEntry } from '../types/content'
 
-export type TileZoomMode = 'detail' | 'initial-only' | 'none'
+export type TileZoomMode = 'detail' | 'initial-only' | 'initial-cover' | 'none'
 
 export interface TileZoomRange {
   minZoom: number
@@ -52,12 +52,14 @@ export function constrainMinZoom(
 /**
  * Rango de zooms para generar/servir tiles.
  * - detail: minZoom = floor(constrainMinZoom), maxZoom = screenCeilingZoom.
- * - initial-only: minZoom = maxZoom = floor(initialZoom).
+ * - initial-only: minZoom = maxZoom = screenCeilingZoom, para un único nivel
+ *   de detalle usado al alcanzar el techo.
+ * - initial-cover: minZoom = maxZoom = floor(constrainMinZoom), para un mapa
+ *   sin zoom cuyo único nivel debe aparecer desde el primer frame.
  * - none: null (sin tiles; reservado para mapas futuros).
  */
 export function computeTileRange(
   geo: MapGeoEntry,
-  initialZoom: number,
   mode: TileZoomMode,
   canvasW: number = REF_W,
   canvasH: number = REF_H,
@@ -65,7 +67,11 @@ export function computeTileRange(
 ): TileZoomRange | null {
   if (mode === 'none') return null
   if (mode === 'initial-only') {
-    const z = Math.floor(initialZoom)
+    const z = screenCeilingZoom(geo, canvasW)
+    return { minZoom: z, maxZoom: z }
+  }
+  if (mode === 'initial-cover') {
+    const z = Math.floor(constrainMinZoom(geo, canvasW, canvasH, bearing))
     return { minZoom: z, maxZoom: z }
   }
   const minZoom = Math.floor(constrainMinZoom(geo, canvasW, canvasH, bearing))

@@ -8,7 +8,6 @@ const geo = {
   height: 5314,
 } as const
 const config = {
-  initialZoom: 9,
   initialBearing: 180,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -25,6 +24,6 @@ export default {
     placeholder: '/assets/maps/cap2/modelo-territorial-suarez.png',
   },
   config,
-  tiles: makeTilesConfig('chapter2-m-suarez', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter2-m-suarez', geo, config.initialBearing),
   layers: LAYERS,
 } satisfies MapContent

@@ -20,31 +20,60 @@ describe('tiles config', () => {
     expect(Object.keys(MAP_TILE_MODES).length).toBe(31)
   })
 
-  it('tileUrlTemplate usa la estructura plana por mapId', () => {
+  it('tileUrlTemplate separa el perfil standard', () => {
     expect(tileUrlTemplate('chapter1-ecosistemas')).toBe(
-      '/assets/maps/tiles/mapas/chapter1-ecosistemas/{z}/{x}/{y}.webp',
+      '/assets/maps/tiles/mapas-standard/chapter1-ecosistemas/{z}/{x}/{y}.webp?v=local-standard-hd-v3-nearest-pyramid',
+    )
+    expect(tileUrlTemplate('chapter1-ecosistemas', 'hd')).toBe(
+      '/assets/maps/tiles/mapas-hd/chapter1-ecosistemas/{z}/{x}/{y}.webp?v=local-standard-hd-v3-nearest-pyramid',
     )
   })
 
-  it('makeTilesConfig: detail deriva rango (ecosistemas z8-10)', () => {
-    const cfg = makeTilesConfig('chapter1-ecosistemas', ECOSISTEMAS, 6.4, -90)
+  it('makeTilesConfig: ecosistemas detail sirve z8-z10', () => {
+    const cfg = makeTilesConfig('chapter1-ecosistemas', ECOSISTEMAS, -90)
     expect(cfg).not.toBeNull()
     expect(cfg!.urlTemplate).toBe(
-      '/assets/maps/tiles/mapas/chapter1-ecosistemas/{z}/{x}/{y}.webp',
+      '/assets/maps/tiles/mapas-standard/chapter1-ecosistemas/{z}/{x}/{y}.webp?v=local-standard-hd-v3-nearest-pyramid',
     )
-    expect(cfg!.tileSize).toBe(256)
+    expect(cfg!.tileSize).toBe(512)
     expect(cfg!.minZoom).toBe(8)
     expect(cfg!.maxZoom).toBe(10)
     expect(cfg!.fadeDuration).toBe(300)
+    expect(cfg!.tilePixelSizeByProfile).toEqual({ standard: {}, hd: { 8: 1024 } })
   })
 
-  it('makeTilesConfig: initial-only fija min=max=floor(initialZoom)', () => {
-    const cfg = makeTilesConfig('intro', ECOSISTEMAS, 6.39, -90)
+  it('makeTilesConfig: encuadres initial-cover sirve z6', () => {
+    const cfg = makeTilesConfig('chapter1-encuadres', {
+      pgw: [0, 0.002291904891, 0.002292263474, 0, -79.43968707918096, -1.987827190702011],
+      width: 3649,
+      height: 6496,
+    }, -90)
     expect(cfg!.minZoom).toBe(6)
     expect(cfg!.maxZoom).toBe(6)
   })
 
+  it('makeTilesConfig: un rio usa pirámide HD 2048/1024/512', () => {
+    const cfg = makeTilesConfig('chapter1-un-rio-cauca', {
+      pgw: [0, 0.001232510189, 0.0012309569997728162, 0, -79.4475590385131, -0.5982582430346929],
+      width: 6082,
+      height: 10826,
+    }, -90)
+    expect(cfg!.tilePixelSizeByProfile?.hd).toEqual({ 6: 2048, 7: 1024, 8: 512 })
+  })
+
+  it('makeTilesConfig: formas-paisaje usa pirámide HD 1024/1024/512', () => {
+    const cfg = makeTilesConfig('chapter1-formas-paisaje', {
+      pgw: [0, 0.002101779729, 0.002098102561, 0, -79.131272642526, -0.005834616506],
+      width: 3382,
+      height: 6023,
+    }, -90)
+    expect(cfg).not.toBeNull()
+    expect(cfg!.minZoom).toBe(6)
+    expect(cfg!.maxZoom).toBe(9)
+    expect(cfg!.tilePixelSizeByProfile?.hd).toEqual({ 6: 1024, 7: 1024, 8: 512 })
+  })
+
   it('makeTilesConfig: mapId no registrado devuelve null', () => {
-    expect(makeTilesConfig('no-existe', ECOSISTEMAS, 6, 0)).toBeNull()
+    expect(makeTilesConfig('no-existe', ECOSISTEMAS, 0)).toBeNull()
   })
 })

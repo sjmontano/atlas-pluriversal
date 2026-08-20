@@ -13,7 +13,6 @@ const geo = {
   height: 9037,
 } as const
 const config = {
-  initialZoom: 5.5,
   initialBearing: -90,
   useTransformConstrain: true,
   viewportMaxBounds: null,
@@ -30,6 +29,6 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter2-m-oriente-cali', geo, config.initialZoom, config.initialBearing),
+  tiles: makeTilesConfig('chapter2-m-oriente-cali', geo, config.initialBearing),
   layers: LAYERS,
 } satisfies MapContent
