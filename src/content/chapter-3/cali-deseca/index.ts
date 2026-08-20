@@ -17,6 +17,7 @@ const geo = {
 const config = {
   initialBearing: -90,
   useTransformConstrain: true,
+  zoomMax: 13,
   viewportMaxBounds: null,
   dragPan: true,
   scrollZoom: true,
@@ -31,7 +32,7 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter3-cali-deseca', geo, config.initialBearing),
+  tiles: makeTilesConfig('chapter3-cali-deseca', geo, config.initialBearing, config.zoomMax),
   layers: LAYERS,
   groups: GROUPS,
   legends: LEGENDS,

@@ -15,6 +15,7 @@ const geo = {
 const config = {
   initialBearing: -90,
   useTransformConstrain: true,
+  zoomMax: 20,
   viewportMaxBounds: null,
   dragPan: true,
   scrollZoom: true,
@@ -29,6 +30,6 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter4-la-caicedo', geo, config.initialBearing),
+  tiles: makeTilesConfig('chapter4-la-caicedo', geo, config.initialBearing, config.zoomMax),
   legends: LEGENDS,
 } satisfies MapContent

@@ -16,6 +16,7 @@ const geo = {
 const config = {
   initialBearing: -90,
   useTransformConstrain: true,
+  zoomMax: 10,
   viewportMaxBounds: null,
   viewportMarginH: -0.03,
   viewportMarginV: -0.12,
@@ -32,7 +33,7 @@ export default {
     placeholder: ph(base),
   },
   config,
-  tiles: makeTilesConfig('chapter1-ecosistemas', geo, config.initialBearing),
+  tiles: makeTilesConfig('chapter1-ecosistemas', geo, config.initialBearing, config.zoomMax),
   layers: LAYERS,
   groups: GROUPS,
 } satisfies MapContent

@@ -36,14 +36,10 @@ export const MAP_TILE_MODES: Record<string, TileZoomMode> = {
   'chapter4-problematicas': 'detail',
 }
 
-const TILESET_VERSION = 'local-standard-hd-v3-nearest-pyramid'
+const TILESET_VERSION = 'local-standard-hd-v4-nearest-pyramid'
 const TILE_ROOTS: Record<TileDeliveryProfile, string> = {
   standard: '/assets/maps/tiles/mapas-standard',
   hd: '/assets/maps/tiles/mapas-hd',
-}
-const HD_TILE_PIXEL_SIZE_BY_ZOOM: Record<string, Record<number, number>> = {
-  'chapter1-un-rio-cauca': { 6: 2048, 7: 1024, 8: 512 },
-  'chapter1-formas-paisaje': { 6: 1024, 7: 1024, 8: 512 },
 }
 const LOCAL_TILE_SOURCES: Record<string, string> = {
   intro: '/assets/maps/intro/cuenca-cauca.png',
@@ -93,6 +89,7 @@ export function makeTilesConfig(
   mapId: string,
   geo: MapGeoEntry,
   initialBearing: number,
+  zoomMax?: number,
 ): MapTilesConfig | null {
   const mode = MAP_TILE_MODES[mapId]
   if (!mode) return null
@@ -104,16 +101,21 @@ export function makeTilesConfig(
     urlTemplateHd: tileUrlTemplate(mapId, 'hd'),
     tileSize: 512,
     minZoom: range.minZoom,
-    maxZoom: range.maxZoom,
+    // Techo de GENERACIÓN: zoomMax manual del mapa o techo automático de
+    // detalle. La cámara puede superarlo (MapLibre reutiliza los tiles del
+    // último nivel — overzoom — sin nuevos requests).
+    maxZoom: Math.max(range.minZoom, zoomMax ?? range.maxZoom),
     fadeDuration: 300,
     source: LOCAL_TILE_SOURCES[mapId],
     preview: `/assets/maps/previews/${mapId}.webp`,
     sourceRotate: 'auto',
     tilePixelSizeByProfile: {
       standard: {},
+      // Pirámide HD ligera para todos los mapas: los dos primeros niveles en
+      // 1024 (entrada nítida) y el resto en 512 (eficiencia). z8+ → 512.
       hd: {
         [range.minZoom]: 1024,
-        ...HD_TILE_PIXEL_SIZE_BY_ZOOM[mapId],
+        [range.minZoom + 1]: 1024,
       },
     },
   }

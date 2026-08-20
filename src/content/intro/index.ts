@@ -16,6 +16,7 @@ const geo = {
 const config = {
   initialBearing: -90,
   useTransformConstrain: true,
+  zoomMax: 9,
   viewportMaxBounds: null,
   dragPan: false,
   scrollZoom: false,
@@ -26,5 +27,5 @@ export default {
   geo,
   images: { base, full, placeholder: ph(base) },
   config,
-  tiles: makeTilesConfig('intro', geo, config.initialBearing),
+  tiles: makeTilesConfig('intro', geo, config.initialBearing, config.zoomMax),
 } satisfies MapContent

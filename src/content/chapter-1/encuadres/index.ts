@@ -9,6 +9,7 @@ const geo = {
 const config = {
   initialBearing: -90,
   useTransformConstrain: true,
+  zoomMax: 6,
   viewportMaxBounds: null,
   dragPan: false,
   scrollZoom: true,
@@ -24,5 +25,5 @@ export default {
     placeholder: '/assets/maps/cap1/encuadres.png',
   },
   config,
-  tiles: makeTilesConfig('chapter1-encuadres', geo, config.initialBearing),
+  tiles: makeTilesConfig('chapter1-encuadres', geo, config.initialBearing, config.zoomMax),
 } satisfies MapContent

@@ -17,7 +17,7 @@ import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { processBounds, expandBoundsPerAxis, type PGWData, type BoundsResult, type ImageCoordinates, type GeographicBounds } from './BoundsCalculator'
 import { createBearingAwareConstrain } from './TransformConstrain'
-import { screenCeilingZoom, constrainMinZoom } from '@utils/tileZoom'
+import { constrainMinZoom } from '@utils/tileZoom'
 import { logger } from './MapLogger'
 import { useMapStore } from '@stores/mapStore'
 import type { MapContent, TileDeliveryProfile } from '../types/content'
@@ -153,12 +153,11 @@ export async function buildGeoreferencedMap(
     container.clientHeight,
     config.initialBearing,
   )
-  // Techo de detalle: el zoom donde el mapa llena el ancho REAL del contenedor.
-  // Si hay tiles, no superar su maxZoom (los tiles no se generan más allá).
-  const maxZoom = Math.max(
-    Math.floor(initialZoom),
-    Math.min(screenCeilingZoom(geo, container.clientWidth), entry.tiles?.maxZoom ?? Infinity),
-  )
+  // Techo de la VISTA: fijo y desacoplado de la generación de tiles. La cámara
+  // puede superar el maxZoom del tileset (MapLibre reutiliza los tiles del
+  // último nivel — overzoom — sin nuevos requests). 22 = techo nativo.
+  const VIEW_MAX_ZOOM = 22
+  const maxZoom = Math.max(Math.floor(initialZoom), VIEW_MAX_ZOOM)
   logger.debug(CATEGORY, 'build:zoom', { mapId, initialZoom, maxZoom, clientWidth: container.clientWidth, clientHeight: container.clientHeight })
 
   // ── 2. Instancia MapLibre ───────────────────────────────────────────────
@@ -286,11 +285,12 @@ export async function buildGeoreferencedMap(
   if (config.loadFullImage && config.useImageBase !== false && images.full && images.full !== images.placeholder) {
     logger.trace(CATEGORY, 'full:preload-start', { mapId })
     const t0 = performance.now()
+    const fullUrl = images.full
     preloadImage(images.full)
       .then(() => {
         if (map.getSource(IMAGE_SOURCE_ID)) {
           const source = map.getSource(IMAGE_SOURCE_ID) as maplibregl.ImageSource
-          source.updateImage({ url: images.full, coordinates })
+          source.updateImage({ url: fullUrl, coordinates })
           logger.info(CATEGORY, `Imagen completa cargada: ${mapId}`, {
             ms: Math.round(performance.now() - t0),
           })

@@ -22,10 +22,10 @@ describe('tiles config', () => {
 
   it('tileUrlTemplate separa el perfil standard', () => {
     expect(tileUrlTemplate('chapter1-ecosistemas')).toBe(
-      '/assets/maps/tiles/mapas-standard/chapter1-ecosistemas/{z}/{x}/{y}.webp?v=local-standard-hd-v3-nearest-pyramid',
+      '/assets/maps/tiles/mapas-standard/chapter1-ecosistemas/{z}/{x}/{y}.webp?v=local-standard-hd-v4-nearest-pyramid',
     )
     expect(tileUrlTemplate('chapter1-ecosistemas', 'hd')).toBe(
-      '/assets/maps/tiles/mapas-hd/chapter1-ecosistemas/{z}/{x}/{y}.webp?v=local-standard-hd-v3-nearest-pyramid',
+      '/assets/maps/tiles/mapas-hd/chapter1-ecosistemas/{z}/{x}/{y}.webp?v=local-standard-hd-v4-nearest-pyramid',
     )
   })
 
@@ -33,13 +33,13 @@ describe('tiles config', () => {
     const cfg = makeTilesConfig('chapter1-ecosistemas', ECOSISTEMAS, -90)
     expect(cfg).not.toBeNull()
     expect(cfg!.urlTemplate).toBe(
-      '/assets/maps/tiles/mapas-standard/chapter1-ecosistemas/{z}/{x}/{y}.webp?v=local-standard-hd-v3-nearest-pyramid',
+      '/assets/maps/tiles/mapas-standard/chapter1-ecosistemas/{z}/{x}/{y}.webp?v=local-standard-hd-v4-nearest-pyramid',
     )
     expect(cfg!.tileSize).toBe(512)
     expect(cfg!.minZoom).toBe(8)
     expect(cfg!.maxZoom).toBe(10)
     expect(cfg!.fadeDuration).toBe(300)
-    expect(cfg!.tilePixelSizeByProfile).toEqual({ standard: {}, hd: { 8: 1024 } })
+    expect(cfg!.tilePixelSizeByProfile).toEqual({ standard: {}, hd: { 8: 1024, 9: 1024 } })
   })
 
   it('makeTilesConfig: encuadres initial-cover sirve z6', () => {
@@ -52,16 +52,16 @@ describe('tiles config', () => {
     expect(cfg!.maxZoom).toBe(6)
   })
 
-  it('makeTilesConfig: un rio usa pirámide HD 2048/1024/512', () => {
+  it('makeTilesConfig: un rio usa la pirámide HD ligera global (1024/1024, resto 512)', () => {
     const cfg = makeTilesConfig('chapter1-un-rio-cauca', {
       pgw: [0, 0.001232510189, 0.0012309569997728162, 0, -79.4475590385131, -0.5982582430346929],
       width: 6082,
       height: 10826,
     }, -90)
-    expect(cfg!.tilePixelSizeByProfile?.hd).toEqual({ 6: 2048, 7: 1024, 8: 512 })
+    expect(cfg!.tilePixelSizeByProfile?.hd).toEqual({ 6: 1024, 7: 1024 })
   })
 
-  it('makeTilesConfig: formas-paisaje usa pirámide HD 1024/1024/512', () => {
+  it('makeTilesConfig: formas-paisaje usa la pirámide HD ligera global', () => {
     const cfg = makeTilesConfig('chapter1-formas-paisaje', {
       pgw: [0, 0.002101779729, 0.002098102561, 0, -79.131272642526, -0.005834616506],
       width: 3382,
@@ -70,7 +70,27 @@ describe('tiles config', () => {
     expect(cfg).not.toBeNull()
     expect(cfg!.minZoom).toBe(6)
     expect(cfg!.maxZoom).toBe(9)
-    expect(cfg!.tilePixelSizeByProfile?.hd).toEqual({ 6: 1024, 7: 1024, 8: 512 })
+    expect(cfg!.tilePixelSizeByProfile?.hd).toEqual({ 6: 1024, 7: 1024 })
+  })
+
+  it('makeTilesConfig: zoomMax manual reduce el techo de generación', () => {
+    const cfg = makeTilesConfig('chapter1-ecosistemas', ECOSISTEMAS, -90, 9)
+    expect(cfg!.maxZoom).toBe(9)
+    expect(cfg!.tilePixelSizeByProfile?.hd).toEqual({ 8: 1024, 9: 1024 })
+  })
+
+  it('makeTilesConfig: zoomMax manual extiende el techo más allá del natural', () => {
+    const cfg = makeTilesConfig('chapter1-ecosistemas', ECOSISTEMAS, -90, 12)
+    expect(cfg!.maxZoom).toBe(12)
+  })
+
+  it('makeTilesConfig: sin zoomMax usa el techo automático del tileset', () => {
+    const cfg = makeTilesConfig('chapter1-un-rio-cauca', {
+      pgw: [0, 0.001232510189, 0.0012309569997728162, 0, -79.4475590385131, -0.5982582430346929],
+      width: 6082,
+      height: 10826,
+    }, -90)
+    expect(cfg!.maxZoom).toBe(8)
   })
 
   it('makeTilesConfig: mapId no registrado devuelve null', () => {

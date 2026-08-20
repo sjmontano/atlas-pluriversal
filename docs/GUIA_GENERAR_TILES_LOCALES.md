@@ -42,8 +42,9 @@ public/assets/maps/previews/{mapId}.webp
 
 - `standard`: 512x512 físicos en todos los niveles. Es el perfil para 2G/3G,
   `saveData`, offline y equipos limitados.
-- `hd`: 1024x1024 físicos solo en el primer nivel visible; los siguientes son
-  512x512. Es el punto medio entre nitidez y peso para Wi-Fi/4G estable.
+- `hd`: 1024x1024 físicos en los dos primeros niveles visibles; el resto
+  (z8+ en adelante) es 512x512. Es el punto medio entre nitidez y peso para
+  Wi-Fi/4G estable.
 - `preview`: 1024 px de ancho máximo, WebP calidad 55, usado debajo de los
   tiles para que aparezca un mapa inmediatamente.
 
@@ -55,30 +56,46 @@ el PGW ni los bounds.
 
 ### Resolución por mapa
 
-Cada mapa puede definir sus píxeles físicos por perfil en `src/data/tiles.ts`:
+La pirámide HD es **global y uniforme para todos los mapas**: los dos primeros
+niveles visibles en 1024 y el resto en 512 (z8+ en adelante).
 
 ```ts
 tilePixelSizeByProfile: {
   standard: {},
-  hd: { [range.minZoom]: 1024 },
+  hd: {
+    [range.minZoom]: 1024,
+    [range.minZoom + 1]: 1024,
+  },
 }
 ```
 
 La clave es el nivel `z`; el valor son los píxeles físicos del WebP servido como
-tile lógico de 512. No se usa una pirámide 2048→1024→512 por defecto: el primer
-nivel HD duplica una sola vez y evita multiplicar peso sin información adicional.
-
-Excepción experimental actual para `chapter1-un-rio-cauca`:
-
-```ts
-hd: { 6: 2048, 7: 1024, 8: 512 }
-```
-
-El `6` coincide con su primer nivel visible (`range.minZoom`).
+tile lógico de 512. No se usa una pirámide 2048→1024→512: 1024 duplica una sola
+vez y evita multiplicar peso sin información adicional.
 
 El pipeline usa resampling `near`/`nearest` para conservar bordes exactos. No usa
 `lanczos` ni interpolación `linear`, porque ambos suavizan los límites de estos
 mapas.
+
+### zoomMax por mapa (manual)
+
+Cada mapa define en su `config` (en el index del mapa) hasta qué z se generan
+tiles:
+
+```ts
+const config = {
+  initialBearing: -90,
+  useTransformConstrain: true,
+  zoomMax: 9, // hasta este z se generan tiles; ajústalo manualmente
+  // ...
+}
+```
+
+- Si se omite `zoomMax`, se usa el techo automático de detalle del tileset
+  (`computeTileRange`, referencia 1920px).
+- La **cámara siempre puede hacer zoom más allá** del último z generado
+  (overzoom): MapLibre reutiliza los tiles del último nivel escalados, sin pedir
+  tiles inexistentes. El techo de la vista es fijo (22 = nativo de MapLibre).
 
 ## Orientación
 
@@ -96,6 +113,18 @@ Esto permite conservar los PGW actuales aunque los originales estén girados.
 public/assets/maps/tiles/mapas/{mapId}/{z}/{x}/{y}.webp
 ```
 
-Los tiles llevan la versión `local-standard-hd-v3-nearest-pyramid` en la URL runtime y los
+Los tiles llevan la versión `local-standard-hd-v4-nearest-pyramid` en la URL runtime y los
 directorios separan los perfiles para invalidar generaciones anteriores con
 `immutable` sin mezclar calidades.
+
+## Regenerar tras cambiar la pirámide o `zoomMax`
+
+Al modificar `tilePixelSizeByProfile` (p. ej. subir un nivel a 1024) o bajar
+`zoomMax` de un mapa, hay que regenerar sus tiles:
+
+```powershell
+npx tsx --tsconfig tsconfig.app.json scripts/generate-tiles.mjs chapter1-formas-paisaje --force
+```
+
+La versión `v4` invalida las URLs antiguas (los tiles llevan `?v=` en runtime), así
+que no hace falta purgar caché manualmente.

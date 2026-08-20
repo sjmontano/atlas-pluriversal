@@ -1130,6 +1130,71 @@ real (contenedor más pequeño que la referencia 1920×1080 → minZoom mayor qu
 
 ---
 
+## Pirámide HD experimental — pesos medidos y comparación (2026-08-20)
+
+Exploración de pirámides HD para calibrar "buena calidad a bajo peso". Se
+midieron los pesos reales en disco por perfil y nivel (WebP QUALITY=95, resampling
+`near`):
+
+| Mapa | Perfil | z6 | z7 | z8 | z9 | Total |
+|---|---|---|---|---|---|---|
+| formas-paisaje | HD | 0,89 MB (12 @1024) | 2,87 MB (24 @1024) | 2,87 MB (66 @512) | 8,34 MB (220 @512) | **14,96 MB** |
+| formas-paisaje | STD | 0,26 | 0,88 | 2,87 | 8,34 | 12,34 MB |
+| un-rio-cauca | HD (6:2048) | 3,69 MB (12 @2048) | 3,68 MB (24 @1024) | 3,72 MB (66 @512) | — | **11,08 MB** |
+| un-rio-cauca | STD | 0,28 | 1,03 | 3,72 | — | 5,03 MB |
+
+**Métricas por clase física de tile:** 2048 ≈ 0,31 MB · 1024 ≈ 0,07–0,15 MB ·
+512 ≈ 0,04–0,06 MB. Factor WebP por ×4 píxeles ≈ ×3,6; 2048 ≈ ×3,7 de 1024 y
+≈ ×13 de 512.
+
+**Conclusión:** el peso lo domina el **número de niveles de zoom servidos**
+(z9 de formas-paisaje = 56% del HD), no 1024 vs 2048 (el extra de 2048 en el
+nivel de entrada ≈ +2,6 MB por mapa). El desenfoque al hacer zoom profundo es
+inherente a los 512 físicos escalados (hiDPI y overzoom).
+
+## Decisión final: pirámide HD ligera global, campo `zoomMax` y vista desacoplada (2026-08-20)
+
+Configuración de tiles unificada para los 31 mapas y nueva palanca manual por
+mapa. Commit: `6d0458b` (estado previo) + implementación en working tree.
+
+### Pirámide HD global
+
+Todos los mapas usan la **misma pirámide ligera**: los dos primeros niveles
+visibles en 1024 y el resto en **512** (z8+ en adelante). Se eliminó la excepción
+experimental 2048 de `chapter1-un-rio-cauca` y `HD_TILE_PIXEL_SIZE_BY_ZOOM`.
+`TILESET_VERSION` sube a `local-standard-hd-v4-nearest-pyramid`.
+
+### Campo `zoomMax` por mapa (manual)
+
+En el `config` de cada index (los 31 prefilled con su techo natural actual):
+
+```ts
+const config = {
+  initialBearing: -90,
+  useTransformConstrain: true,
+  zoomMax: 9, // hasta este z se generan tiles; editar manualmente
+}
+```
+
+- Si se omite → techo automático del tileset (`computeTileRange`, ref 1920px).
+- `makeTilesConfig(mapId, geo, initialBearing, zoomMax?)` → `maxZoom` de generación.
+
+### Vista desacoplada (overzoom)
+
+- La cámara ya NO se clampa a `tiles.maxZoom`: `MapRenderer` usa un techo fijo
+  `VIEW_MAX_ZOOM = 22` (nativo). El source raster conserva `maxzoom` de
+  generación → MapLibre reutiliza/escala los tiles del último nivel al pasar,
+  sin pedir tiles inexistentes (zoom a z11 aunque los tiles terminen en z9).
+- `screenCeilingZoom` dejó de usarse en `MapRenderer` (sigue en `tileZoom.ts`).
+- Fix de typecheck preexistente: `source.updateImage({ url: fullUrl })` captura
+  `fullUrl` antes del closure (`images.full` es opcional).
+
+### Verificación
+
+- `npm run typecheck` ✓ · `npm run lint` ✓ (solo warnings preexistentes) ·
+  `npm run test` → 131/131 (14 archivos).
+- **No se generaron tiles** (los regenera el usuario manualmente).
+
 ## Estado Actual
 
 - **✅ Los mapas renderizan** (validado en navegador). Se cerró la pantalla azul con el fix de altura (`containerH: 0`) + vendor worker v6 + basemap CARTO. Cierre documentado en la crónica de arriba.

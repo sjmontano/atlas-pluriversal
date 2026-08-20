@@ -32,6 +32,10 @@ export interface MapConfig {
   viewportMarginV?: number
   dragPan: boolean
   scrollZoom: boolean
+  /** Máximo z hasta el que se generan tiles (manual, por mapa). Si se omite,
+   *  se usa el techo automático de detalle del tileset. La cámara puede hacer
+   *  zoom más allá (overzoom: los tiles del último nivel se escalan). */
+  zoomMax?: number
   /** Omite la imagen atlas en runtime y usa únicamente la capa XYZ. */
   useImageBase?: boolean
   /** Carga opcionalmente la imagen full como fallback/debug. */
