@@ -1,0 +1,139 @@
+/* LAYOUTS DEL MODAL — variantes de presentación del contenido */
+
+/* ── image-text (large): hero + texto en columnas (1 col en móvil) ─────── */
+.imageText {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: clamp(14px, 2.5vw, 28px);
+  align-items: start;
+}
+.media {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(3, 9, 30, 0.85);
+  aspect-ratio: 4 / 3;
+}
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── gallery (medium): carrusel + miniaturas ───────────────────────────── */
+.galleryMain {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: rgba(3, 9, 30, 0.85);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.galleryImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.galleryNav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(3, 9, 30, 0.55);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.galleryNav:hover,
+.galleryNav:focus-visible {
+  background: var(--primary-blue, #0599b7);
+  outline: 2px solid var(--primary-blue, #0599b7);
+  outline-offset: 2px;
+}
+.galleryPrev {
+  left: 10px;
+}
+.galleryNext {
+  right: 10px;
+}
+.galleryCount {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  background: rgba(3, 9, 30, 0.6);
+  color: #fff;
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.galleryThumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.galleryThumb {
+  width: 72px;
+  height: 52px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  object-fit: cover;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+.galleryThumbActive {
+  border-color: var(--primary-blue, #0599b7);
+}
+
+/* ── datasheet (small): tabla meta ─────────────────────────────────────── */
+.datasheet {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.datasheet th,
+.datasheet td {
+  border: 1px solid rgba(3, 9, 30, 0.15);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.datasheet th {
+  background: rgba(5, 153, 183, 0.1);
+  color: var(--dark-green, #046c81);
+  white-space: nowrap;
+  width: 38%;
+}
+
+/* ── alert (small): aviso centrado ─────────────────────────────────────── */
+.alert {
+  text-align: center;
+  padding: 24px 8px 12px;
+}
+.alertIcon {
+  font-size: 2.6rem;
+  margin-bottom: 14px;
+  color: var(--primary-blue, #0599b7);
+  display: grid;
+  place-items: center;
+}
+.alertIcon svg {
+  width: 48px;
+  height: 48px;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .imageText {
+    grid-template-columns: 1fr;
+  }
+}

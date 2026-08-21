@@ -12,6 +12,7 @@ import { addBasemap, removeBasemap, setImageOpacity } from '@services/BasemapMan
 import { sync as syncLayers, removeAll as removeAllLayers } from '@services/LayerManager'
 import { addPois, removePois } from '@services/PoiManager'
 import { getMapContent } from '@content'
+import { getModalById } from '@content/modals'
 import type { MapController } from '@services/MapRenderer'
 import type { Poi } from '../../types/poi.ts'
 import { MapControls } from './MapControls'
@@ -55,6 +56,17 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
   const [activePoi, setActivePoi] = useState<Poi | null>(null)
   const [rebuildKey, setRebuildKey] = useState(1)
   const [calibrationOpen, setCalibrationOpen] = useState(false)
+
+  const handlePoiClick = (poi: Poi) => {
+    if (poi.modalId) {
+      const modal = getModalById(poi.modalId)
+      if (modal) {
+        useUIStore.getState().openModal(modal)
+        return
+      }
+    }
+    setActivePoi(poi)
+  }
 
   useAutoLowPower()
   usePrefetchAdjacent(mapId)
@@ -113,7 +125,7 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapBuilt || !pois) return
-    addPois(map, mapId, pois, setActivePoi)
+    addPois(map, mapId, pois, handlePoiClick)
   }, [mapRef, mapId, pois, mapBuilt])
 
   return (

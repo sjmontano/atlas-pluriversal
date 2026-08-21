@@ -1,9 +1,10 @@
 import { create } from 'zustand'
 import type { BasemapStyle } from '@services/BasemapManager.ts'
+import type { Modal } from '../types/modal'
 import { useConnectionStore } from './connectionStore.ts'
 
 export interface UIStoreState {
-  activeModal: unknown
+  activeModal: Modal | null
   sidebarOpen: boolean
   activePanel: string | null
 
@@ -14,7 +15,7 @@ export interface UIStoreState {
 
   lowPowerMode: boolean
 
-  openModal: (modal: unknown) => void
+  openModal: (modal: Modal) => void
   closeModal: () => void
   toggleSidebar: () => void
   setActivePanel: (panel: string | null) => void

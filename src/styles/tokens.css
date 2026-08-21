@@ -18,6 +18,23 @@
   --text-lg: 2.59vh;
   --text-xl: 3.2vh;
 
+  /* Modales — 3 variantes responsive (sistema de modales) */
+  --modal-small-w: clamp(320px, 92vw, 400px);
+  --modal-small-h: min(75vh, 560px);
+  --modal-medium-w: clamp(400px, 60vw, 720px);
+  --modal-medium-h: min(85vh, 720px);
+  --modal-large-w: clamp(600px, 90vw, 1080px);
+  --modal-large-h: 92vh;
+
+  /* Modal inicio (POIs de la home) — tema del layout v17 */
+  --modal-inicio-title: #0599b7;
+  --modal-inicio-text: #767575;
+
+  /* IconButton — trigger responsive de modales */
+  --icon-btn-size: clamp(44px, 5.5vh, 60px);
+  --icon-btn-glyph: clamp(26px, 3.5vh, 36px);
+  --icon-btn-font: clamp(12px, 1.6vh, 16px);
+
   --space-xs: 0.5vh;
   --space-sm: 1vh;
   --space-md: 2vh;
