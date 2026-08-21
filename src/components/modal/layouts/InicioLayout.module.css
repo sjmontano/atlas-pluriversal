@@ -95,11 +95,10 @@
   color: var(--modal-inicio-text);
   font-size: clamp(0.95rem, 2.15vh, 1.12rem);
   line-height: 1.4;
-  background: radial-gradient(ellipse 120% 120% at center center,
-      rgba(255, 255, 255, 0.60) 0%,
-      rgba(255, 255, 255, 0.35) 45%,
-      rgba(255, 255, 255, 0.10) 75%,
-      rgba(255, 255, 255, 0) 100%);
+  background: radial-gradient(ellipse 90% 55% at center top,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.28) 45%,
+      rgba(255, 255, 255, 0) 80%);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
 }

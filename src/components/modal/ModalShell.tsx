@@ -1,21 +1,21 @@
 /**
- * 🖼️ MODAL SHELL — Estructura base del modal (Atomic Design)
+ * MODAL SHELL — Estructura base del modal (Atomic Design)
  * ===========================================================
  * Dialog + overlay + portal. Tres variantes responsive (tokens).
  *
  * Estructura unificada (no-hero):
- *   header → [Glyph(icon)] + [título] → decorador (linea.svg repeat-x)
+ *   header → [IconBadge(fondo + Glyph)] + [título] → decorador (linea.svg repeat-x)
  *   body   → children (layout específico)
  *   footer → actions
  *   close  → salir.svg (top-right)
  *
- * Hero (layout inicio): full-bleed, el layout controla todo.
+ * Hero (layout inicio): full-bleed, el layout controla toda la superficie.
  *
  * A11y: role=dialog, aria-modal, Esc, focus trap, scroll-lock.
  */
 
+import type { CSSProperties, ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
-import type { ReactNode, CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import type { ModalVariant } from '../../types/modal.ts'
 import { Glyph } from './Glyph'
@@ -41,6 +41,7 @@ export interface ModalShellProps {
 }
 
 const DECORATOR_URL = '/assets/modal/inicio/linea.svg'
+const ICON_BG_URL = '/assets/modal/inicio/fondoIcon1.svg'
 const SALIR_URL = '/assets/modal/inicio/salir.svg'
 
 export function ModalShell({
@@ -64,7 +65,7 @@ export function ModalShell({
     document.body.style.overflow = 'hidden'
 
     const first = dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE)
-    ;(first ?? dialogRef.current)?.focus()
+      ; (first ?? dialogRef.current)?.focus()
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -116,7 +117,19 @@ export function ModalShell({
             <header className={styles.header}>
               <div className={styles.headerGroup}>
                 <div className={styles.iconTitle}>
-                  {icon && <Glyph name={icon} size={32} />}
+                  {icon && (
+                    <span className={styles.iconBadge}>
+                      <img
+                        className={styles.iconBg}
+                        src={ICON_BG_URL}
+                        alt=""
+                        aria-hidden="true"
+                      />
+                      <span className={styles.iconGlyph}>
+                        <Glyph name={icon} size={20} />
+                      </span>
+                    </span>
+                  )}
                   <div className={styles.titles}>
                     {highlight ? (
                       <p className={styles.highlight}>{highlight}</p>
