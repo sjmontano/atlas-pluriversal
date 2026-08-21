@@ -15,7 +15,6 @@ import { GalleryLayout } from './layouts/GalleryLayout'
 import { ImageTextLayout } from './layouts/ImageTextLayout'
 import { InicioLayout } from './layouts/InicioLayout'
 import { TextLayout } from './layouts/TextLayout'
-import styles from './ModalShell.module.css'
 
 function layoutFor(modal: Modal, onClose: () => void) {
   switch (modal.layout) {
@@ -42,7 +41,6 @@ export function ModalRenderer() {
   if (!modal) return null
 
   const hero = modal.layout === 'inicio'
-  const actions = modal.actions ?? [{ label: 'Cerrar', variant: 'ghost' }]
   const dialogStyle = modal.theme?.size
     ? {
         width: modal.theme.size.width,
@@ -61,33 +59,8 @@ export function ModalRenderer() {
       onClose={closeModal}
       hero={hero}
       dialogStyle={dialogStyle}
-      footer={
-        hero ? null : (
-          <div className={styles.footer}>
-            {actions.map((action) => (
-              <button
-                key={action.label}
-                type="button"
-                className={
-                  action.variant === 'primary'
-                    ? `${styles.btn} ${styles.btnPrimary}`
-                    : `${styles.btn} ${styles.btnGhost}`
-                }
-                onClick={() => {
-                  if (action.onClick === 'close' || !action.href) {
-                    closeModal()
-                  } else if (action.href) {
-                    window.open(action.href, '_blank', 'noopener')
-                    closeModal()
-                  }
-                }}
-              >
-                {action.label}
-              </button>
-            ))}
-          </div>
-        )
-      }
+      icon={modal.icon}
+      footer={null}
     >
       {layoutFor(modal, closeModal)}
     </ModalShell>

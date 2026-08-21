@@ -87,13 +87,13 @@ describe('ModalRenderer (motor + uiStore)', () => {
     ).toBeDefined()
   })
 
-  it('cierra al pulsar la acción del footer', () => {
+  it('cierra al pulsar el botón X (aria-label Cerrar)', () => {
     const modal = getModalById('cuenca-cauca') as Modal
     render(<ModalRenderer />)
     act(() => {
       useUIStore.getState().openModal(modal)
     })
-    const button = screen.getByText('Cerrar', { selector: 'button' })
+    const button = screen.getByRole('button', { name: /Cerrar/i })
     fireEvent.click(button)
     expect(useUIStore.getState().activeModal).toBeNull()
   })

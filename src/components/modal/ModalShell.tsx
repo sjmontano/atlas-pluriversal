@@ -1,26 +1,24 @@
 /**
- * 🖼️ MODAL SHELL — Estructura base del modal
- * ===========================================
- * Dialog + overlay + portal. Tres variantes de tamaño responsive
- * (small/medium/large) definidas en tokens CSS.
+ * 🖼️ MODAL SHELL — Estructura base del modal (Atomic Design)
+ * ===========================================================
+ * Dialog + overlay + portal. Tres variantes responsive (tokens).
  *
- * A11y (patrón WAI-ARIA APG):
- * - role=dialog + aria-modal
- * - Esc cierra · Tab cíclico (focus trap) · scroll bloqueado al abrir
- * - foco inicial al primer elemento enfocable
+ * Estructura unificada (no-hero):
+ *   header → [Glyph(icon)] + [título] → decorador (linea.svg repeat-x)
+ *   body   → children (layout específico)
+ *   footer → actions
+ *   close  → salir.svg (top-right)
  *
- * Motor genérico: no conoce datos de contenido, solo presenta `title`,
- * `highlight`, `variant`, `children` y `footer`.
+ * Hero (layout inicio): full-bleed, el layout controla todo.
  *
- * `hero` (layout inicio): sin header/footer/chrome — el layout controla toda
- * la superficie (imagen de fondo 100%). Conserva portal, Esc, focus trap y
- * bloqueo de scroll. El cierre visual lo aporta el propio layout.
+ * A11y: role=dialog, aria-modal, Esc, focus trap, scroll-lock.
  */
 
 import { useEffect, useRef } from 'react'
 import type { ReactNode, CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import type { ModalVariant } from '../../types/modal.ts'
+import { Glyph } from './Glyph'
 import styles from './ModalShell.module.css'
 
 const FOCUSABLE =
@@ -34,11 +32,16 @@ export interface ModalShellProps {
   onClose: () => void
   children: ReactNode
   footer?: ReactNode
+  /** Glyph del header (p.ej. 'marker', 'presentation', 'gallery'...). */
+  icon?: string
   /** Sin chrome (header/footer), el layout controla toda la superficie. */
   hero?: boolean
-  /** Estilo inline para el dialog (p.ej. tamaño personalizado por modal). */
+  /** Estilo inline para el dialog (tamaño personalizado por modal). */
   dialogStyle?: CSSProperties
 }
+
+const DECORATOR_URL = '/assets/modal/inicio/linea.svg'
+const SALIR_URL = '/assets/modal/inicio/salir.svg'
 
 export function ModalShell({
   open,
@@ -48,6 +51,7 @@ export function ModalShell({
   onClose,
   children,
   footer,
+  icon,
   hero = false,
   dialogStyle,
 }: ModalShellProps) {
@@ -110,11 +114,21 @@ export function ModalShell({
         ) : (
           <>
             <header className={styles.header}>
-              <div className={styles.titles}>
-                {highlight ? (
-                  <p className={styles.highlight}>{highlight}</p>
-                ) : null}
-                <h2 className={styles.title}>{title}</h2>
+              <div className={styles.headerGroup}>
+                <div className={styles.iconTitle}>
+                  {icon && <Glyph name={icon} size={32} />}
+                  <div className={styles.titles}>
+                    {highlight ? (
+                      <p className={styles.highlight}>{highlight}</p>
+                    ) : null}
+                    <h2 className={styles.title}>{title}</h2>
+                  </div>
+                </div>
+                <span
+                  className={styles.decor}
+                  style={{ backgroundImage: `url(${DECORATOR_URL})` }}
+                  aria-hidden="true"
+                />
               </div>
               <button
                 type="button"
@@ -122,7 +136,7 @@ export function ModalShell({
                 onClick={onClose}
                 aria-label="Cerrar"
               >
-                ✕
+                <img src={SALIR_URL} alt="" aria-hidden="true" />
               </button>
             </header>
 

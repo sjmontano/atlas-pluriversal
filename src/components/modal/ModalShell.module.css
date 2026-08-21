@@ -1,4 +1,9 @@
-/* MODAL SHELL — 3 variantes responsive (tokens en styles/tokens.css) */
+/* MODAL SHELL — 3 variantes responsive (tokens en styles/tokens.css)
+   Estructura unificada (atomic design):
+   - header: [Glyph] + título + decorador (linea.svg repeat-x)
+   - body: children (layout)
+   - footer: actions
+   - close: salir.svg */
 
 .root {
   position: fixed;
@@ -57,14 +62,33 @@
   overflow: hidden;
 }
 
+/* ─── Header unificado ─────────────────────────────────────────────── */
 .header {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: clamp(12px, 2vw, 20px);
-  border-bottom: 1px solid rgba(3, 9, 30, 0.12);
+  justify-content: space-between;
+  gap: 16px;
+  padding: clamp(16px, 2.5vw, 24px) clamp(16px, 2.5vw, 24px) 0;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.4);
+}
+
+.headerGroup {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.2vh, 14px);
+}
+
+.iconTitle {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(10px, 1.4vw, 18px);
+}
+
+.glyph {
+  flex-shrink: 0;
+  color: var(--primary-blue, #0599b7);
 }
 
 .titles {
@@ -88,28 +112,17 @@
   overflow-wrap: break-word;
 }
 
-.close {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-secondary, #767575ea);
-  font-size: 1.2rem;
-  line-height: 1;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-}
-.close:hover,
-.close:focus-visible {
-  background: rgba(5, 153, 183, 0.12);
-  color: var(--primary-blue, #0599b7);
-  outline: 2px solid var(--primary-blue, #0599b7);
-  outline-offset: 2px;
+/* Decorador: linea.svg repeat-x, ancho del grupo header (iconTitle) */
+.decor {
+  height: 14px;
+  width: 100%;
+  background-repeat: repeat-x;
+  background-size: 122px 14px;
+  background-position: left center;
+  overflow: hidden;
 }
 
+/* ─── Body / Footer ────────────────────────────────────────────────── */
 .body {
   flex: 1;
   min-height: 0;
@@ -126,6 +139,29 @@
   padding: 12px clamp(14px, 2.5vw, 28px);
   border-top: 1px solid rgba(3, 9, 30, 0.12);
   background: rgba(255, 255, 255, 0.5);
+}
+
+/* ─── Close button (salir.svg) ─────────────────────────────────────── */
+.close {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+}
+.close img {
+  width: 26px;
+  height: 26px;
+}
+.close:hover,
+.close:focus-visible {
+  background: #fff;
+  outline: 2px solid #0599b7;
+  outline-offset: 2px;
 }
 
 .btn {
@@ -177,5 +213,16 @@
   .medium {
     --modal-w: 94vw;
     --modal-h: 92dvh;
+  }
+  .header {
+    padding: 14px 14px 0;
+  }
+  .close {
+    width: 40px;
+    height: 40px;
+  }
+  .close img {
+    width: 22px;
+    height: 22px;
   }
 }
