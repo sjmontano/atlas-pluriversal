@@ -1,17 +1,8 @@
 /**
- * MODAL SHELL — Estructura base del modal (Atomic Design)
+ * 🖼️ MODAL SHELL — Estructura base del modal (Atomic Design)
  * ===========================================================
- * Dialog + overlay + portal. Tres variantes responsive (tokens).
- *
- * Estructura unificada (no-hero):
- *   header → [IconBadge(fondo + Glyph)] + [título] → decorador (linea.svg repeat-x)
- *   body   → children (layout específico)
- *   footer → actions
- *   close  → salir.svg (top-right)
- *
- * Hero (layout inicio): full-bleed, el layout controla toda la superficie.
- *
- * A11y: role=dialog, aria-modal, Esc, focus trap, scroll-lock.
+ * Componente contenedor reocupable para modales.
+ * Maneja overlay, accesibilidad (Focus trap, ESC, ARIA) y tres variantes responsive.
  */
 
 import type { CSSProperties, ReactNode } from 'react'
@@ -32,11 +23,11 @@ export interface ModalShellProps {
   onClose: () => void
   children: ReactNode
   footer?: ReactNode
-  /** Glyph del header (p.ej. 'marker', 'presentation', 'gallery'...). */
+  /** Ícono dinámico del header (p.ej. 'marker', 'presentation', 'gallery'...). */
   icon?: string
-  /** Sin chrome (header/footer), el layout controla toda la superficie. */
+  /** Sin cromo básico, el layout interno toma el control total de la superficie. */
   hero?: boolean
-  /** Estilo inline para el dialog (tamaño personalizado por modal). */
+  /** Estilos opcionales en línea para dimensionar el diálogo. */
   dialogStyle?: CSSProperties
 }
 
@@ -114,48 +105,51 @@ export function ModalShell({
           <div className={styles.heroBody}>{children}</div>
         ) : (
           <>
-            <header className={styles.header}>
+            {/* Encabezado del modal */}
+            <div className={styles.head}>
               <div className={styles.headerGroup}>
-                <div className={styles.iconTitle}>
-                  {icon && (
-                    <span className={styles.iconBadge}>
-                      <img
-                        className={styles.iconBg}
-                        src={ICON_BG_URL}
-                        alt=""
-                        aria-hidden="true"
-                      />
-                      <span className={styles.iconGlyph}>
-                        <Glyph name={icon} size={20} />
-                      </span>
+                {icon && (
+                  <span className={styles.iconBadge}>
+                    <img
+                      className={styles.iconBg}
+                      src={ICON_BG_URL}
+                      alt=""
+                      aria-hidden="true"
+                    />
+                    <span className={styles.iconGlyph}>
+                      <Glyph name={icon} size={20} />
                     </span>
-                  )}
-                  <div className={styles.titles}>
-                    {highlight ? (
-                      <p className={styles.highlight}>{highlight}</p>
-                    ) : null}
-                    <h2 className={styles.title}>{title}</h2>
-                  </div>
+                  </span>
+                )}
+
+                <div className={styles.titleColumn}>
+                  {highlight ? (
+                    <p className={styles.highlight}>{highlight}</p>
+                  ) : null}
+                  <h2 className={styles.title}>{title}</h2>
+                  <span
+                    className={styles.decor}
+                    style={{ backgroundImage: `url(${DECORATOR_URL})` }}
+                    aria-hidden="true"
+                  />
                 </div>
-                <span
-                  className={styles.decor}
-                  style={{ backgroundImage: `url(${DECORATOR_URL})` }}
-                  aria-hidden="true"
-                />
               </div>
+
               <button
                 type="button"
                 className={styles.close}
                 onClick={onClose}
-                aria-label="Cerrar"
+                aria-label="Cerrar modal"
               >
                 <img src={SALIR_URL} alt="" aria-hidden="true" />
               </button>
-            </header>
+            </div>
 
+            {/* Contenido principal alineado */}
             <div className={styles.body}>{children}</div>
 
-            {footer ? <footer className={styles.footer}>{footer}</footer> : null}
+            {/* Acciones o pie opcional */}
+            {footer ? <div className={styles.foot}>{footer}</div> : null}
           </>
         )}
       </div>

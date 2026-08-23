@@ -12,7 +12,7 @@ import { POIS } from '../inicio/pois.ts'
 export const INICIO_MODALS: Modal[] = POIS.map((poi) => ({
   id: poi.id,
   section: 'inicio',
-  variant: 'large',
+  variant: 'xl',
   layout: 'inicio',
   title: poi.title,
   icon: 'marker',
@@ -20,9 +20,7 @@ export const INICIO_MODALS: Modal[] = POIS.map((poi) => ({
   texto: poi.texto,
   body: [],
   actions: [{ label: 'Cerrar', variant: 'ghost' }],
-  theme: {
-    size: { width: '80vw', height: '88vh' },
-  },
+
   trigger: {
     type: 'poi',
     icon: 'marker',

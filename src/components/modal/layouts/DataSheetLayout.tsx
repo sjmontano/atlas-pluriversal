@@ -10,7 +10,7 @@ export function DataSheetLayout({ modal }: { modal: Modal }) {
   const metaEntries = Object.entries(modal.meta ?? {})
 
   return (
-    <div>
+    <div className={styles.datasheetContainer}>
       <BlockRenderer blocks={modal.body} />
       {metaEntries.length > 0 && (
         <table className={styles.datasheet}>

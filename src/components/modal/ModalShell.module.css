@@ -1,10 +1,4 @@
-/* MODAL SHELL — 3 variantes responsive (tokens en styles/tokens.css)
-   Estructura unificada (atomic design):
-   - header: [Glyph] + título + decorador (linea.svg repeat-x)
-   - body: children (layout)
-   - footer: actions
-   - close: salir.svg */
-
+/* ─── Contenedor Global y Overlay ─────────────────────────────────── */
 .root {
   position: fixed;
   inset: 0;
@@ -21,7 +15,16 @@
   backdrop-filter: blur(2px);
 }
 
+/* ─── Diálogo Modal y Tokens Dimensionales ────────────────────────── */
 .dialog {
+  /* Separación interna fluida: hasta 30px en escritorio y 16px en móvil */
+  --modal-padding: clamp(16px, 2.5vw, 30px);
+  --icon-size: clamp(36px, 4vw, 42px);
+  --header-gap: clamp(10px, 1.4vw, 18px);
+
+  /* Recálculo exacto para alinear el texto con el título y decorador */
+  --content-left-indent: calc(var(--modal-padding) + var(--icon-size) + var(--header-gap));
+
   position: relative;
   width: 100%;
   height: 100%;
@@ -38,24 +41,41 @@
   animation: modalIn 0.18s ease-out;
 }
 
+/* Variantes de tamaño */
+/* ─── Variantes Estándar Ampliadas ────────────────────────────────── */
+.xs {
+  --modal-w: clamp(300px, 90vw, 400px);
+  --modal-h: min(55vh, 520px);
+}
+
 .small {
-  --modal-w: var(--modal-small-w);
-  --modal-h: var(--modal-small-h);
+  --modal-w: clamp(320px, 92vw, 560px);
+  --modal-h: min(65vh, 520px);
 }
 
 .medium {
-  --modal-w: var(--modal-medium-w);
-  --modal-h: var(--modal-medium-h);
+  --modal-w: clamp(480px, 85vw, 820px);
+  --modal-h: min(70vh, 680px);
 }
 
 .large {
-  --modal-w: var(--modal-large-w);
-  --modal-h: var(--modal-large-h);
+  --modal-w: clamp(600px, 90vw, 960px);
+  --modal-h: min(75vh, 720px);
 }
 
-/* Hero: el layout controla toda la superficie (imagen de fondo 100%) */
+.xl {
+  --modal-w: clamp(800px, 94vw, 1280px);
+  --modal-h: 90vh;
+}
+
+.full {
+  --modal-w: 100vw;
+  --modal-h: 100dvh;
+}
+
+/* Variante Hero (Full bleed) */
 .hero {
-  background: #000;
+  background: #ffffff;
 }
 
 .heroBody {
@@ -65,37 +85,32 @@
   overflow: hidden;
 }
 
-/* ─── Header unificado ─────────────────────────────────────────────── */
-.header {
+/* ─── Encabezado ─────────────────────────────────────────────────── */
+.head {
   display: flex;
+  z-index: 2;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding: clamp(16px, 2.5vw, 24px) clamp(16px, 2.5vw, 24px) 0;
+  gap: 12px;
+  padding: var(--modal-padding) var(--modal-padding) 0;
   flex-shrink: 0;
 }
 
 .headerGroup {
-  width: fit-content;
-  max-width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: clamp(8px, 1.2vh, 14px);
+  align-items: flex-end;
+  gap: var(--header-gap);
+  max-width: calc(100% - 48px);
+  margin-bottom: 12px;
 }
 
-.iconTitle {
-  display: flex;
-  align-items: center;
-  gap: clamp(10px, 1.4vw, 18px);
-}
-
-/* Badge del ícono: fondoSVG + ícono Glyph superpuesto */
+/* Ícono con fondo */
 .iconBadge {
   position: relative;
   flex-shrink: 0;
-  width: clamp(30px, 3vw, 38px);
-  height: clamp(30px, 3vw, 38px);
+  width: var(--icon-size);
+  height: var(--icon-size);
+  margin-bottom: 3px;
 }
 
 .iconBg {
@@ -116,67 +131,49 @@
   justify-content: center;
 }
 
-.titles {
-  flex: 1;
+/* Bloque central del título y decorador */
+.titleColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  /* Forzar shrink-wrap en flexbox */
+  flex: 0 0 auto;
   min-width: 0;
 }
 
 .highlight {
   margin: 0;
-  font-size: 0.72rem;
+  font-size: clamp(0.65rem, 1.2vw, 0.72rem);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--primary-blue, #0599b7);
+  white-space: nowrap;
 }
 
 .title {
   margin: 2px 0 0;
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
   line-height: 1.2;
   color: var(--dark-green, #046c81);
   overflow-wrap: break-word;
+  white-space: nowrap;
 }
 
-/* Decorador: ajustado al ancho dinámico del headerGroup */
 .decor {
   height: 14px;
-  width: 100%;
+  /* Ancho = ancho del título (no del contenedor) */
+  width: max-content;
+  min-width: 100%;
+  margin-top: clamp(6px, 1vh, 12px);
   background-repeat: repeat-x;
   background-size: 122px 14px;
   background-position: left center;
   overflow: hidden;
 }
 
-/* Decorador: linea.svg repeat-x, ancho del grupo header (iconTitle) */
-.decor {
-  height: 14px;
-  width: 100%;
-  background-repeat: repeat-x;
-  background-size: 122px 14px;
-  background-position: left center;
-  overflow: hidden;
-}
-
-/* ─── Body / Footer ────────────────────────────────────────────────── */
-.body {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding: clamp(14px, 2.5vw, 28px);
-}
-
-.footer {
-  flex-shrink: 0;
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  padding: 12px clamp(14px, 2.5vw, 28px);
-  border-top: 1px solid rgba(3, 9, 30, 0.12);
-  background: rgba(255, 255, 255, 0.5);
-}
-
-/* ─── Close button (salir.svg) ─────────────────────────────────────── */
+/* ─── Botón de Cierre ─────────────────────────────────────────────── */
 .close {
   flex-shrink: 0;
   width: 44px;
@@ -187,6 +184,7 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.55);
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .close img {
@@ -201,35 +199,31 @@
   outline-offset: 2px;
 }
 
-.btn {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
+/* ─── Cuerpo del Modal (Alineado con el Título/Decorador) ──────────── */
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-top: clamp(10px, 1.5vh, 16px);
+  padding-bottom: var(--modal-padding);
+  padding-right: var(--modal-padding);
+  padding-left: var(--content-left-indent);
+  max-width: 100%;
 }
 
-.btnPrimary {
-  background: var(--primary-blue, #0599b7);
-  color: #fff;
+/* ─── Pie de Acciones ─────────────────────────────────────────────── */
+.foot {
+  flex-shrink: 0;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  padding: 12px var(--modal-padding);
+  border-top: 1px solid rgba(3, 9, 30, 0.12);
+  background: rgba(255, 255, 255, 0.5);
 }
 
-.btnPrimary:hover {
-  filter: brightness(1.08);
-}
-
-.btnGhost {
-  background: transparent;
-  color: var(--text-primary, #4b5563);
-  border: 1px solid rgba(3, 9, 30, 0.25);
-}
-
-.btnGhost:hover {
-  background: rgba(3, 9, 30, 0.06);
-}
-
+/* ─── Animación ───────────────────────────────────────────────────── */
 @keyframes modalIn {
   from {
     opacity: 0;
@@ -242,30 +236,48 @@
   }
 }
 
+/* ─── Adaptación Responsiva ────────────────────────────────────────── */
 @media (max-width: 640px) {
   .root {
-    padding: 0;
+    padding: 8px;
+    /* Margen global para mantener los bordes redondeados flotantes */
+  }
+
+  .xs {
+    --modal-w: 90vw;
+    --modal-h: auto;
+  }
+
+  .small {
+    --modal-w: 92vw;
+    --modal-h: 75dvh;
+  }
+
+  .medium {
+    --modal-w: 94vw;
+    --modal-h: 82dvh;
   }
 
   .large {
+    --modal-w: 95vw;
+    --modal-h: 88dvh;
+  }
+
+  .xl {
+    --modal-w: 96vw;
+    --modal-h: 92dvh;
+  }
+
+  /* Único caso que rompe bordes y llena el viewport por completo */
+  .full {
     --modal-w: 100vw;
     --modal-h: 100dvh;
     border-radius: 0;
   }
 
-  .small,
-  .medium {
-    --modal-w: 94vw;
-    --modal-h: 92dvh;
-  }
-
-  .header {
-    padding: 14px 14px 0;
-  }
-
   .close {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
   }
 
   .close img {

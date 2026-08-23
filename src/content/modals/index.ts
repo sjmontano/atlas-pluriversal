@@ -57,7 +57,7 @@ const CUENCA_CAUCA: Modal = {
 const GALERIA_EJEMPLO: Modal = {
   id: 'galeria-ejemplo',
   section: 'demo',
-  variant: 'medium',
+  variant: 'large',
   layout: 'gallery',
   title: 'Galería de imágenes',
   highlight: 'Lugares de la cuenca',
@@ -115,7 +115,7 @@ const FICHA_TECNICA: Modal = {
 const EN_CONSTRUCCION: Modal = {
   id: 'en-construccion',
   section: 'legales',
-  variant: 'small',
+  variant: 'xl',
   layout: 'alert',
   title: 'En construcción',
   highlight: 'Aviso',

@@ -6,7 +6,7 @@
  * (registro por id + índice por mapa); estos tipos tipan su consumo.
  */
 
-export type ModalVariant = 'small' | 'medium' | 'large'
+export type ModalVariant = 'xs' | 'small' | 'medium' | 'large' | 'xl' | 'full'
 
 export type ModalLayout =
   /** large · hero imagen + bloques de texto */
@@ -41,11 +41,11 @@ export type ModalBlock =
   | { type: 'heading'; id: string; level?: 2 | 3; text: string }
   | { type: 'list'; id: string; ordered?: boolean; items: string[] }
   | {
-      type: 'datatable'
-      id: string
-      columns: string[]
-      rows: string[][]
-    }
+    type: 'datatable'
+    id: string
+    columns: string[]
+    rows: string[][]
+  }
   | { type: 'quote'; id: string; text: string; source?: string }
 
 /* ─── Acciones (footer) ────────────────────────────────────────────────── */

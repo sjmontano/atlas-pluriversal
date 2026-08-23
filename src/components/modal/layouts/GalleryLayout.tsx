@@ -13,12 +13,11 @@ export function GalleryLayout({ modal }: { modal: Modal }) {
   if (images.length === 0) return null
 
   const current = images[index] ?? images[0]
-
   const prev = () => setIndex((i) => (i - 1 + images.length) % images.length)
   const next = () => setIndex((i) => (i + 1) % images.length)
 
   return (
-    <div>
+    <div className={styles.gallery}>
       <div className={styles.galleryMain}>
         <img className={styles.galleryImg} src={current} alt="" />
         <button

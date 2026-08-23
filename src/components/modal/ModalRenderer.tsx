@@ -6,8 +6,8 @@
  * Los datos vienen de src/content/modals/ (vía openModal(getModalById(...))).
  */
 
-import type { Modal } from '../../types/modal.ts'
 import { useUIStore } from '@stores/index.ts'
+import type { Modal } from '../../types/modal.ts'
 import { ModalShell } from './ModalShell'
 import { AlertLayout } from './layouts/AlertLayout'
 import { DataSheetLayout } from './layouts/DataSheetLayout'
@@ -40,14 +40,14 @@ export function ModalRenderer() {
 
   if (!modal) return null
 
-  const hero = modal.layout === 'inicio'
+  const hero = false
   const dialogStyle = modal.theme?.size
     ? {
-        width: modal.theme.size.width,
-        height: modal.theme.size.height,
-        maxWidth: modal.theme.size.width,
-        maxHeight: modal.theme.size.height,
-      }
+      width: modal.theme.size.width,
+      height: modal.theme.size.height,
+      maxWidth: modal.theme.size.width,
+      maxHeight: modal.theme.size.height,
+    }
     : undefined
 
   return (
