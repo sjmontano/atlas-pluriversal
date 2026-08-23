@@ -2,14 +2,10 @@
 
 /* ── image-text (large): hero + texto en columnas (1 col en móvil) ─────── */
 
-/* 🏔️ InicioLayout */
+/* 🏔️ InicioLayout — contenido superpuesto sobre el .dialogBg de ModalShell */
 .inicio {
-  position: relative;
-  width: 100%;
+  width: 70%;
   max-width: 100%;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 /* ⚠️ AlertLayout */
@@ -42,36 +38,14 @@
   max-width: 80%;
 }
 
-/* 🏔️ InicioLayout */
-.inicio {
-  /* ❌ Quitamos position: relative para que la imagen no se contenga solo aquí */
-  width: 100%;
-  height: 100%;
-}
-
-.inicioBg {
-  position: absolute;
-  inset: 0;
-  /* Cubre desde la esquina superior izquierda a la inferior derecha de .dialog */
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  /* Queda al fondo */
-  pointer-events: none;
-}
-
-/* Texto con scrim sutil para asegurar legibilidad sobre la imagen */
+/* Texto con scrim sutil para asegurar legibilidad sobre la imagen de fondo */
 .inicioTexto {
   position: relative;
   z-index: 1;
-  /* Garantiza que el texto quede por encima de la imagen */
-  margin-top: clamp(8px, 2.4vh, 16px);
-  width: min(100%, 55ch);
-  padding: 12px 16px;
+
   border-radius: 10px;
-  color: var(--text-primary, #4b5563);
-  font-size: clamp(0.95rem, 2.15vh, 1.12rem);
+  font-size: clamp(0.85rem, 2.15vh, 1.12rem);
+
   line-height: 1.4;
   background: radial-gradient(ellipse 90% 55% at center top,
       rgba(255, 255, 255, 0.75) 0%,
@@ -230,5 +204,9 @@
 @media (max-width: 720px) {
   .imageText {
     grid-template-columns: 1fr;
+  }
+
+  .inicio {
+    width: 90%;
   }
 }

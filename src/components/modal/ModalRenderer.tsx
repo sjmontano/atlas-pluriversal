@@ -16,7 +16,7 @@ import { ImageTextLayout } from './layouts/ImageTextLayout'
 import { InicioLayout } from './layouts/InicioLayout'
 import { TextLayout } from './layouts/TextLayout'
 
-function layoutFor(modal: Modal, onClose: () => void) {
+function layoutFor(modal: Modal) {
   switch (modal.layout) {
     case 'image-text':
       return <ImageTextLayout modal={modal} />
@@ -27,7 +27,7 @@ function layoutFor(modal: Modal, onClose: () => void) {
     case 'alert':
       return <AlertLayout modal={modal} />
     case 'inicio':
-      return <InicioLayout modal={modal} onClose={onClose} />
+      return <InicioLayout modal={modal} />
     case 'text':
     default:
       return <TextLayout modal={modal} />
@@ -58,11 +58,12 @@ export function ModalRenderer() {
       variant={modal.variant}
       onClose={closeModal}
       hero={hero}
+      bgImage={modal.layout === 'inicio' ? modal.image : undefined}
       dialogStyle={dialogStyle}
       icon={modal.icon}
       footer={null}
     >
-      {layoutFor(modal, closeModal)}
+      {layoutFor(modal)}
     </ModalShell>
   )
 }

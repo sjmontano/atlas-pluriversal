@@ -27,6 +27,9 @@ export interface ModalShellProps {
   icon?: string
   /** Sin cromo básico, el layout interno toma el control total de la superficie. */
   hero?: boolean
+  /** Imagen de fondo full-bleed a nivel del diálogo (detrás del header y del
+   *  body). Solo la usan los modales de inicio; el resto queda intacto. */
+  bgImage?: string
   /** Estilos opcionales en línea para dimensionar el diálogo. */
   dialogStyle?: CSSProperties
 }
@@ -45,6 +48,7 @@ export function ModalShell({
   footer,
   icon,
   hero = false,
+  bgImage,
   dialogStyle,
 }: ModalShellProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -101,6 +105,15 @@ export function ModalShell({
         className={`${styles.dialog} ${styles[variant]}${hero ? ` ${styles.hero}` : ''}`}
         style={dialogStyle}
       >
+        {bgImage && (
+          <img
+            className={styles.dialogBg}
+            src={bgImage}
+            alt=""
+            aria-hidden="true"
+          />
+        )}
+
         {hero ? (
           <div className={styles.heroBody}>{children}</div>
         ) : (

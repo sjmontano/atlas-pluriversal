@@ -1,15 +1,17 @@
 /**
  * 🖼️ FRAME — Marcos del IconButton (identidad visual por sección)
  * ===============================================================
- * Placeholders vectoriales de los 4 frames de v17 (icon-frame-1..4).
- * Sustituir por los SVGs oficiales sin cambiar la API.
+ * Arte oficial de v17: icon-frame-1..4 (bitmap PNG embebido en SVG,
+ * servido desde /assets/ui/frames/). Se renderiza como <img> porque
+ * el arte es bitmap, no vectorial — igual que el icon-background de v17.
+ * API intacta: `variant='1'..'4'` con fallback '1'.
  */
 
-const FRAME_VARIANTS: Record<string, { fill: string; stroke: string }> = {
-  '1': { fill: '#0599b7', stroke: '#f2eee7' },
-  '2': { fill: '#046c81', stroke: '#f2eee7' },
-  '3': { fill: '#b98a5e', stroke: '#f2eee7' },
-  '4': { fill: '#2f4f38', stroke: '#f2eee7' },
+const FRAME_ASSETS: Record<string, string> = {
+  '1': '/assets/ui/frames/icon-frame-1.svg',
+  '2': '/assets/ui/frames/icon-frame-2.svg',
+  '3': '/assets/ui/frames/icon-frame-3.svg',
+  '4': '/assets/ui/frames/icon-frame-4.svg',
 }
 
 export interface FrameProps {
@@ -17,21 +19,15 @@ export interface FrameProps {
 }
 
 export function Frame({ variant = '1' }: FrameProps) {
-  const c = FRAME_VARIANTS[variant] ?? FRAME_VARIANTS['1']
-  if (!c) return null
+  const src = FRAME_ASSETS[variant] ?? FRAME_ASSETS['1']
+  if (!src) return null
   return (
-    <svg viewBox="0 0 115 117" fill="none" aria-hidden="true">
-      <rect x="6" y="8" width="103" height="103" rx="26" fill={c.fill} />
-      <rect
-        x="10"
-        y="12"
-        width="95"
-        height="95"
-        rx="22"
-        fill="none"
-        stroke={c.stroke}
-        strokeWidth="2"
-      />
-    </svg>
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      style={{ width: '100%', height: '100%', display: 'block' }}
+    />
   )
 }

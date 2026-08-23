@@ -85,9 +85,24 @@
   overflow: hidden;
 }
 
+/* ─── Imagen de fondo full-bleed (modales de inicio) ─────────────────
+   Vive a nivel de .dialog: cubre el 100% del modal, por detrás del
+   header y del body. El resto de modales no la renderizan. */
+.dialogBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
 /* ─── Encabezado ─────────────────────────────────────────────────── */
 .head {
   display: flex;
+  position: relative;
+  /* Activa el z-index para pintar sobre .dialogBg */
   z-index: 2;
   align-items: flex-start;
   justify-content: space-between;
@@ -203,10 +218,13 @@
 .body {
   flex: 1;
   min-height: 0;
+  position: relative;
+  /* Encima de .dialogBg (z-index 0) */
+  z-index: 1;
   overflow-y: auto;
   padding-top: clamp(10px, 1.5vh, 16px);
   padding-bottom: var(--modal-padding);
-  padding-right: var(--modal-padding);
+  /* padding-right: var(--modal-padding); */
   padding-left: var(--content-left-indent);
   max-width: 100%;
 }
