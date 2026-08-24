@@ -1,0 +1,38 @@
+.stage {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(1000px 500px at 30% 30%, rgba(5, 153, 183, 0.22), transparent 60%),
+    radial-gradient(800px 600px at 75% 70%, rgba(185, 138, 94, 0.18), transparent 65%),
+    linear-gradient(160deg, #04122b 0%, #03091e 55%, #061a38 100%);
+  display: grid;
+  place-items: center;
+}
+
+.note {
+  color: rgba(242, 238, 231, 0.55);
+  font-size: 14px;
+  max-width: 520px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.link {
+  color: var(--primary-blue, #0599b7);
+  text-decoration: none;
+}
+.link:hover {
+  text-decoration: underline;
+}
+
+.devOff {
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #03091e;
+  color: rgba(242, 238, 231, 0.8);
+}
+
+.devOff a {
+  color: var(--primary-blue, #0599b7);
+}

@@ -72,6 +72,12 @@ export interface ModalTrigger {
   mapId?: string
   /** Posición % del marker sobre el mapa */
   position?: { top: string; left: string }
+  /** Si está presente, el trigger abre esta URL externa en vez de un modal
+   *  (caso v17: fichas técnicas/descargas en Google Drive). */
+  href?: string
+  /** Si está presente, el trigger navega a este mapa en vez de abrir modal
+   *  (caso v17: "Síntesis" → onMapChange). */
+  gotoMapId?: string
 }
 
 /* ─── ModalData ────────────────────────────────────────────────────────── */

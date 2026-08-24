@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ModalRenderer } from '@components/modal/ModalRenderer'
 
 const DevMenu = lazy(() =>
@@ -13,6 +13,21 @@ const ModalDemoPage = lazy(() =>
 )
 const UiMockupPage = lazy(() =>
   import('@pages/UiMockupPage.tsx').then((m) => ({ default: m.UiMockupPage })),
+)
+const InicioPage = lazy(() =>
+  import('@pages/InicioPage.tsx').then((m) => ({ default: m.InicioPage })),
+)
+const IntroMapPage = lazy(() =>
+  import('@pages/IntroMapPage.tsx').then((m) => ({ default: m.IntroMapPage })),
+)
+const ChapterEntry = lazy(() =>
+  import('@pages/ChapterPage.tsx').then((m) => ({ default: m.ChapterEntry })),
+)
+const ChapterPage = lazy(() =>
+  import('@pages/ChapterPage.tsx').then((m) => ({ default: m.ChapterPage })),
+)
+const ShellMockupPage = lazy(() =>
+  import('@pages/ShellMockupPage.tsx').then((m) => ({ default: m.ShellMockupPage })),
 )
 
 const ENABLE_DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
@@ -45,10 +60,14 @@ export function App() {
     <BrowserRouter>
       <Suspense fallback={<Fallback />}>
         <Routes>
-          <Route path="/" element={<Navigate to="/dev" replace />} />
+          <Route path="/" element={<InicioPage />} />
+          <Route path="/intro" element={<IntroMapPage />} />
+          <Route path="/capitulo/:chapterId" element={<ChapterEntry />} />
+          <Route path="/capitulo/:chapterId/:mapId" element={<ChapterPage />} />
           <Route path="/dev" element={<DevMenu />} />
           <Route path="/modales" element={<ModalDemoPage />} />
           {ENABLE_DEV_TOOLS && <Route path="/dev/ui" element={<UiMockupPage />} />}
+          {ENABLE_DEV_TOOLS && <Route path="/dev/shell" element={<ShellMockupPage />} />}
           <Route path="/test/:mapId" element={<TestMapPage />} />
         </Routes>
         <ModalRenderer />

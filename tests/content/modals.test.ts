@@ -12,7 +12,7 @@ describe('Registro de modales (content/modals)', () => {
   it('todos los modales tienen forma y datos coherentes', () => {
     for (const modal of Object.values(MODALS)) {
       expect(modal.id).toBeTruthy()
-      expect(['small', 'medium', 'large']).toContain(modal.variant)
+      expect(['xs', 'small', 'medium', 'large', 'xl', 'full']).toContain(modal.variant)
       expect([
         'text',
         'image-text',
@@ -40,7 +40,7 @@ describe('Registro de modales (content/modals)', () => {
     const inicio = Object.values(MODALS).filter((m) => m.layout === 'inicio')
     expect(inicio).toHaveLength(16)
     for (const modal of inicio) {
-      expect(modal.variant).toBe('large')
+      expect(modal.variant).toBe('xl')
       expect(modal.section).toBe('inicio')
       expect(modal.image).toBeTruthy()
       expect(modal.texto?.length).toBeGreaterThan(0)

@@ -8,7 +8,6 @@
   gap: 12px;
   position: relative;
   padding: 6px;
-  border-radius: 12px;
   cursor: pointer;
   min-width: 44px;
   min-height: 44px;
@@ -25,38 +24,54 @@
   border-radius: 12px;
 }
 
-.frame {
+/* ── Contenedor: frame de fondo + glyph centrado DENTRO ─────────────── */
+.iconBox {
+  position: relative;
   width: var(--icon-btn-size);
   height: var(--icon-btn-size);
   flex-shrink: 0;
-  display: grid;
-  place-items: center;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.28s ease;
+}
+.btn:hover .iconBox,
+.btn:focus-visible .iconBox {
+  transform: scale(1.07);
+  filter: brightness(1.12) drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
+}
+.btn:active .iconBox {
+  transform: scale(0.96);
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  display: block;
 }
 .frame svg {
   width: 100%;
   height: 100%;
+  display: block;
 }
 .frame img {
   width: 100%;
   height: 100%;
+  display: block;
 }
 
 .glyph {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: var(--icon-btn-glyph);
-  height: var(--icon-btn-glyph);
+  inset: 0;
   display: grid;
   place-items: center;
   pointer-events: none;
 }
 .glyph svg {
-  width: 100%;
-  height: 100%;
+  width: var(--icon-btn-glyph);
+  height: var(--icon-btn-glyph);
 }
 
+/* ── Etiqueta: aparece fluida al hover/focus (desktop) ──────────────── */
 .label {
   font-size: var(--icon-btn-font);
   font-weight: 600;
@@ -64,10 +79,11 @@
   white-space: nowrap;
   color: var(--atlas-cream, #f2eee7);
   opacity: 0;
-  transform: translateX(-6px);
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transform: translateX(-8px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
 @media (hover: hover) and (min-width: 641px) {
   .btn:hover .label,
   .btn:focus-visible .label {
@@ -82,32 +98,9 @@
     gap: 4px;
     align-items: center;
   }
-  .glyph {
-    position: static;
-    transform: none;
-  }
   .label {
     opacity: 1;
     transform: none;
     text-align: center;
-  }
-}
-
-.row {
-  display: flex;
-  align-items: flex-start;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-.rowStack {
-  flex-direction: column;
-  gap: 6px;
-}
-@media (max-width: 640px) {
-  .row {
-    flex-direction: row;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 8px;
   }
 }

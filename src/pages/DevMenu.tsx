@@ -8,9 +8,11 @@ export function DevMenu() {
       <h1 className={styles.title}>Atlas Pluriversal — Dev Menu</h1>
       <p className={styles.subtitle}>31 mapas · 4 capítulos</p>
 
-      <Link to="/modales" className={styles.card}>
-        <span className={styles.mapId}>modales</span>
-        <span className={styles.mapTitle}>Maqueta del sistema de modales</span>
+      <Link to="/dev/shell" className={styles.card}>
+        <span className={styles.mapId}>dev/shell</span>
+        <span className={styles.mapTitle}>
+          Shell UI — ToolRail · ChapterTabs · Header · Minimapa
+        </span>
       </Link>
 
       <Link to="/dev/ui" className={styles.card}>

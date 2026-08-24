@@ -1,0 +1,18 @@
+.missing {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #03091e;
+  color: rgba(242, 238, 231, 0.85);
+}
+
+.missingLink {
+  color: var(--primary-blue, #0599b7);
+  text-decoration: none;
+}
+.missingLink:hover {
+  text-decoration: underline;
+}

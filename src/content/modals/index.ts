@@ -19,7 +19,7 @@
  */
 
 import type { Modal } from '../../types/modal.ts'
-import { INICIO_MODALS } from './inicio.ts'
+import { INICIO_MODALS, CREDITOS_MODAL } from './inicio.ts'
 
 /* ── MEDIUM · layout text · intro del mapa ───────────────────────────────
    Trigger: botón "Presentación" (frame 1 + glyph presentation). */
@@ -139,6 +139,7 @@ const EN_CONSTRUCCION: Modal = {
 /* ── Agregado maestro: inicio + estándar ─────────────────────────────── */
 const ALL_MODALS: Modal[] = [
   ...INICIO_MODALS,
+  CREDITOS_MODAL,
   CUENCA_CAUCA,
   GALERIA_EJEMPLO,
   FICHA_TECNICA,

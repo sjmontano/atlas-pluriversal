@@ -3,22 +3,26 @@ import type { Chapter, ChapterMapRef } from '../../types/chapter.ts'
 export const CHAPTERS: ReadonlyArray<Chapter> = [
   {
     id: 1,
+    roman: 'I',
     title: 'I. El valle alto del río Cauca, su cuenca y sus mundos',
     description: 'Cartografías de la Cuenca',
+    hoverImage: '/assets/ui/sidebar/tab-default-bg.webp',
     maps: [
       { mapId: 'chapter1-encuadres', title: 'Encuadres Territoriales' },
-      { mapId: 'chapter1-ecosistemas', title: 'Ecosistemas' },
+      { mapId: 'chapter1-ecosistemas', title: 'Ecosistemas', minimap: 'valle' },
       { mapId: 'chapter1-formas-paisaje', title: 'Formas del Paisaje' },
       { mapId: 'chapter1-bredunco', title: 'Bredunco' },
-      { mapId: 'chapter1-mosaicos-del-agua', title: 'Mosaicos del Agua' },
+      { mapId: 'chapter1-mosaicos-del-agua', title: 'Mosaicos del Agua', minimap: 'sur' },
       { mapId: 'chapter1-un-rio-cauca', title: 'Un Río Cauca, Muchos Mundos' },
     ],
   },
   {
     id: 2,
+    roman: 'II',
     title: 'II. Tejidos, entramados territoriales y alternativas transformadoras',
     description: 'Territorios Específicos',
     territories: ['valle', 'suarez', 'cali', 'villa-rica'],
+    hoverImage: '/assets/ui/sidebar/tab-default-bg.webp',
     maps: [
       { mapId: 'chapter2-valle', title: 'Valle del Cauca' },
       { mapId: 'chapter2-suarez', title: 'Suárez' },
@@ -31,8 +35,10 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
   },
   {
     id: 3,
+    roman: 'III',
     title: 'III. Caminos y conflictos del río Cauca en el valle alto',
     description: 'Caminos y Conflictos del Río Cauca',
+    hoverImage: '/assets/ui/sidebar/tab-default-bg.webp',
     maps: [
       { mapId: 'chapter3-introduccion', title: 'Introducción Capítulo 3' },
       { mapId: 'chapter3-monocultivo', title: 'Monocultivo de Caña' },
@@ -44,8 +50,10 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
   },
   {
     id: 4,
+    roman: 'IV',
     title: 'IV. Actores, acciones, capacidades y poderes en los nodos del Tejido',
     description: 'Actores, Acciones, Capacidades y Poderes',
+    hoverImage: '/assets/ui/sidebar/tab-default-bg.webp',
     maps: [
       { mapId: 'chapter4-introduccion', title: 'Introducción Capítulo 4' },
       { mapId: 'chapter4-asoyoge', title: 'Asoyoge' },

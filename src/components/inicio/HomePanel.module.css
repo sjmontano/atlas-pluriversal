@@ -1,0 +1,184 @@
+.panel {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ── Logo (header superior izquierdo, link a unriocauca) ─────────────── */
+.logoLink {
+  pointer-events: auto;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: block;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.logoLink:hover {
+  transform: scale(1.04);
+}
+.logo {
+  width: clamp(120px, 14vw, 200px);
+  height: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
+/* ── Bloque central de títulos ───────────────────────────────────────── */
+.titles {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: var(--steel-blue, #193965);
+  width: min(92vw, 900px);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2.6rem, 8vw, 4.75rem);
+  font-weight: 900;
+  line-height: 1.2;
+  transform: scaleY(1.15);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: clamp(1.3rem, 5vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.3;
+  transform: scaleY(1.15);
+}
+
+.description {
+  margin: 1.2vh 0 0;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(0.95rem, 2vw, 1.5rem);
+  color: var(--steel-blue, #193965);
+}
+
+/* ── Botones (inferior derecho): créditos · ficha · inicio ───────────── */
+.buttons {
+  pointer-events: auto;
+  position: absolute;
+  right: 3%;
+  bottom: 4vh;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.button {
+  all: unset;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(52px, 4.6vw, 74px);
+  aspect-ratio: 1;
+  cursor: pointer;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.3s ease;
+}
+.button:hover,
+.button:focus-visible {
+  transform: translateY(-3px) scale(1.07);
+  filter: brightness(1.12) drop-shadow(0 4px 12px rgba(3, 9, 30, 0.4));
+}
+.button:active {
+  transform: scale(0.95);
+}
+.button:focus-visible {
+  outline: 2px solid var(--primary-blue, #0599b7);
+  outline-offset: 3px;
+  border-radius: 14px;
+}
+
+.fondo {
+  position: absolute;
+  inset: 8%;
+  width: 84%;
+  height: 84%;
+}
+
+.icon {
+  position: relative;
+  z-index: 1;
+  width: 52%;
+  height: auto;
+}
+
+/* Botón destacado (Inicio/play) un poco más grande, como v17 */
+.buttonPlay {
+  width: clamp(62px, 5.6vw, 90px);
+}
+
+/* ── Tooltip compartido ──────────────────────────────────────────────── */
+.tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  color: #fff;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 25;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(4px);
+  transition:
+    opacity 0.24s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0.28s;
+  pointer-events: none;
+}
+
+.tooltipBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  border: 2px solid rgba(0, 110, 150, 1);
+  border-radius: 6px;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: rgba(0, 110, 150, 1) transparent transparent transparent;
+}
+
+.button:hover .tooltip,
+.button:focus-visible .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  transition:
+    opacity 0.24s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 640px) {
+  .titles {
+    top: 14%;
+  }
+  .buttons {
+    right: 50%;
+    transform: translateX(50%);
+    bottom: 3vh;
+  }
+}

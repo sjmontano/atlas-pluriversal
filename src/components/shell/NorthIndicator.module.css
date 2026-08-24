@@ -1,0 +1,14 @@
+.north {
+  position: absolute;
+  top: 3%;
+  right: 30%;
+  z-index: 20;
+  width: clamp(28px, 2.8vw, 44px);
+  pointer-events: auto;
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
