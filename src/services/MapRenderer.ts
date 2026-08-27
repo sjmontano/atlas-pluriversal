@@ -199,6 +199,12 @@ export async function buildGeoreferencedMap(
   }
   const map = new maplibregl.Map(mapOptions)
 
+  // Puente de depuración dev-only: expone la instancia para consola/DevTools
+  // (calibración, pruebas de clicks por coordenada). Nunca en producción.
+  if (import.meta.env.VITE_DEV_TOOLS === 'true') {
+    ;(window as unknown as Record<string, unknown>).__atlasMap = map
+  }
+
   // Límite de descargas/decodificaciones simultáneas de imágenes
   // (ver FACETA_2_TILES_PLAN.md §2.3.1).
   // lowPowerMode: 2 en paralelo para equipos Celeron/A4 con GPU integrada.

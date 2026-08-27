@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 📇 REGISTRO DE MODALES — contenido del sistema de modales
  * ==========================================================
  * MAESTRO de los modales del Atlas (3 tamaños, 6 layouts). Agrega los
@@ -20,13 +20,14 @@
 
 import type { Modal } from '../../types/modal.ts'
 import { INICIO_MODALS, CREDITOS_MODAL } from './inicio.ts'
+import { CHAPTER1_MODALS, CHAPTER1_MODAL_INDEX } from './chapter-1.ts'
 
 /* ── MEDIUM · layout text · intro del mapa ───────────────────────────────
    Trigger: botón "Presentación" (frame 1 + glyph presentation). */
 const CUENCA_CAUCA: Modal = {
   id: 'cuenca-cauca',
   section: 'intro',
-  variant: 'medium',
+  variant: 'large',
   layout: 'text',
   title: 'Confines del sur del valle alto caucano',
   highlight: 'Presentación',
@@ -43,7 +44,6 @@ const CUENCA_CAUCA: Modal = {
       text: 'El territorio del sur del valle alto del río Cauca: cordilleras, planicie y agua en movimiento.',
     },
   ],
-  actions: [{ label: 'Cerrar', variant: 'ghost' }],
   trigger: {
     type: 'button',
     icon: 'presentation',
@@ -68,7 +68,6 @@ const GALERIA_EJEMPLO: Modal = {
     'https://res.cloudinary.com/dvluvxfvn/image/upload/v1754784166/geoImages/xeg78osmzhq42p1q6rc6.webp',
   ],
   body: [],
-  actions: [{ label: 'Cerrar', variant: 'ghost' }],
   trigger: {
     type: 'button',
     icon: 'gallery',
@@ -101,7 +100,6 @@ const FICHA_TECNICA: Modal = {
     'Mapa base': 'Cuenca alta del río Cauca',
     Año: '2026',
   },
-  actions: [{ label: 'Cerrar', variant: 'ghost' }],
   trigger: {
     type: 'button',
     icon: 'fichatecnica',
@@ -127,7 +125,6 @@ const EN_CONSTRUCCION: Modal = {
       text: 'Este contenido del Atlas estará disponible próximamente.',
     },
   ],
-  actions: [{ label: 'Entendido', variant: 'primary' }],
   trigger: {
     type: 'button',
     icon: 'info',
@@ -136,10 +133,11 @@ const EN_CONSTRUCCION: Modal = {
   },
 }
 
-/* ── Agregado maestro: inicio + estándar ─────────────────────────────── */
+/* ── Agregado maestro: inicio + capítulos + estándar ─────────────────── */
 const ALL_MODALS: Modal[] = [
   ...INICIO_MODALS,
   CREDITOS_MODAL,
+  ...CHAPTER1_MODALS,
   CUENCA_CAUCA,
   GALERIA_EJEMPLO,
   FICHA_TECNICA,
@@ -151,11 +149,17 @@ export const MODALS: Record<string, Modal> = Object.fromEntries(
 )
 
 /* ── Índice mapa → modales ────────────────────────────────────────────────
-   El intro indexa la presentación + los 16 POIs de la home (layout `inicio`). */
+   El intro indexa la presentación + los 16 POIs de la home (layout `inicio`).
+   El capítulo 1 indexa presentaciones, fichas y perfil por mapa. */
 export const MAP_MODAL_INDEX: Record<string, string[]> = {
-  intro: ['cuenca-cauca', ...INICIO_MODALS.map((modal) => modal.id)],
+  intro: [
+    'cuenca-cauca',
+    'cap1-atlas-proyecto',
+    ...INICIO_MODALS.map((modal) => modal.id),
+  ],
   herramientas: ['ficha-tecnica', 'en-construccion'],
   demo: ['galeria-ejemplo'],
+  ...CHAPTER1_MODAL_INDEX,
 }
 
 /* ─── Helpers ──────────────────────────────────────────────────────────── */
@@ -169,3 +173,4 @@ export const getModalsByMap = (mapId: string): Modal[] =>
 
 export const listModalsBySection = (section: string): Modal[] =>
   Object.values(MODALS).filter((m) => m.section === section)
+

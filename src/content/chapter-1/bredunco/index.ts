@@ -1,6 +1,7 @@
 import type { MapContent } from '../../../types/content'
 import { makeTilesConfig } from '@data/tiles'
 import { POIS } from './pois'
+import { LAYERS, GROUPS } from './layers'
 
 const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
 
@@ -29,5 +30,7 @@ export default {
   images: { base, full, placeholder: ph(base) },
   config,
   tiles: makeTilesConfig('chapter1-bredunco', geo, config.initialBearing, config.zoomMax),
+  layers: LAYERS,
+  groups: GROUPS,
   pois: POIS,
 } satisfies MapContent

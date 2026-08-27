@@ -4,23 +4,28 @@ import { useMap } from '@hooks/useMap'
 import { useAutoLowPower } from '@hooks/useAutoLowPower'
 import { usePrefetchAdjacent } from '@hooks/usePrefetchAdjacent'
 import { useTilePrefetch } from '@hooks/useTilePrefetch'
+import { useNavigate } from 'react-router-dom'
 import { useMapStore } from '@stores/mapStore'
 import { useUIStore } from '@stores/uiStore'
 import { useConnectionStore } from '@stores/connectionStore'
 import { useLayerStore } from '@stores/layerStore'
 import { addBasemap, removeBasemap, setImageOpacity } from '@services/BasemapManager'
-import { sync as syncLayers, removeAll as removeAllLayers } from '@services/LayerManager'
+import {
+  sync as syncLayers,
+  removeAll as removeAllLayers,
+  bindLayerClicks,
+} from '@services/LayerManager'
 import { addPois, removePois } from '@services/PoiManager'
+import { addEncuadres, removeEncuadres } from '@services/EncuadresManager'
 import { getMapContent } from '@content'
 import { getModalById } from '@content/modals'
+import { routeForMap } from '@data/chapters/chapters.ts'
 import type { MapController } from '@services/MapRenderer'
 import type { Poi } from '../../types/poi.ts'
-import { MapControls } from './MapControls'
 import { LayerMenu } from './LayerMenu'
 import { PoiModal } from './PoiModal'
 import { CalibrationPanel } from '@components/calibration/CalibrationPanel.tsx'
 import { OfflineBanner } from './OfflineBanner'
-import { ZoomBadge } from './ZoomBadge'
 import styles from './AtlasMap.module.css'
 
 const ENABLE_DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
@@ -31,6 +36,7 @@ export interface AtlasMapProps {
 }
 
 export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
+  const navigate = useNavigate()
   const containerRef = useRef<HTMLDivElement>(null)
   const { mapRef, error } = useMap({ mapId, containerRef, controllerRef })
   const loading = useMapStore((s) => s.loading)
@@ -51,6 +57,7 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
   const groups = content?.groups ?? null
   const legends = content?.legends ?? null
   const pois = content?.pois ?? null
+  const encuadres = content?.encuadres ?? null
   const hasLayers = layers !== null && layers.length > 0
   const hasLegends = legends !== null && legends.length > 0
   const [activePoi, setActivePoi] = useState<Poi | null>(null)
@@ -77,7 +84,10 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
   }, [initConnection])
 
   useEffect(() => {
-    useLayerStore.getState().resetAll(mapId)
+    useLayerStore.getState().resetAll(
+      mapId,
+      (content?.layers ?? []).filter((l) => l.visibleByDefault).map((l) => l.id),
+    )
     const map = mapRef.current
     return () => {
       if (map) {
@@ -85,7 +95,7 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
         removePois(map)
       }
     }
-  }, [mapId, mapRef])
+  }, [mapId, mapRef, content])
 
   useEffect(() => {
     const map = mapRef.current
@@ -128,6 +138,32 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
     addPois(map, mapId, pois, handlePoiClick)
   }, [mapRef, mapId, pois, mapBuilt])
 
+  /* Click en capa → modal (cuencas Tejidos del Agua, Voz del río…) */
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapBuilt || !layers) return
+    bindLayerClicks(map, layers, (modalId) => {
+      const modal = getModalById(modalId)
+      if (modal) useUIStore.getState().openModal(modal)
+    })
+  }, [mapRef, mapBuilt, layers])
+
+  /* Encuadres navegables (polígono + etiqueta → otro mapa, URL-first) */
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapBuilt || !encuadres) return
+    let cancelled = false
+    void addEncuadres(map, encuadres, (targetMapId) => {
+      if (cancelled) return
+      const route = routeForMap(targetMapId)
+      if (route !== null) navigate(route)
+    })
+    return () => {
+      cancelled = true
+      removeEncuadres(map)
+    }
+  }, [mapRef, mapBuilt, encuadres, navigate])
+
   return (
     <div className={styles.wrapper} key={`${mapId}-${rebuildKey}`}>
       <div ref={containerRef} className={styles.mapContainer} />
@@ -138,12 +174,6 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
           <span>Modo básico: el mapa es navegable sin alta resolución por conexión lenta.</span>
         </div>
       )}
-
-      {ENABLE_DEV_TOOLS && !loading && !error && (
-        <MapControls hasImageBase={content?.config.useImageBase !== false} />
-      )}
-
-      {ENABLE_DEV_TOOLS && !loading && !error && <ZoomBadge map={mapRef.current} />}
 
       {!loading && !error && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} onCalibrate={() => setCalibrationOpen(true)} />}
 

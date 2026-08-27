@@ -25,6 +25,9 @@ export interface ModalShellProps {
   footer?: ReactNode
   /** Ícono dinámico del header (p.ej. 'marker', 'presentation', 'gallery'...). */
   icon?: string
+  /** Imagen de icono propia (p.ej. iconos de cuencas Tejidos del Agua).
+   *  Si está presente sustituye al glyph en el badge del header. */
+  iconImage?: string
   /** Sin cromo básico, el layout interno toma el control total de la superficie. */
   hero?: boolean
   /** Imagen de fondo full-bleed a nivel del diálogo (detrás del header y del
@@ -47,6 +50,7 @@ export function ModalShell({
   children,
   footer,
   icon,
+  iconImage,
   hero = false,
   bgImage,
   dialogStyle,
@@ -130,7 +134,17 @@ export function ModalShell({
                       aria-hidden="true"
                     />
                     <span className={styles.iconGlyph}>
-                      <Glyph name={icon} size={20} />
+                      {iconImage !== undefined ? (
+                        <img
+                          src={iconImage}
+                          alt=""
+                          width={20}
+                          height={20}
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <Glyph name={icon} size={20} />
+                      )}
                     </span>
                   </span>
                 )}

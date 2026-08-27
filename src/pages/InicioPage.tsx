@@ -62,9 +62,12 @@ export function InicioPage() {
   }, [maxX, maxY])
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!pannable || !e.isPrimary) return
-    drag.current = { id: e.pointerId, px: e.clientX, py: e.clientY, ox: offset.x, oy: offset.y }
     movedRef.current = false
+    /* Los elementos interactivos (markers, botones, links) no inician pan:
+       así el click llega limpio a su handler. */
+    const target = e.target as HTMLElement
+    if (!pannable || !e.isPrimary || target.closest('button, a') !== null) return
+    drag.current = { id: e.pointerId, px: e.clientX, py: e.clientY, ox: offset.x, oy: offset.y }
     setDragging(true)
     void e.currentTarget.setPointerCapture(e.pointerId)
   }

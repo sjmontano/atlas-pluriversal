@@ -68,8 +68,7 @@ const FAKE_MODALS: Record<string, Modal> = {
         source: 'Fuente de maqueta',
       },
     ],
-    actions: [{ label: 'Cerrar', variant: 'ghost' }],
-    trigger: {
+        trigger: {
       type: 'button',
       icon: 'perfil',
       frame: '1',
@@ -99,8 +98,7 @@ const FAKE_MODALS: Record<string, Modal> = {
         text: 'Párrafo adicional de relleno para observar el comportamiento del scroll en la variante large.',
       },
     ],
-    actions: [{ label: 'Cerrar', variant: 'ghost' }],
-    trigger: {
+        trigger: {
       type: 'button',
       icon: 'mapa-arbol',
       frame: '1',
@@ -129,8 +127,7 @@ const FAKE_MODALS: Record<string, Modal> = {
         items: ['Nombre falso 1', 'Nombre falso 2', 'Nombre falso 3'],
       },
     ],
-    actions: [{ label: 'Cerrar', variant: 'ghost' }],
-    trigger: {
+        trigger: {
       type: 'button',
       icon: 'credits',
       frame: '4',
@@ -163,8 +160,7 @@ const FAKE_MODALS: Record<string, Modal> = {
         ],
       },
     ],
-    actions: [{ label: 'Cerrar', variant: 'ghost' }],
-    trigger: {
+        trigger: {
       type: 'button',
       icon: 'datos',
       frame: '3',
@@ -186,8 +182,7 @@ const FAKE_MODALS: Record<string, Modal> = {
       ph('FOTO 3', '#2f4f38', '#1c3323'),
     ],
     body: [],
-    actions: [{ label: 'Cerrar', variant: 'ghost' }],
-    trigger: {
+        trigger: {
       type: 'button',
       icon: 'gallery',
       frame: '2',
@@ -211,8 +206,7 @@ const FAKE_MODALS: Record<string, Modal> = {
         text: 'Marker falso sobre el escenario de maqueta. Abre el mismo layout large que el nevado-huila real, para refinar tamaño y composición.',
       },
     ],
-    actions: [{ label: 'Cerrar', variant: 'ghost' }],
-    trigger: {
+        trigger: {
       type: 'marker',
       icon: 'marker',
       frame: '1',
@@ -237,8 +231,7 @@ const FAKE_MODALS: Record<string, Modal> = {
         text: 'Segundo marker de maqueta para comparar el mismo modal con distinta imagen hero.',
       },
     ],
-    actions: [{ label: 'Cerrar', variant: 'ghost' }],
-    trigger: {
+        trigger: {
       type: 'marker',
       icon: 'marker',
       frame: '1',

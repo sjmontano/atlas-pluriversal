@@ -22,6 +22,9 @@ export interface LayerBase {
   visibleByDefault?: boolean
   opacity?: number
   order: number
+  /** Si está presente, el click sobre la capa abre este modal del sistema
+   *  (mismo patrón que Poi.modalId). Ej: cuencas Tejidos del Agua. */
+  modalId?: string
   legend?: {
     swatch?: string
     description?: string

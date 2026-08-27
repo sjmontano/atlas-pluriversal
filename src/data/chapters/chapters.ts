@@ -82,3 +82,9 @@ export function getChapterMapIds(chapterId: number): string[] {
 export function getAllMaps(): ChapterMapRef[] {
   return CHAPTERS.flatMap((c) => c.maps)
 }
+
+/** Ruta pública de un mapa: /capitulo/:n/:mapId (null si no existe). */
+export function routeForMap(mapId: string): string | null {
+  const chapter = CHAPTERS.find((c) => c.maps.some((m) => m.mapId === mapId))
+  return chapter !== undefined ? `/capitulo/${chapter.id}/${mapId}` : null
+}

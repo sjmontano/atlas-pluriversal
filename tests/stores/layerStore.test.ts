@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+﻿import { describe, it, expect, beforeEach } from 'vitest'
 import { useLayerStore } from '@stores/layerStore'
 
 function getState() {
@@ -73,19 +73,19 @@ describe('layerStore', () => {
     it('persists visibleLayers to localStorage on change', () => {
       getState().resetAll('map-1')
       getState().toggleLayer('layer-a')
-      const stored = JSON.parse(localStorage.getItem('atlas:layers:map-1')!)
+      const stored = JSON.parse(localStorage.getItem('atlas:layers:v2:map-1')!)
       expect(stored.v).toContain('layer-a')
     })
 
     it('persists opacities to localStorage on change', () => {
       getState().resetAll('map-1')
       getState().setLayerOpacity('layer-a', 0.3)
-      const stored = JSON.parse(localStorage.getItem('atlas:layers:map-1')!)
+      const stored = JSON.parse(localStorage.getItem('atlas:layers:v2:map-1')!)
       expect(stored.o['layer-a']).toBe(0.3)
     })
 
     it('resetAll loads persisted state for the given mapId', () => {
-      localStorage.setItem('atlas:layers:map-1', JSON.stringify({ v: ['layer-a'], o: { 'layer-a': 0.5 } }))
+      localStorage.setItem('atlas:layers:v2:map-1', JSON.stringify({ v: ['layer-a'], o: { 'layer-a': 0.5 } }))
       getState().resetAll('map-1')
       expect(getState().visibleLayers.has('layer-a')).toBe(true)
       expect(getState().opacities['layer-a']).toBe(0.5)
@@ -101,8 +101,21 @@ describe('layerStore', () => {
     it('does not persist expandedGroups', () => {
       getState().resetAll('map-1')
       getState().toggleGroupExpanded('g1')
-      const stored = JSON.parse(localStorage.getItem('atlas:layers:map-1')!)
+      const stored = JSON.parse(localStorage.getItem('atlas:layers:v2:map-1')!)
       expect(stored.eg).toBeUndefined()
+    })
+
+    it('siembra defaultVisible en la primera visita (sin persistencia)', () => {
+      getState().resetAll('fresh-defaults', ['layer-x', 'layer-y'])
+      expect(getState().visibleLayers.has('layer-x')).toBe(true)
+      expect(getState().visibleLayers.has('layer-y')).toBe(true)
+    })
+
+    it('respeta la elección persistida aunque haya defaultVisible', () => {
+      localStorage.setItem('atlas:layers:v2:map-2', JSON.stringify({ v: [], o: {} }))
+      getState().resetAll('map-2', ['layer-x'])
+      expect(getState().visibleLayers.has('layer-x')).toBe(false)
     })
   })
 })
+

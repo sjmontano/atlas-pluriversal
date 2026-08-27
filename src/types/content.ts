@@ -72,4 +72,21 @@ export interface MapContent {
   groups?: LayerGroup[]
   legends?: LegendItem[]
   pois?: Poi[]
+  /** Encuadres navegables (rectángulos clickeables que llevan a otro mapa). */
+  encuadres?: Encuadre[]
+}
+
+/** Encuadre navegable: polígono opcional + etiqueta clickeable que lleva
+ *  a otro mapa del atlas (port data-driven del flujo de v17). */
+export interface Encuadre {
+  id: string
+  name: string
+  /** Mapa destino (navegación URL-first: /capitulo/:n/:mapId). */
+  targetMapId: string
+  /** Posición de la etiqueta [lng, lat]. */
+  labelCoords: [number, number]
+  /** GeoJSON del polígono (archivo estático en /assets/geojson). */
+  url?: string
+  /** Color del polígono/borde. Default: #5577af (como v17). */
+  color?: string
 }

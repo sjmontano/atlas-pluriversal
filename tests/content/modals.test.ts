@@ -76,15 +76,16 @@ describe('Registro de modales (content/modals)', () => {
     }
   })
 
-  it('getModalsByMap devuelve los modales del intro (presentación + 16 POIs)', () => {
+  it('getModalsByMap devuelve los modales del intro (presentaciones + 16 POIs)', () => {
     const intro = getModalsByMap('intro')
     expect(intro.map((m) => m.id)).toEqual(MAP_MODAL_INDEX.intro)
-    expect(intro).toHaveLength(17)
+    expect(intro).toHaveLength(18)
   })
 
   it('listModalsBySection filtra por sección', () => {
     expect(listModalsBySection('legales').length).toBeGreaterThan(0)
-    expect(listModalsBySection('inicio')).toHaveLength(16)
+    expect(listModalsBySection('inicio')).toHaveLength(17)
+    expect(listModalsBySection('capitulo-1')).toHaveLength(32)
     expect(listModalsBySection('nada')).toEqual([])
   })
 })

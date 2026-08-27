@@ -69,7 +69,6 @@ export const CREDITOS_MODAL: Modal = {
       text: 'Contenido bajo licencia CC BY-NC-ND 4.0.',
     },
   ],
-  actions: [{ label: 'Cerrar', variant: 'ghost' }],
   trigger: {
     type: 'button',
     icon: 'credits',

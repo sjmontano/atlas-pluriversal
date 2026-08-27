@@ -10,10 +10,13 @@ export interface LayerStoreState {
   setLayerGroupVisible: (groupId: string, visible: boolean, layerIds: string[]) => void
   setActiveCategories: (categories: string[]) => void
   toggleGroupExpanded: (groupId: string) => void
-  resetAll: (mapId: string) => void
+  /** Reinicia el estado del mapa. `defaultVisible` siembra las capas
+   *  `visibleByDefault` en la PRIMERA visita (sin persistencia previa);
+   *  si ya hay elección del usuario guardada, se respeta. */
+  resetAll: (mapId: string, defaultVisible?: string[]) => void
 }
 
-const STORAGE_PREFIX = 'atlas:layers:'
+const STORAGE_PREFIX = 'atlas:layers:v2:'
 
 let currentMapId: string | null = null
 let unsub: (() => void) | null = null
@@ -87,15 +90,17 @@ export const useLayerStore = create<LayerStoreState>()((set) => ({
       },
     })),
 
-  resetAll: (mapId) => {
+  resetAll: (mapId, defaultVisible = []) => {
     if (unsub) {
       unsub()
       unsub = null
     }
     currentMapId = mapId
+    const storageKey = STORAGE_PREFIX + mapId
+    const hasPersisted = localStorage.getItem(storageKey) !== null
     const persisted = loadPersisted(mapId)
     set({
-      visibleLayers: new Set(persisted.v),
+      visibleLayers: new Set(hasPersisted ? persisted.v : defaultVisible),
       opacities: persisted.o,
       activeCategories: new Set<string>(),
       expandedGroups: {},

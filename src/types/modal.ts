@@ -92,6 +92,9 @@ export interface Modal {
   highlight?: string
   /** Nombre del glyph del header/trigger */
   icon: string
+  /** Imagen de icono propia (p.ej. iconos de cuencas). Sustituye al glyph
+   *  en el badge del header del modal. */
+  iconImage?: string
   /** Imagen hero (URL) — layouts image-text / gallery / inicio */
   image?: string
   /** Cuerpo largo (párrafo) — layout inicio (soporta `\n`) */

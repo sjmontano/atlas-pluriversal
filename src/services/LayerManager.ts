@@ -116,6 +116,36 @@ export function removeLayer(map: maplibregl.Map, layerId: string): void {
   } catch { /* noop */ }
 }
 
+/* ── Click en capa → modal ───────────────────────────────────────────────
+   Los listeners con scope de capa se resuelven en tiempo de evento: se
+   pueden registrar aunque la capa aún no exista (se activan cuando la
+   capa se vuelve visible). Registro deduplicado por mapa. */
+const boundClicks = new WeakMap<maplibregl.Map, Set<string>>()
+
+export function bindLayerClicks(
+  map: maplibregl.Map,
+  layers: Layer[],
+  onModal: (modalId: string) => void,
+): void {
+  let bound = boundClicks.get(map)
+  if (bound === undefined) {
+    bound = new Set()
+    boundClicks.set(map, bound)
+  }
+
+  for (const layer of layers) {
+    if (layer.modalId === undefined || bound.has(layer.id)) continue
+    const sid = sourceId(layer.id)
+    const modalId = layer.modalId
+    map.on('click', sid, (e) => {
+      if (e.features !== undefined && e.features.length > 0) onModal(modalId)
+    })
+    map.on('mouseenter', sid, () => { map.getCanvas().style.cursor = 'pointer' })
+    map.on('mouseleave', sid, () => { map.getCanvas().style.cursor = '' })
+    bound.add(layer.id)
+  }
+}
+
 export function removeAll(map: maplibregl.Map): void {
   const style = map.getStyle()
   if (!style?.layers) return

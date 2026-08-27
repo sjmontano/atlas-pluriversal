@@ -9,6 +9,7 @@
 import { useUIStore } from '@stores/index.ts'
 import type { Modal } from '../../types/modal.ts'
 import { ModalShell } from './ModalShell'
+import { ModalActions } from './ModalActions'
 import { AlertLayout } from './layouts/AlertLayout'
 import { DataSheetLayout } from './layouts/DataSheetLayout'
 import { GalleryLayout } from './layouts/GalleryLayout'
@@ -61,7 +62,10 @@ export function ModalRenderer() {
       bgImage={modal.layout === 'inicio' ? modal.image : undefined}
       dialogStyle={dialogStyle}
       icon={modal.icon}
-      footer={null}
+      iconImage={modal.iconImage}
+      footer={modal.actions !== undefined && modal.actions.length > 0
+        ? <ModalActions actions={modal.actions} onClose={closeModal} />
+        : null}
     >
       {layoutFor(modal)}
     </ModalShell>

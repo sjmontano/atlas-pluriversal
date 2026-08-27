@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+﻿import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   render,
   screen,
@@ -93,7 +93,7 @@ describe('ModalRenderer (motor + uiStore)', () => {
     act(() => {
       useUIStore.getState().openModal(modal)
     })
-    const button = screen.getByRole('button', { name: /Cerrar/i })
+    const button = screen.getByRole('button', { name: 'Cerrar modal' })
     fireEvent.click(button)
     expect(useUIStore.getState().activeModal).toBeNull()
   })
@@ -119,7 +119,7 @@ describe('ModalRenderer (motor + uiStore)', () => {
     const dialog = screen.getByRole('dialog', { name: /Los Farallones/ })
     expect(dialog.querySelector('img[aria-hidden]')).toBeDefined()
     expect(screen.getByText(/Somos altos y rocosos/)).toBeDefined()
-    const close = screen.getByRole('button', { name: /Cerrar/ })
+    const close = screen.getByRole('button', { name: 'Cerrar modal' })
     expect(close.querySelector('img')).toBeDefined()
     fireEvent.click(close)
     expect(useUIStore.getState().activeModal).toBeNull()

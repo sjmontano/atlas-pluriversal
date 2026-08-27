@@ -2,6 +2,7 @@ import type { MapContent } from '../../../types/content'
 import { makeTilesConfig } from '@data/tiles'
 import { LAYERS } from './layers'
 import { GROUPS } from './groups'
+import { POIS } from './pois'
 
 const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
 
@@ -34,4 +35,5 @@ export default {
   tiles: makeTilesConfig('chapter1-mosaicos-del-agua', geo, config.initialBearing, config.zoomMax),
   layers: LAYERS,
   groups: GROUPS,
+  pois: POIS,
 } satisfies MapContent
