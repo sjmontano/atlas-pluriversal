@@ -241,6 +241,24 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
+.btnLink {
+  background: transparent;
+  color: var(--primary-blue, #0599b7);
+  border: none;
+  padding: 8px 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+.btnLink:hover,
+.btnLink:focus-visible {
+  color: var(--dark-green, #046c81);
+  text-decoration-color: var(--dark-green, #046c81);
+}
+
 /* ─── Animación ───────────────────────────────────────────────────── */
 @keyframes modalIn {
   from {

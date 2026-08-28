@@ -24,7 +24,7 @@ import type { MapController } from '@services/MapRenderer'
 import type { Poi } from '../../types/poi.ts'
 import { LayerMenu } from './LayerMenu'
 import { PoiModal } from './PoiModal'
-import { CalibrationPanel } from '@components/calibration/CalibrationPanel.tsx'
+import { CalibrationPanel } from '@components/dev/calibration/CalibrationPanel'
 import { OfflineBanner } from './OfflineBanner'
 import styles from './AtlasMap.module.css'
 
@@ -61,7 +61,7 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
   const hasLayers = layers !== null && layers.length > 0
   const hasLegends = legends !== null && legends.length > 0
   const [activePoi, setActivePoi] = useState<Poi | null>(null)
-  const [rebuildKey, setRebuildKey] = useState(1)
+  const [rebuildKey] = useState(1)
   const [calibrationOpen, setCalibrationOpen] = useState(false)
 
   const handlePoiClick = (poi: Poi) => {
@@ -182,8 +182,6 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
           key={mapId}
           mapId={mapId}
           controllerRef={controllerRef}
-          onRebuild={() => setRebuildKey((k) => k + 1)}
-          onClose={() => setCalibrationOpen(false)}
         />
       )}
 

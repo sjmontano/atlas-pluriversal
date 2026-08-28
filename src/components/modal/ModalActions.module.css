@@ -48,3 +48,20 @@
 .ghost:hover {
   border-color: rgba(242, 238, 231, 0.7);
 }
+
+.link {
+  background: transparent;
+  color: var(--primary-blue, #0599b7);
+  border: none;
+  padding: 8px 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  border-radius: 0;
+}
+.link:hover {
+  color: var(--dark-green, #046c81);
+  text-decoration-color: var(--dark-green, #046c81);
+  background: transparent;
+  filter: none;
+  transform: none;
+}

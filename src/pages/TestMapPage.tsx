@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useRef, useState } from 'react'
 import { getAllMaps } from '@data/chapters/chapters.ts'
 import { AtlasMap } from '@components/map/AtlasMap.tsx'
-import { CalibrationPanel } from '@components/calibration/CalibrationPanel.tsx'
+import { CalibrationPanel } from '@components/dev/calibration/CalibrationPanel'
 import type { MapController } from '@services/MapRenderer'
 import styles from './TestMapPage.module.css'
 
@@ -17,7 +17,7 @@ export function TestMapPage() {
   const nextMap = currentIndex < allMaps.length - 1 ? allMaps[currentIndex + 1] : null
 
   const controllerRef = useRef<MapController | null>(null)
-  const [rebuildKey, setRebuildKey] = useState(0)
+  const [rebuildKey] = useState(0)
 
   if (!currentMap) {
     return (
@@ -46,7 +46,6 @@ export function TestMapPage() {
             key={currentMap.mapId}
             mapId={currentMap.mapId}
             controllerRef={controllerRef}
-            onRebuild={() => setRebuildKey((k) => k + 1)}
           />
         )}
       </div>

@@ -12,6 +12,7 @@ import { ModalShell } from './ModalShell'
 import { ModalActions } from './ModalActions'
 import { AlertLayout } from './layouts/AlertLayout'
 import { DataSheetLayout } from './layouts/DataSheetLayout'
+import { FeatureLayout } from './layouts/FeatureLayout'
 import { GalleryLayout } from './layouts/GalleryLayout'
 import { ImageTextLayout } from './layouts/ImageTextLayout'
 import { InicioLayout } from './layouts/InicioLayout'
@@ -29,6 +30,8 @@ function layoutFor(modal: Modal) {
       return <AlertLayout modal={modal} />
     case 'inicio':
       return <InicioLayout modal={modal} />
+    case 'feature':
+      return <FeatureLayout modal={modal} />
     case 'text':
     default:
       return <TextLayout modal={modal} />
@@ -41,14 +44,15 @@ export function ModalRenderer() {
 
   if (!modal) return null
 
-  const hero = false
+  const isHeroLayout = modal.layout === 'feature'
+  const hasBgImage = modal.layout === 'feature' || modal.layout === 'inicio'
   const dialogStyle = modal.theme?.size
     ? {
-      width: modal.theme.size.width,
-      height: modal.theme.size.height,
-      maxWidth: modal.theme.size.width,
-      maxHeight: modal.theme.size.height,
-    }
+        width: modal.theme.size.width,
+        height: modal.theme.size.height,
+        maxWidth: modal.theme.size.width,
+        maxHeight: modal.theme.size.height,
+      }
     : undefined
 
   return (
@@ -58,12 +62,12 @@ export function ModalRenderer() {
       highlight={modal.highlight}
       variant={modal.variant}
       onClose={closeModal}
-      hero={hero}
-      bgImage={modal.layout === 'inicio' ? modal.image : undefined}
+      hero={isHeroLayout}
+      bgImage={hasBgImage ? modal.image : undefined}
       dialogStyle={dialogStyle}
-      icon={modal.icon}
-      iconImage={modal.iconImage}
-      footer={modal.actions !== undefined && modal.actions.length > 0
+      icon={!isHeroLayout ? modal.icon : undefined}
+      iconImage={!isHeroLayout ? modal.iconImage : undefined}
+      footer={!isHeroLayout && modal.actions !== undefined && modal.actions.length > 0
         ? <ModalActions actions={modal.actions} onClose={closeModal} />
         : null}
     >

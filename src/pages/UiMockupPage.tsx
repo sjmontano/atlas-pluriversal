@@ -251,7 +251,7 @@ interface SidebarItem {
 const SIDEBAR_GROUPS: { title: string; items: SidebarItem[] }[] = [
   {
     title: 'Mapa · presentación',
-    items: [{ id: 'cuenca-cauca', label: 'Presentación', frame: '1' }],
+    items: [{ id: 'presentacion', label: 'Presentación', frame: '1' }],
   },
   {
     title: 'Mapa · herramientas',

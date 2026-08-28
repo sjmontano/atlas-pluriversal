@@ -20,6 +20,7 @@ describe('Registro de modales (content/modals)', () => {
         'datasheet',
         'alert',
         'inicio',
+        'feature',
       ]).toContain(modal.layout)
       expect(modal.title).toBeTruthy()
       expect(modal.trigger.type).toBeTruthy()
@@ -76,16 +77,16 @@ describe('Registro de modales (content/modals)', () => {
     }
   })
 
-  it('getModalsByMap devuelve los modales del intro (presentaciones + 16 POIs)', () => {
+  it('getModalsByMap devuelve los modales del intro (presentación + presentaciones + 16 POIs)', () => {
     const intro = getModalsByMap('intro')
     expect(intro.map((m) => m.id)).toEqual(MAP_MODAL_INDEX.intro)
-    expect(intro).toHaveLength(18)
+    expect(intro).toHaveLength(19)
   })
 
-  it('listModalsBySection filtra por sección', () => {
+it('listModalsBySection filtra por sección', () => {
     expect(listModalsBySection('legales').length).toBeGreaterThan(0)
-    expect(listModalsBySection('inicio')).toHaveLength(17)
-    expect(listModalsBySection('capitulo-1')).toHaveLength(32)
+    expect(listModalsBySection('inicio')).toHaveLength(17) // 16 POIs + CREDITOS_MODAL
+    expect(listModalsBySection('intro')).toHaveLength(3) // presentacion + cuenca-cauca + cap1-atlas-proyecto
     expect(listModalsBySection('nada')).toEqual([])
   })
 })

@@ -13,14 +13,16 @@
  * los motores (components/modal) solo conocen interfaces y no se tocan
  * al agregar contenido. El contenido se agrega AQUÍ sin tocar componentes.
  *
- * Estructura por secciones:
+* Estructura por secciones:
  * - `inicio.ts`  : los 16 POIs de la home (layout `inicio`)
+ * - `presentacion.ts` : modal de bienvenida (layout `feature`)
  * - este archivo : intro, demo y legales (modales estándar)
  */
 
 import type { Modal } from '../../types/modal.ts'
 import { INICIO_MODALS, CREDITOS_MODAL } from './inicio.ts'
 import { CHAPTER1_MODALS, CHAPTER1_MODAL_INDEX } from './chapter-1.ts'
+import { PRESENTACION_MODAL } from './presentacion.tsx'
 
 /* ── MEDIUM · layout text · intro del mapa ───────────────────────────────
    Trigger: botón "Presentación" (frame 1 + glyph presentation). */
@@ -100,6 +102,10 @@ const FICHA_TECNICA: Modal = {
     'Mapa base': 'Cuenca alta del río Cauca',
     Año: '2026',
   },
+  actions: [
+    { label: 'Ver documento completo', variant: 'link', href: 'https://drive.google.com/...' },
+    { label: 'Cerrar', variant: 'ghost', onClick: 'close' },
+  ],
   trigger: {
     type: 'button',
     icon: 'fichatecnica',
@@ -133,8 +139,9 @@ const EN_CONSTRUCCION: Modal = {
   },
 }
 
-/* ── Agregado maestro: inicio + capítulos + estándar ─────────────────── */
+/* ── Agregado maestro: presentacion + inicio + capítulos + estándar ─────────────────── */
 const ALL_MODALS: Modal[] = [
+  PRESENTACION_MODAL,
   ...INICIO_MODALS,
   CREDITOS_MODAL,
   ...CHAPTER1_MODALS,
@@ -153,6 +160,7 @@ export const MODALS: Record<string, Modal> = Object.fromEntries(
    El capítulo 1 indexa presentaciones, fichas y perfil por mapa. */
 export const MAP_MODAL_INDEX: Record<string, string[]> = {
   intro: [
+    'presentacion',
     'cuenca-cauca',
     'cap1-atlas-proyecto',
     ...INICIO_MODALS.map((modal) => modal.id),

@@ -21,6 +21,8 @@ export type ModalLayout =
   | 'alert'
   /** large · modal de inicio (POIs): imagen de fondo 100% + gota + decorador */
   | 'inicio'
+  /** large · modal completo (bienvenida): carrusel + 2 columnas + scroll indicators */
+  | 'feature'
 
 /* ─── Tema (modelo plantilla + configuración, sin Tailwind) ───────────────
    Cada modal fuera del estándar puede sobrescribir los colores del layout
@@ -53,7 +55,7 @@ export type ModalBlock =
 export interface ModalAction {
   label: string
   href?: string
-  variant?: 'primary' | 'ghost'
+  variant?: 'primary' | 'ghost' | 'link'
   onClick?: 'close'
 }
 
@@ -99,7 +101,7 @@ export interface Modal {
   image?: string
   /** Cuerpo largo (párrafo) — layout inicio (soporta `\n`) */
   texto?: string
-  /** Tema (CSS variables) — layout inicio */
+  /** Tema (CSS variables) — layout inicio / feature */
   theme?: ModalTheme
   /** Galería de imágenes (URLs) — layout gallery */
   gallery?: string[]
@@ -108,4 +110,24 @@ export interface Modal {
   /** Tabla de la ficha técnica (layout datasheet) */
   meta?: Record<string, string>
   trigger: ModalTrigger
+
+  /* ─── Campos específicos para layout 'feature' (modal completo/bienvenida) ─── */
+  /** Imágenes para carrusel (id=1 bienvenida) */
+  carouselImages?: { src: string; alt: string; description?: string }[];
+  /** Cuerpo a dos columnas (60/40) — layout feature */
+  twoColumnBody?: {
+    main: React.ReactNode;
+    aside?: React.ReactNode;
+  };
+  /** Imagen con caption — layout feature */
+  imageWithCaption?: {
+    src: string;
+    alt: string;
+    caption?: string;
+    maxWidth?: string;
+  };
+  /** Link "Ver documento completo" (href) — layout feature */
+  fullDocLink?: string;
+  /** Mostrar indicadores de scroll (flecha bounce + fade bottom) */
+  showScrollIndicators?: boolean;
 }
