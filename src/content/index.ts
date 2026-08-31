@@ -1,8 +1,8 @@
-import type { MapContent } from '../types/content'
+import type { MapContent, MapUI, MapUISidebarItem } from '../types/content'
 import { MAP_CALIBRATIONS } from './calibration/map'
 
-const mapModules = import.meta.glob<{ default: MapContent }>('./*/*/index.ts', { eager: true })
-const looseModules = import.meta.glob<{ default: MapContent }>('./*/index.ts', { eager: true })
+const mapModules = import.meta.glob<{ default: MapContent }>('./*/*/map.ts', { eager: true })
+const looseModules = import.meta.glob<{ default: MapContent }>('./*/map.ts', { eager: true })
 
 const CONTENT = new Map<string, MapContent>()
 
@@ -29,5 +29,21 @@ export function getMapContent(mapId: string): MapContent | null {
       ...(calib.viewportMarginH !== undefined ? { viewportMarginH: calib.viewportMarginH } : {}),
       ...(calib.viewportMarginV !== undefined ? { viewportMarginV: calib.viewportMarginV } : {}),
     },
+  }
+}
+
+/* ─── resolveMapUI ──────────────────────────────────────────────────────
+   Resuelve la UI de un mapa con defaults aplicados.
+   Si map.ui no está definido, retorna defaults sensatos. */
+
+const DEFAULT_SIDEBAR: MapUISidebarItem[] = []
+
+export function resolveMapUI(map: MapContent): Required<MapUI> & { sidebar: MapUISidebarItem[] } {
+  return {
+    title: map.ui?.title ?? map.mapId,
+    minimap: map.ui?.minimap ?? 'cuenca',
+    northIndicator: map.ui?.northIndicator ?? true,
+    homeNav: map.ui?.homeNav ?? true,
+    sidebar: map.ui?.sidebar ?? DEFAULT_SIDEBAR,
   }
 }

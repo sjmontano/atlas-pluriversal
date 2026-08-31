@@ -26,6 +26,15 @@ const config = {
 
 export default {
   mapId: 'chapter1-bredunco',
+  ui: {
+    title: 'Bredunco',
+    minimap: 'valle',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap1-presentacion-bredunco' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1A7Jw4LORNUxoopVOMvVyahswDT4-VxS1/view' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/19t24x_n0A_Fe_tgzWX57uP6azJc-PHyo/view' },
+    ],
+  },
   geo,
   images: { base, full, placeholder: ph(base) },
   config,

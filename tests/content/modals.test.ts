@@ -1,9 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   MODALS,
-  MAP_MODAL_INDEX,
   getModalById,
-  getModalsByMap,
   listModalsBySection,
 } from '@content/modals'
 import { POIS } from '@content/inicio/pois'
@@ -15,7 +13,6 @@ describe('Registro de modales (content/modals)', () => {
       expect(['xs', 'small', 'medium', 'large', 'xl', 'full']).toContain(modal.variant)
       expect([
         'text',
-        'image-text',
         'gallery',
         'datasheet',
         'alert',
@@ -25,14 +22,6 @@ describe('Registro de modales (content/modals)', () => {
       expect(modal.title).toBeTruthy()
       expect(modal.trigger.type).toBeTruthy()
       expect(Array.isArray(modal.body)).toBe(true)
-    }
-  })
-
-  it('los modales large (image-text) tienen imagen', () => {
-    for (const modal of Object.values(MODALS)) {
-      if (modal.layout === 'image-text') {
-        expect(modal.image).toBeTruthy()
-      }
     }
   })
 
@@ -69,21 +58,7 @@ describe('Registro de modales (content/modals)', () => {
     expect(getModalById('no-existe')).toBeNull()
   })
 
-  it('MAP_MODAL_INDEX solo referencia modales existentes', () => {
-    for (const ids of Object.values(MAP_MODAL_INDEX)) {
-      for (const id of ids) {
-        expect(MODALS[id]).toBeDefined()
-      }
-    }
-  })
-
-  it('getModalsByMap devuelve los modales del intro (presentación + presentaciones + 16 POIs)', () => {
-    const intro = getModalsByMap('intro')
-    expect(intro.map((m) => m.id)).toEqual(MAP_MODAL_INDEX.intro)
-    expect(intro).toHaveLength(19)
-  })
-
-it('listModalsBySection filtra por sección', () => {
+  it('listModalsBySection filtra por sección', () => {
     expect(listModalsBySection('legales').length).toBeGreaterThan(0)
     expect(listModalsBySection('inicio')).toHaveLength(17) // 16 POIs + CREDITOS_MODAL
     expect(listModalsBySection('intro')).toHaveLength(3) // presentacion + cuenca-cauca + cap1-atlas-proyecto

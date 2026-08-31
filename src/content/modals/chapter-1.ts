@@ -17,8 +17,6 @@
 import type { Modal, ModalAction, ModalBlock } from '../../types/modal.ts'
 import { CAP1_TEXTOS } from './cap1-textos.generated.ts'
 
-const DRIVE = (fileId: string): string => `https://drive.google.com/file/d/${fileId}/view`
-
 /** El cierre siempre lo maneja la X del shell; el footer es solo para links. */
 const DOC_ACTION = (link: string): ModalAction[] =>
   [{ label: 'Ver documento completo', href: link, variant: 'primary' }]
@@ -124,58 +122,6 @@ const PERFIL_CUENCA: Modal = {
   },
 }
 
-/* ── Fichas técnicas y descargas (links Drive por mapa, como v17) ────────
-   Carriers con `trigger.href`: el ToolRail los convierte en acción `link`
-   y nunca abre el modal. El body mínimo existe por si se abre por id. */
-
-interface DriveLink {
-  mapKey: string
-  ficha: string
-  descarga: string
-}
-
-const DRIVE_LINKS: DriveLink[] = [
-  { mapKey: 'bredunco', ficha: '1A7Jw4LORNUxoopVOMvVyahswDT4-VxS1', descarga: '19t24x_n0A_Fe_tgzWX57uP6azJc-PHyo' },
-  { mapKey: 'formas-paisaje', ficha: '1lPJsUwLxV2TTlGwkf_F1nEPkroixZxh3', descarga: '1gIOicCrLnLeC3aoxVCsHSjPZdGmg4N6d' },
-  { mapKey: 'ecosistemas', ficha: '13Fd5C8St_BArPKEgTQC8ZefT0gI_LXpE', descarga: '13mmmAcE0odjgSLI2-u00DtReF13ZFy5p' },
-  { mapKey: 'mosaicos-del-agua', ficha: '1nvHvHBqucWGGzJEXpALQnVO-qmIRNCLO', descarga: '1FV4jcrdxeRRdOmRuYUlaozv0t4Vq1Ocd' },
-  { mapKey: 'un-rio-cauca', ficha: '17adqPeKCjtrKwjv0pHMZVat6UgEUnogH', descarga: '1FeTqSUT-m1D69gdRod8zZuEm6LKIgI3h' },
-]
-
-function linkCarrier(
-  mapKey: string,
-  kind: 'ficha' | 'descargar',
-  label: string,
-  icon: string,
-  frame: string,
-  fileId: string,
-): Modal {
-  const href = DRIVE(fileId)
-  return {
-    id: `cap1-${kind}-${mapKey}`,
-    section: 'capitulo-1',
-    variant: 'small',
-    layout: 'alert',
-    title: label,
-    highlight: 'Capítulo I',
-    icon,
-    body: [
-      {
-        type: 'paragraph',
-        id: 'ext',
-        text: 'Este contenido se abre en Google Drive en una pestaña nueva.',
-      },
-    ],
-    actions: [{ label: 'Abrir', href, variant: 'primary' }],
-    trigger: { type: 'button', icon, frame, label, href, mapId: `chapter1-${mapKey}` },
-  }
-}
-
-const LINK_CARRIERS: Modal[] = DRIVE_LINKS.flatMap((d) => [
-  linkCarrier(d.mapKey, 'ficha', 'Ficha técnica', 'fichatecnica', '3', d.ficha),
-  linkCarrier(d.mapKey, 'descargar', 'Descargar', 'download', '3', d.descarga),
-])
-
 /* ── Cuencas Tejidos del Agua (ids 8–18, click en capa del mosaico) ───── */
 
 interface CuencaDef {
@@ -248,36 +194,8 @@ export const CHAPTER1_MODALS: Modal[] = [
   ...PRESENTACIONES,
   ATLAS_PROYECTO,
   PERFIL_CUENCA,
-  ...LINK_CARRIERS,
   ...CUENCAS,
   ...VOZ_RIO,
 ]
 
-export const CHAPTER1_MODAL_INDEX: Record<string, string[]> = {
-  'chapter1-encuadres': ['cap1-presentacion-encuadres', 'cap1-perfil-cuenca'],
-  'chapter1-bredunco': [
-    'cap1-presentacion-bredunco',
-    'cap1-ficha-bredunco',
-    'cap1-descargar-bredunco',
-  ],
-  'chapter1-formas-paisaje': [
-    'cap1-presentacion-formas-paisaje',
-    'cap1-ficha-formas-paisaje',
-    'cap1-descargar-formas-paisaje',
-  ],
-  'chapter1-ecosistemas': [
-    'cap1-presentacion-ecosistemas',
-    'cap1-ficha-ecosistemas',
-    'cap1-descargar-ecosistemas',
-  ],
-  'chapter1-mosaicos-del-agua': [
-    'cap1-presentacion-mosaicos-del-agua',
-    'cap1-ficha-mosaicos-del-agua',
-    'cap1-descargar-mosaicos-del-agua',
-  ],
-  'chapter1-un-rio-cauca': [
-    'cap1-presentacion-un-rio-cauca',
-    'cap1-ficha-un-rio-cauca',
-    'cap1-descargar-un-rio-cauca',
-  ],
-}
+

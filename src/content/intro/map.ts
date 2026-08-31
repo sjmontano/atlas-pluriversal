@@ -24,6 +24,15 @@ const config = {
 
 export default {
   mapId: 'intro',
+  ui: {
+    title: 'Iniciamos nuestro recorrido',
+    minimap: 'cuenca',
+    sidebar: [
+      { id: 'intro-presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cuenca-cauca' },
+      { id: 'intro-recursos', type: 'link', icon: 'gallery', label: 'Recursos', frame: '2', href: 'https://drive.google.com/file/d/1AEAngJNFZ7GfjTYXwGPhhS2bbJGz9XCq/view?usp=sharing' },
+      { id: 'intro-tejidos', type: 'modal', icon: 'credits', label: 'Tejidos para el atlas', frame: '4', target: 'en-construccion' },
+    ],
+  },
   geo,
   images: { base, full, placeholder: ph(base) },
   config,

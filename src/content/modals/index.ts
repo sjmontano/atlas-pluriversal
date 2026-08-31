@@ -6,14 +6,13 @@
  * registro tipado: id → Modal (forma tipada en src/types/modal.ts).
  *
  * - `MODALS`          : id → Modal
- * - `MAP_MODAL_INDEX` : mapa → ids de modales indexados a ese mapa
  * - Los triggers abren el modal vía `uiStore.openModal(modal)`.
  *
  * ⚠️ Convención del proyecto: los DATOS viven en `content/` (este módulo),
  * los motores (components/modal) solo conocen interfaces y no se tocan
  * al agregar contenido. El contenido se agrega AQUÍ sin tocar componentes.
  *
-* Estructura por secciones:
+ * Estructura por secciones:
  * - `inicio.ts`  : los 16 POIs de la home (layout `inicio`)
  * - `presentacion.ts` : modal de bienvenida (layout `feature`)
  * - este archivo : intro, demo y legales (modales estándar)
@@ -21,7 +20,7 @@
 
 import type { Modal } from '../../types/modal.ts'
 import { INICIO_MODALS, CREDITOS_MODAL } from './inicio.ts'
-import { CHAPTER1_MODALS, CHAPTER1_MODAL_INDEX } from './chapter-1.ts'
+import { CHAPTER1_MODALS } from './chapter-1.ts'
 import { PRESENTACION_MODAL } from './presentacion.tsx'
 
 /* ── MEDIUM · layout text · intro del mapa ───────────────────────────────
@@ -155,29 +154,9 @@ export const MODALS: Record<string, Modal> = Object.fromEntries(
   ALL_MODALS.map((modal) => [modal.id, modal]),
 )
 
-/* ── Índice mapa → modales ────────────────────────────────────────────────
-   El intro indexa la presentación + los 16 POIs de la home (layout `inicio`).
-   El capítulo 1 indexa presentaciones, fichas y perfil por mapa. */
-export const MAP_MODAL_INDEX: Record<string, string[]> = {
-  intro: [
-    'presentacion',
-    'cuenca-cauca',
-    'cap1-atlas-proyecto',
-    ...INICIO_MODALS.map((modal) => modal.id),
-  ],
-  herramientas: ['ficha-tecnica', 'en-construccion'],
-  demo: ['galeria-ejemplo'],
-  ...CHAPTER1_MODAL_INDEX,
-}
-
 /* ─── Helpers ──────────────────────────────────────────────────────────── */
 
 export const getModalById = (id: string): Modal | null => MODALS[id] ?? null
-
-export const getModalsByMap = (mapId: string): Modal[] =>
-  (MAP_MODAL_INDEX[mapId] ?? [])
-    .map((id) => MODALS[id])
-    .filter((m): m is Modal => m !== undefined)
 
 export const listModalsBySection = (section: string): Modal[] =>
   Object.values(MODALS).filter((m) => m.section === section)

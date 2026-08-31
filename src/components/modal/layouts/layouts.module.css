@@ -1,7 +1,5 @@
 /* LAYOUTS DEL MODAL — variantes de presentación del contenido */
 
-/* ── image-text (large): hero + texto en columnas (1 col en móvil) ─────── */
-
 /* 🏔️ InicioLayout — contenido superpuesto sobre el .dialogBg de ModalShell */
 .inicio {
   width: 67%;
@@ -12,6 +10,8 @@
 .alert {
   width: 85%;
   max-width: 100%;
+  text-align: center;
+  padding: 24px 8px 12px;
 }
 
 /* 🎞️ GalleryLayout */
@@ -32,12 +32,6 @@
   max-width: 70%;
 }
 
-/* 🖼️ ImageTextLayout */
-.imageText {
-  width: 100%;
-  max-width: 80%;
-}
-
 /* Texto con scrim sutil para asegurar legibilidad sobre la imagen de fondo */
 .inicioTexto {
   position: relative;
@@ -53,28 +47,6 @@
       rgba(255, 255, 255, 0) 100%);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-}
-
-.imageText {
-  display: grid;
-  grid-template-columns: 1fr 1.25fr;
-  gap: clamp(14px, 2.5vw, 28px);
-  align-items: start;
-}
-
-.media {
-  width: 100%;
-  border-radius: 10px;
-  overflow: hidden;
-  background: rgba(3, 9, 30, 0.85);
-  aspect-ratio: 4 / 3;
-}
-
-.img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
 }
 
 /* ── gallery (medium): carrusel + miniaturas ───────────────────────────── */
@@ -181,12 +153,7 @@
   width: 38%;
 }
 
-/* ── alert (small): aviso centrado ─────────────────────────────────────── */
-.alert {
-  text-align: center;
-  padding: 24px 8px 12px;
-}
-
+/* ── alert (small): icono centrado ─────────────────────────────────────── */
 .alertIcon {
   font-size: 2.6rem;
   margin-bottom: 14px;
@@ -202,10 +169,6 @@
 
 /* ── Responsive ────────────────────────────────────────────────────────── */
 @media (max-width: 720px) {
-  .imageText {
-    grid-template-columns: 1fr;
-  }
-
   .inicio {
     width: 90%;
   }

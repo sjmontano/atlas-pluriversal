@@ -1,9 +1,9 @@
 /**
  * 🗺️ CHAPTER PAGE — Visor público de un mapa dentro del shell
  * ============================================================
- * Ruta `/capitulo/:chapterId/:mapId`. Deriva TODO el chrome de los
- * registros (CHAPTERS + MAP_MODAL_INDEX): título, minimapa, rail y
- * tabs. Sincroniza params ↔ stores (deep-linkable, atrás/adelante).
+ * Ruta `/capitulo/:chapterId/:mapId`. Lee la config UI desde
+ * `map.ui` (map.ts) con fallback a CHAPTERS. Sincroniza
+ * params ↔ stores (deep-linkable, atrás/adelante).
  *
  * `ChapterEntry` resuelve `/capitulo/:n` → primer mapa del capítulo.
  */
@@ -11,11 +11,9 @@
 import { useEffect, useMemo } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { AtlasMap } from '@components/map/AtlasMap.tsx'
-import {
-  buildToolRailItems,
-} from '@components/shell/toolRailItems.ts'
+import { buildRailFromSidebar } from '@components/shell/toolRailItems.ts'
 import { ShellLayout } from '@components/shell/ShellLayout'
-import type { MiniMapKey } from '../types/chapter'
+import { getMapContent, resolveMapUI } from '@content'
 import { getChapter } from '@data/chapters/chapters.ts'
 import { useChapterStore } from '@stores/chapterStore'
 import { useMapStore } from '@stores/mapStore'
@@ -46,9 +44,19 @@ export function ChapterPage() {
     }
   }, [chapter, mapRef, mapId])
 
-  const railItems = useMemo(
-    () => (mapId !== undefined ? buildToolRailItems(mapId) : []),
+  /* Resolver UI desde map.ts (con fallback a defaults) */
+  const mapContent = useMemo(
+    () => (mapId !== undefined ? getMapContent(mapId) : null),
     [mapId],
+  )
+  const ui = useMemo(
+    () => (mapContent !== null ? resolveMapUI(mapContent) : null),
+    [mapContent],
+  )
+
+  const railItems = useMemo(
+    () => (ui !== null ? buildRailFromSidebar(ui.sidebar) : []),
+    [ui],
   )
 
   if (chapter === null || mapRef === undefined) {
@@ -62,14 +70,15 @@ export function ChapterPage() {
 
   const isFirstMap = chapter.maps[0]?.mapId === mapRef.mapId
   const backTo = isFirstMap ? '/' : `/capitulo/${chapter.id}`
-  const minimap: MiniMapKey = mapRef.minimap ?? 'cuenca'
 
   return (
     <ShellLayout
-      title={mapRef.title}
+      title={ui?.title ?? mapRef.title}
       backTo={backTo}
       railItems={railItems}
-      minimap={minimap}
+      minimap={ui?.minimap ?? mapRef.minimap ?? 'cuenca'}
+      showNorth={ui?.northIndicator ?? true}
+      showHome={ui?.homeNav ?? true}
     >
       <AtlasMap key={mapRef.mapId} mapId={mapRef.mapId} />
     </ShellLayout>

@@ -2,7 +2,7 @@
  * 🚀 MODAL RENDERER — Motor del sistema de modales
  * ================================================
  * Conecta `uiStore.activeModal` con la shell y los layouts.
- * Registry de layouts: image-text, gallery, datasheet, text, alert.
+ * Registry de layouts: gallery, datasheet, text, alert.
  * Los datos vienen de src/content/modals/ (vía openModal(getModalById(...))).
  */
 
@@ -14,14 +14,11 @@ import { AlertLayout } from './layouts/AlertLayout'
 import { DataSheetLayout } from './layouts/DataSheetLayout'
 import { FeatureLayout } from './layouts/FeatureLayout'
 import { GalleryLayout } from './layouts/GalleryLayout'
-import { ImageTextLayout } from './layouts/ImageTextLayout'
 import { InicioLayout } from './layouts/InicioLayout'
 import { TextLayout } from './layouts/TextLayout'
 
 function layoutFor(modal: Modal) {
   switch (modal.layout) {
-    case 'image-text':
-      return <ImageTextLayout modal={modal} />
     case 'gallery':
       return <GalleryLayout modal={modal} />
     case 'datasheet':

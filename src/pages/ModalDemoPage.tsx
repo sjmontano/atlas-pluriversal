@@ -1,7 +1,6 @@
 import { MODALS } from '@content/modals'
 import { useUIStore } from '@stores/index.ts'
 import { IconButton } from '@components/modal/IconButton'
-import { getModalsByMap } from '@content/modals'
 import styles from './ModalDemoPage.module.css'
 
 export function ModalDemoPage() {
@@ -22,7 +21,7 @@ export function ModalDemoPage() {
       <h1 className={styles.title}>Sistema de Modales — Maqueta</h1>
       <p className={styles.subtitle}>
         3 tamaños responsive (small / medium / large) · 5 layouts (text,
-        image-text, gallery, datasheet, alert). Abre los modales desde aquí o
+        gallery, datasheet, alert, feature). Abre los modales desde aquí o
         desde los triggers sobre el mapa.
       </p>
 
@@ -50,28 +49,6 @@ export function ModalDemoPage() {
           </div>
         </section>
       ))}
-
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Índice mapa → modales</h2>
-        <div className={styles.indexList}>
-          {Object.entries(getModalsByMap('intro')).length > 0 && (
-            <div className={styles.indexBlock}>
-              <span className={styles.indexKey}>intro</span>
-              <div className={styles.row}>
-                {getModalsByMap('intro').map((m) => (
-                  <IconButton
-                    key={m.id}
-                    icon={m.icon}
-                    label={m.title}
-                    frame={m.trigger.frame}
-                    onClick={() => openModal(m)}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
     </div>
   )
 }

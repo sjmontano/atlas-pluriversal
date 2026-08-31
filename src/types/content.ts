@@ -1,4 +1,5 @@
 import type { PGWData } from '@services/BoundsCalculator'
+import type { MiniMapKey } from './chapter'
 import type { Layer, LayerGroup, LegendItem } from './layer'
 import type { Poi } from './poi'
 
@@ -62,8 +63,46 @@ export interface MapTilesConfig {
   tilePixelSizeByProfile?: Partial<Record<TileDeliveryProfile, Record<number, number>>>
 }
 
+/* ─── UI config por mapa ─────────────────────────────────────────────── */
+
+export interface MapUISidebarItem {
+  /** ID único del item. */
+  id: string
+  /** Tipo de acción. */
+  type: 'modal' | 'link' | 'goto'
+  /** Nombre del glyph (components/modal/Glyph.tsx). */
+  icon: string
+  /** Label del botón (aparece en hover). */
+  label: string
+  /** Frame visual (1-4). Default: '1'. */
+  frame?: string
+  /** Para type='modal': ID del modal en el registro global. */
+  target?: string
+  /** Para type='link': URL externa. */
+  href?: string
+  /** Para type='goto': ruta interna. */
+  to?: string
+  /** Habilitar/deshabilitar item. Default: true. */
+  enabled?: boolean
+}
+
+export interface MapUI {
+  /** Título del mapa (aparece en SectionHeader). */
+  title: string
+  /** Variante de minimapa. Default: 'cuenca'. Si se omite, no se muestra. */
+  minimap?: MiniMapKey
+  /** Mostrar indicador de norte. Default: true. */
+  northIndicator?: boolean
+  /** Mostrar botón HomeNav. Default: true. */
+  homeNav?: boolean
+  /** Botones del sidebar (ToolRail). Si se omite, sidebar vacío. */
+  sidebar?: MapUISidebarItem[]
+}
+
 export interface MapContent {
   mapId: string
+  /** Configuración UI del mapa (título, sidebar, minimapa, etc.). */
+  ui?: MapUI
   geo: MapGeoEntry
   images: MapImageUrls
   config: MapConfig

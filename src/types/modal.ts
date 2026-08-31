@@ -9,8 +9,6 @@
 export type ModalVariant = 'xs' | 'small' | 'medium' | 'large' | 'xl' | 'full'
 
 export type ModalLayout =
-  /** large · hero imagen + bloques de texto */
-  | 'image-text'
   /** medium · carrusel de imágenes con miniaturas */
   | 'gallery'
   /** small · ficha técnica (tabla de `meta`) */
@@ -97,7 +95,7 @@ export interface Modal {
   /** Imagen de icono propia (p.ej. iconos de cuencas). Sustituye al glyph
    *  en el badge del header del modal. */
   iconImage?: string
-  /** Imagen hero (URL) — layouts image-text / gallery / inicio */
+  /** Imagen hero (URL) — layouts gallery / inicio / feature */
   image?: string
   /** Cuerpo largo (párrafo) — layout inicio (soporta `\n`) */
   texto?: string
