@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { ModalRenderer } from '@components/modal/ModalRenderer'
+import { ModalRenderer } from '@components/modal/shell/ModalRenderer'
 
 const DevMenu = lazy(() =>
   import('@pages/DevMenu.tsx').then((m) => ({ default: m.DevMenu })),

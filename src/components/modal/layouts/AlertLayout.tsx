@@ -3,8 +3,8 @@
  */
 
 import type { Modal } from '../../../types/modal.ts'
-import { Glyph } from '../Glyph'
-import { BlockRenderer } from '../blocks/BlockRenderer'
+import { Glyph } from '../primitives/Glyph'
+import { BlockRenderer } from './BlockRenderer'
 import styles from './layouts.module.css'
 
 export function AlertLayout({ modal }: { modal: Modal }) {

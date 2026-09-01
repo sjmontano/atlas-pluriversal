@@ -1,6 +1,6 @@
 import { MODALS } from '@content/modals'
 import { useModalStore } from '@stores/modalStore'
-import { IconButton } from '@components/modal/IconButton'
+import { IconButton } from '@components/modal/primitives/IconButton'
 import styles from './ModalDemoPage.module.css'
 
 export function ModalDemoPage() {

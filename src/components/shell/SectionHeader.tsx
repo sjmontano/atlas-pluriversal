@@ -6,7 +6,7 @@
  */
 
 import { Link } from 'react-router-dom'
-import { Glyph } from '../modal/Glyph'
+import { Glyph } from '../modal/primitives/Glyph'
 import { SHELL_ASSETS } from './assets'
 import styles from './SectionHeader.module.css'
 

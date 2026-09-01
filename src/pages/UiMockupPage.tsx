@@ -13,7 +13,7 @@
 
 import { getModalById } from '@content/modals'
 import { useModalStore } from '@stores/modalStore'
-import { IconButton } from '@components/modal/IconButton'
+import { IconButton } from '@components/modal/primitives/IconButton'
 import type { Modal } from '../types/modal'
 import styles from './UiMockupPage.module.css'
 

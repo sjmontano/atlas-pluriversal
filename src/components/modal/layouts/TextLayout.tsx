@@ -3,7 +3,7 @@
  */
 
 import type { Modal } from '../../../types/modal.ts'
-import { BlockRenderer } from '../blocks/BlockRenderer'
+import { BlockRenderer } from './BlockRenderer'
 import styles from './layouts.module.css'
 
 export function TextLayout({ modal }: { modal: Modal }) {

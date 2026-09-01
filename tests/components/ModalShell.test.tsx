@@ -6,8 +6,8 @@ import {
   cleanup,
   act,
 } from '@testing-library/react'
-import { ModalShell } from '@components/modal/ModalShell'
-import { ModalRenderer } from '@components/modal/ModalRenderer'
+import { ModalShell } from '@components/modal/shell/ModalShell'
+import { ModalRenderer } from '@components/modal/shell/ModalRenderer'
 import { useModalStore } from '@stores/modalStore'
 import { getModalById } from '@content/modals'
 import type { Modal } from '@types/modal.ts'

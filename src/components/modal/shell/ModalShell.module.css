@@ -215,18 +215,36 @@
 }
 
 /* ─── Cuerpo del Modal (Alineado con el Título/Decorador) ──────────── */
-.body {
+.bodyOuter {
   flex: 1;
   min-height: 0;
   position: relative;
   /* Encima de .dialogBg (z-index 0) */
   z-index: 1;
+  overflow: hidden;
+}
+
+.bodyScrollbar {
+  position: absolute;
+  right: 4px;
+  top: 0;
+  bottom: 0;
+}
+
+.bodyInner {
+  height: 100%;
   overflow-y: auto;
+  scrollbar-width: none;
+  position: relative;
   padding-top: clamp(10px, 1.5vh, 16px);
   padding-bottom: var(--modal-padding);
-  /* padding-right: var(--modal-padding); */
   padding-left: var(--content-left-indent);
+  padding-right: 48px;
   max-width: 100%;
+}
+
+.bodyInner::-webkit-scrollbar {
+  display: none;
 }
 
 /* ─── Pie de Acciones ─────────────────────────────────────────────── */

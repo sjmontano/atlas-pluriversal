@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { getModalById } from '@content/modals'
 import { useModalStore } from '@stores/modalStore'
 import { SHELL_ASSETS } from './assets'
-import { IconButton } from '../modal/IconButton'
+import { IconButton } from '../modal/primitives/IconButton'
 import styles from './ToolRail.module.css'
 
 export type RailAction =

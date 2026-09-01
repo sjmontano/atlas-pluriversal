@@ -7,15 +7,15 @@
  */
 
 import { useModalStore } from '@stores/modalStore'
-import type { Modal } from '../../types/modal.ts'
+import type { Modal } from '../../../types/modal.ts'
 import { ModalShell } from './ModalShell'
 import { ModalActions } from './ModalActions'
-import { AlertLayout } from './layouts/AlertLayout'
-import { DataSheetLayout } from './layouts/DataSheetLayout'
-import { FeatureLayout } from './layouts/FeatureLayout'
-import { GalleryLayout } from './layouts/GalleryLayout'
-import { InicioLayout } from './layouts/InicioLayout'
-import { TextLayout } from './layouts/TextLayout'
+import { AlertLayout } from '../layouts/AlertLayout'
+import { DataSheetLayout } from '../layouts/DataSheetLayout'
+import { FeatureLayout } from '../layouts/FeatureLayout'
+import { GalleryLayout } from '../layouts/GalleryLayout'
+import { InicioLayout } from '../layouts/InicioLayout'
+import { TextLayout } from '../layouts/TextLayout'
 
 function layoutFor(modal: Modal) {
   switch (modal.layout) {

@@ -11,7 +11,7 @@ import { CHAPTERS } from '@data/chapters/chapters.ts'
 import { useChapterStore } from '@stores/chapterStore'
 import { SHELL_ASSETS } from './assets'
 import type { Chapter } from '../../types/chapter.ts'
-import { Glyph } from '../modal/Glyph'
+import { Glyph } from '../modal/primitives/Glyph'
 import styles from './ChapterTabs.module.css'
 
 /** Quita el prefijo "I. " del título del registro para el descriptor. */

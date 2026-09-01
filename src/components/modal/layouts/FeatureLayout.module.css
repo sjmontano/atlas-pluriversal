@@ -159,34 +159,30 @@
   overflow: hidden;
 }
 
+.featureScrollbar {
+  position: absolute;
+  right: 4px;
+  top: 0;
+  bottom: 0;
+}
+
 .content {
   position: absolute;
   top: clamp(120px, 18vh, 160px);
   left: clamp(24px, 4vw, 48px);
-  right: clamp(24px, 4vw, 48px);
+  right: clamp(40px, 5vw, 64px);
   bottom: clamp(20px, 3vh, 40px);
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: none;
   display: flex;
   flex-direction: column;
   gap: clamp(20px, 2.5vh, 32px);
   padding-bottom: 40px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--primary-blue, #0599b7) var(--scrollbar-track, #e0f7fa);
 }
 
 .content::-webkit-scrollbar {
-  width: 8px;
-  background: var(--scrollbar-track, #e0f7fa);
-}
-
-.content::-webkit-scrollbar-thumb {
-  background: var(--primary-blue, #0599b7);
-  border-radius: 4px;
-}
-
-.content::-webkit-scrollbar-thumb:hover {
-  background: var(--dark-green, #046c81);
+  display: none;
 }
 
 /* ─── Carrusel Wrapper ───────────────────────────────────────────── */
@@ -258,7 +254,7 @@
   .content {
     top: clamp(100px, 16vh, 130px);
     left: 16px;
-    right: 16px;
+    right: 36px;
     gap: 16px;
   }
 }

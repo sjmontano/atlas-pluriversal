@@ -7,8 +7,8 @@
  * - Semántico: <aside> para nota pie
  */
 
-import type { ModalBlock } from '../../types/modal.ts'
-import { BlockRenderer } from './blocks/BlockRenderer'
+import type { ModalBlock } from '../../../types/modal.ts'
+import { BlockRenderer } from '../layouts/BlockRenderer'
 import styles from './TwoColumnBody.module.css'
 
 export interface TwoColumnBodyProps {

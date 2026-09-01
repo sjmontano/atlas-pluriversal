@@ -7,6 +7,8 @@
   --text-secondary: #767575ea;
   --modal-bg: #fffeee;
   --scrollbar-track: #e0f7fa;
+  --scrollbar-width: 8px;
+  --scrollbar-right: 12px;
   --fondo-oscuro: #03091e;
 
   --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.12);

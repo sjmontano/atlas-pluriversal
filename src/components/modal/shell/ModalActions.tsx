@@ -5,7 +5,7 @@
  * sin `href` (u `onClick:'close'`) cierra el modal.
  */
 
-import type { ModalAction } from '../../types/modal.ts'
+import type { ModalAction } from '../../../types/modal.ts'
 import styles from './ModalActions.module.css'
 
 export interface ModalActionsProps {

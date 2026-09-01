@@ -19,16 +19,17 @@
  * - fullDocLink: string
  */
 
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import type { CSSProperties } from 'react';
 import { useModalStore } from '../../../stores/modalStore.ts';
 import type { Modal } from '../../../types/modal.ts';
-import { Carousel } from '../Carousel';
-import { ScrollIndicators } from '../ScrollIndicators';
-import { TwoColumnBody } from '../TwoColumnBody';
-import { ImageWithCaption } from '../ImageWithCaption';
-import { FullDocLink } from '../FullDocLink';
-import { Glyph } from '../Glyph';
+import { Carousel } from '../features/Carousel';
+import { ScrollIndicators } from '../shell/ScrollIndicators';
+import { CustomScrollbar } from '../shell/CustomScrollbar';
+import { TwoColumnBody } from '../features/TwoColumnBody';
+import { ImageWithCaption } from '../features/ImageWithCaption';
+import { FullDocLink } from '../features/FullDocLink';
+import { Glyph } from '../primitives/Glyph';
 import styles from './FeatureLayout.module.css';
 
 const DECORATOR_URL = '/assets/modal/feature/linea.svg';
@@ -36,9 +37,35 @@ const SALIR_URL = '/assets/modal/feature/salir.svg';
 const ICON_BG_URL = '/assets/modal/feature/fondoIcon1.svg';
 
 export function FeatureLayout({ modal }: { modal: Modal }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const closeModal = useModalStore((s) => s.closeModal);
+
+  const syncScrollbar = useCallback(() => {
+    const el = contentRef.current
+    if (!el) return
+    const track = el.parentElement?.querySelector<HTMLElement>('[role="scrollbar"]')
+    if (!track) return
+    const thumb = track.querySelector<HTMLElement>(':scope > div')
+    if (!thumb) return
+
+    const { scrollHeight, clientHeight, scrollTop } = el
+    if (scrollHeight <= clientHeight) {
+      thumb.style.height = '0px'
+      return
+    }
+
+    const ratio = clientHeight / scrollHeight
+    const trackH = track.clientHeight
+    const thumbH = Math.max(24, ratio * trackH)
+    const maxScroll = scrollHeight - clientHeight
+    const maxTop = trackH - thumbH
+    const top = maxScroll > 0 ? (scrollTop / maxScroll) * maxTop : 0
+
+    thumb.style.height = `${thumbH}px`
+    thumb.style.transform = `translateY(${top}px)`
+    thumb.style.opacity = '1'
+  }, [])
 
   return (
     <div className={styles.feature} style={modal.theme as CSSProperties}>
@@ -89,8 +116,16 @@ export function FeatureLayout({ modal }: { modal: Modal }) {
       </header>
 
       {/* Contenido scrollable */}
-      <div className={styles.scrollWrapper} ref={scrollRef} onScroll={() => {}}>
-        <div className={styles.content}>
+      <div className={styles.scrollWrapper}>
+        <div
+          ref={contentRef}
+          className={styles.content}
+          onScroll={syncScrollbar}
+        >
+          <CustomScrollbar
+            scrollRef={contentRef}
+            className={styles.featureScrollbar}
+          />
           {/* Carrusel (solo para modal bienvenida / id específico) */}
           {modal.carouselImages && modal.carouselImages.length > 0 && (
             <div className={styles.carouselWrapper}>
@@ -141,7 +176,7 @@ export function FeatureLayout({ modal }: { modal: Modal }) {
 
         {/* Scroll indicators (flecha bounce + fade bottom) */}
         <ScrollIndicators
-          scrollRef={scrollRef}
+          scrollRef={contentRef}
           showArrow={true}
           showFade={true}
         />
