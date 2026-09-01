@@ -6,7 +6,8 @@ import { usePrefetchAdjacent } from '@hooks/usePrefetchAdjacent'
 import { useTilePrefetch } from '@hooks/useTilePrefetch'
 import { useNavigate } from 'react-router-dom'
 import { useMapStore } from '@stores/mapStore'
-import { useUIStore } from '@stores/uiStore'
+import { useModalStore } from '@stores/modalStore'
+import { useMapUIStore } from '@stores/mapUIStore'
 import { useConnectionStore } from '@stores/connectionStore'
 import { useLayerStore } from '@stores/layerStore'
 import { addBasemap, removeBasemap, setImageOpacity } from '@services/BasemapManager'
@@ -45,10 +46,10 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
   const isSlow = useConnectionStore((s) => s.isSlow)
   const initConnection = useConnectionStore((s) => s.init)
 
-  const basemapVisible = useUIStore((s) => s.basemapVisible)
-  const basemapStyle = useUIStore((s) => s.basemapStyle)
-  const imageOpacity = useUIStore((s) => s.imageOpacity)
-  const tilesVisible = useUIStore((s) => s.tilesVisible)
+  const basemapVisible = useMapUIStore((s) => s.basemapVisible)
+  const basemapStyle = useMapUIStore((s) => s.basemapStyle)
+  const imageOpacity = useMapUIStore((s) => s.imageOpacity)
+  const tilesVisible = useMapUIStore((s) => s.tilesVisible)
 
   const { visibleLayers, opacities } = useLayerStore()
 
@@ -68,7 +69,7 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
     if (poi.modalId) {
       const modal = getModalById(poi.modalId)
       if (modal) {
-        useUIStore.getState().openModal(modal)
+        useModalStore.getState().openModal(modal)
         return
       }
     }
@@ -144,7 +145,7 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
     if (!map || !mapBuilt || !layers) return
     bindLayerClicks(map, layers, (modalId) => {
       const modal = getModalById(modalId)
-      if (modal) useUIStore.getState().openModal(modal)
+      if (modal) useModalStore.getState().openModal(modal)
     })
   }, [mapRef, mapBuilt, layers])
 

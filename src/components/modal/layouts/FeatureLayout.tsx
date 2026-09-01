@@ -20,7 +20,8 @@
  */
 
 import { useRef } from 'react';
-import { useUIStore } from '../../../stores/index.ts';
+import type { CSSProperties } from 'react';
+import { useModalStore } from '../../../stores/modalStore.ts';
 import type { Modal } from '../../../types/modal.ts';
 import { Carousel } from '../Carousel';
 import { ScrollIndicators } from '../ScrollIndicators';
@@ -34,30 +35,13 @@ const DECORATOR_URL = '/assets/modal/feature/linea.svg';
 const SALIR_URL = '/assets/modal/feature/salir.svg';
 const ICON_BG_URL = '/assets/modal/feature/fondoIcon1.svg';
 
-interface FeatureModal extends Modal {
-  carouselImages?: { src: string; alt: string; description?: string }[];
-  twoColumnBody?: {
-    main: React.ReactNode;
-    aside?: React.ReactNode;
-  };
-  imageWithCaption?: {
-    src: string;
-    alt: string;
-    caption?: string;
-    maxWidth?: string;
-  };
-  fullDocLink?: string;
-  showScrollIndicators?: boolean;
-  iconImage?: string; // imagen personalizada para el icono (ej. presentación)
-}
-
-export function FeatureLayout({ modal }: { modal: FeatureModal }) {
+export function FeatureLayout({ modal }: { modal: Modal }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const closeModal = useUIStore((s) => s.closeModal);
+  const closeModal = useModalStore((s) => s.closeModal);
 
   return (
-    <div className={styles.feature} style={modal.theme as React.CSSProperties}>
+    <div className={styles.feature} style={modal.theme as CSSProperties}>
       {/* Scrim sutil para legibilidad */}
       <div className={styles.scrim} aria-hidden="true" />
 

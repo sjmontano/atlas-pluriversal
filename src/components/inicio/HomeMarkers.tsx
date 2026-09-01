@@ -12,12 +12,12 @@ import { POI_THEME } from '@content/theme'
 import { getModalById } from '@content/modals'
 import { HOME_MARKERS } from '@content/inicio/markers.ts'
 import { POIS } from '@content/inicio/pois.ts'
-import { useUIStore } from '@stores/uiStore'
+import { useModalStore } from '@stores/modalStore'
 import { SHELL_ASSETS } from '@components/shell/assets'
 import styles from './HomeMarkers.module.css'
 
 export function HomeMarkers() {
-  const openModal = useUIStore((s) => s.openModal)
+  const openModal = useModalStore((s) => s.openModal)
 
   const themeVars = {
     '--poi-bg': POI_THEME.iconBg,

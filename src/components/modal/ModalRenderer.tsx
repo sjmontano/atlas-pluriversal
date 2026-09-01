@@ -1,12 +1,12 @@
 /**
  * 🚀 MODAL RENDERER — Motor del sistema de modales
  * ================================================
- * Conecta `uiStore.activeModal` con la shell y los layouts.
+ * Conecta `modalStore.activeModal` con la shell y los layouts.
  * Registry de layouts: gallery, datasheet, text, alert.
  * Los datos vienen de src/content/modals/ (vía openModal(getModalById(...))).
  */
 
-import { useUIStore } from '@stores/index.ts'
+import { useModalStore } from '@stores/modalStore'
 import type { Modal } from '../../types/modal.ts'
 import { ModalShell } from './ModalShell'
 import { ModalActions } from './ModalActions'
@@ -36,8 +36,8 @@ function layoutFor(modal: Modal) {
 }
 
 export function ModalRenderer() {
-  const modal = useUIStore((s) => s.activeModal)
-  const closeModal = useUIStore((s) => s.closeModal)
+  const modal = useModalStore((s) => s.activeModal)
+  const closeModal = useModalStore((s) => s.closeModal)
 
   if (!modal) return null
 

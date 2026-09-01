@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react'
-import { useUIStore } from '@stores/uiStore'
+import { useMapUIStore } from '@stores/mapUIStore'
 import { useMapStore } from '@stores/mapStore'
 import { DevLayerMenu } from './DevLayerMenu'
 import { CalibrationPanel } from './calibration/CalibrationPanel'
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function DevTools({ mapId }: Props) {
-  const { basemapVisible, basemapStyle, imageOpacity, toggleBasemap, setBasemapStyle, setImageOpacity } = useUIStore()
+  const { basemapVisible, basemapStyle, imageOpacity, toggleBasemap, setBasemapStyle, setImageOpacity } = useMapUIStore()
   const { activeMapId, setActiveMap } = useMapStore()
 
   const allMaps = useMemo(() => getAllMaps().map(m => m.mapId), [])

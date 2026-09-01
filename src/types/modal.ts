@@ -68,7 +68,7 @@ export interface ModalTrigger {
   frame?: string
   /** Etiqueta del trigger */
   label?: string
-  /** Mapa al que se indexa (MAP_MODAL_INDEX) */
+  /** Mapa al que se indexa */
   mapId?: string
   /** Posición % del marker sobre el mapa */
   position?: { top: string; left: string }
@@ -114,8 +114,8 @@ export interface Modal {
   carouselImages?: { src: string; alt: string; description?: string }[];
   /** Cuerpo a dos columnas (60/40) — layout feature */
   twoColumnBody?: {
-    main: React.ReactNode;
-    aside?: React.ReactNode;
+    main: ModalBlock[];
+    aside?: ModalBlock[];
   };
   /** Imagen con caption — layout feature */
   imageWithCaption?: {

@@ -7,7 +7,7 @@
 
 import { Link } from 'react-router-dom'
 import { getModalById } from '@content/modals'
-import { useUIStore } from '@stores/uiStore'
+import { useModalStore } from '@stores/modalStore'
 import { SHELL_ASSETS } from '@components/shell/assets'
 import styles from './HomePanel.module.css'
 
@@ -27,7 +27,7 @@ function Tooltip({ label }: { label: string }) {
 }
 
 export function HomePanel() {
-  const openModal = useUIStore((s) => s.openModal)
+  const openModal = useModalStore((s) => s.openModal)
 
   const openById = (id: string) => {
     const modal = getModalById(id)

@@ -14,14 +14,14 @@
  *
  * Estructura por secciones:
  * - `inicio.ts`  : los 16 POIs de la home (layout `inicio`)
- * - `presentacion.ts` : modal de bienvenida (layout `feature`)
+ * - `presentacion.ts` : modal de bienvenida (layout `feature`) — datos puros
  * - este archivo : intro, demo y legales (modales estándar)
  */
 
 import type { Modal } from '../../types/modal.ts'
 import { INICIO_MODALS, CREDITOS_MODAL } from './inicio.ts'
 import { CHAPTER1_MODALS } from './chapter-1.ts'
-import { PRESENTACION_MODAL } from './presentacion.tsx'
+import { PRESENTACION_MODAL } from './presentacion.ts'
 
 /* ── MEDIUM · layout text · intro del mapa ───────────────────────────────
    Trigger: botón "Presentación" (frame 1 + glyph presentation). */

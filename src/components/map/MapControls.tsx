@@ -1,4 +1,4 @@
-import { useUIStore } from '@stores/uiStore'
+import { useMapUIStore } from '@stores/mapUIStore'
 import type { BasemapStyle } from '@services/BasemapManager'
 import styles from './MapControls.module.css'
 
@@ -9,14 +9,14 @@ const BASEMAP_OPTIONS: { value: BasemapStyle; label: string; icon: string }[] = 
 ]
 
 export function MapControls({ hasImageBase = true }: { hasImageBase?: boolean }) {
-  const basemapVisible = useUIStore((s) => s.basemapVisible)
-  const basemapStyle = useUIStore((s) => s.basemapStyle)
-  const imageOpacity = useUIStore((s) => s.imageOpacity)
-  const tilesVisible = useUIStore((s) => s.tilesVisible)
-  const toggleBasemap = useUIStore((s) => s.toggleBasemap)
-  const setBasemapStyle = useUIStore((s) => s.setBasemapStyle)
-  const setImageOpacity = useUIStore((s) => s.setImageOpacity)
-  const toggleTiles = useUIStore((s) => s.toggleTiles)
+  const basemapVisible = useMapUIStore((s) => s.basemapVisible)
+  const basemapStyle = useMapUIStore((s) => s.basemapStyle)
+  const imageOpacity = useMapUIStore((s) => s.imageOpacity)
+  const tilesVisible = useMapUIStore((s) => s.tilesVisible)
+  const toggleBasemap = useMapUIStore((s) => s.toggleBasemap)
+  const setBasemapStyle = useMapUIStore((s) => s.setBasemapStyle)
+  const setImageOpacity = useMapUIStore((s) => s.setImageOpacity)
+  const toggleTiles = useMapUIStore((s) => s.toggleTiles)
 
   return (
     <div className={styles.toolbar} role="toolbar" aria-label="Mapa base (dev)">

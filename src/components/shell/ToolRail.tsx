@@ -9,7 +9,7 @@
 
 import { useNavigate } from 'react-router-dom'
 import { getModalById } from '@content/modals'
-import { useUIStore } from '@stores/uiStore'
+import { useModalStore } from '@stores/modalStore'
 import { SHELL_ASSETS } from './assets'
 import { IconButton } from '../modal/IconButton'
 import styles from './ToolRail.module.css'
@@ -36,7 +36,7 @@ export interface ToolRailProps {
 }
 
 export function ToolRail({ items }: ToolRailProps) {
-  const openModal = useUIStore((s) => s.openModal)
+  const openModal = useModalStore((s) => s.openModal)
   const navigate = useNavigate()
 
   const run = (item: ToolRailItem) => {

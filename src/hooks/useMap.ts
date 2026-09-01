@@ -21,7 +21,7 @@ import { getMapContent } from '@content'
 import { buildGeoreferencedMap, type MapController } from '@services/MapRenderer'
 import { logger } from '@services/MapLogger'
 import { useMapStore } from '@stores/mapStore'
-import { useUIStore } from '@stores/uiStore'
+import { useMapUIStore } from '@stores/mapUIStore'
 import { useConnectionStore } from '@stores/connectionStore'
 
 const CATEGORY = 'useMap'
@@ -47,7 +47,7 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
   const mapBuilt = useMapStore((s) => s.mapBuilt)
   const setLoading = useMapStore((s) => s.setLoading)
   const setStoreError = useMapStore((s) => s.setError)
-  const lowPowerMode = useUIStore((s) => s.lowPowerMode)
+  const lowPowerMode = useMapUIStore((s) => s.lowPowerMode)
   const tileProfile = useConnectionStore((s) => s.tileProfile)
 
   // ── contador de generación (resuelve el doble-build de StrictMode) ────────

@@ -8,13 +8,13 @@ import {
 } from '@testing-library/react'
 import { ModalShell } from '@components/modal/ModalShell'
 import { ModalRenderer } from '@components/modal/ModalRenderer'
-import { useUIStore } from '@stores/uiStore'
+import { useModalStore } from '@stores/modalStore'
 import { getModalById } from '@content/modals'
 import type { Modal } from '@types/modal.ts'
 
 describe('ModalShell', () => {
   beforeEach(() => {
-    useUIStore.getState().closeModal()
+    useModalStore.getState().closeModal()
   })
   afterEach(cleanup)
 
@@ -67,7 +67,7 @@ describe('ModalShell', () => {
 
 describe('ModalRenderer (motor + uiStore)', () => {
   beforeEach(() => {
-    useUIStore.getState().closeModal()
+    useModalStore.getState().closeModal()
   })
   afterEach(cleanup)
 
@@ -80,7 +80,7 @@ describe('ModalRenderer (motor + uiStore)', () => {
     const modal = getModalById('cuenca-cauca') as Modal
     render(<ModalRenderer />)
     act(() => {
-      useUIStore.getState().openModal(modal)
+      useModalStore.getState().openModal(modal)
     })
     expect(
       screen.getByRole('dialog', { name: /Confines del sur/i }),
@@ -91,18 +91,18 @@ describe('ModalRenderer (motor + uiStore)', () => {
     const modal = getModalById('cuenca-cauca') as Modal
     render(<ModalRenderer />)
     act(() => {
-      useUIStore.getState().openModal(modal)
+      useModalStore.getState().openModal(modal)
     })
     const button = screen.getByRole('button', { name: 'Cerrar modal' })
     fireEvent.click(button)
-    expect(useUIStore.getState().activeModal).toBeNull()
+    expect(useModalStore.getState().activeModal).toBeNull()
   })
 
   it('el modal large/inicio muestra la imagen de fondo', () => {
     const modal = getModalById('nevado-huila') as Modal
     render(<ModalRenderer />)
     act(() => {
-      useUIStore.getState().openModal(modal)
+      useModalStore.getState().openModal(modal)
     })
     const dialog = screen.getByRole('dialog', {
       name: /Volcán Nevado Wila/i,
@@ -114,7 +114,7 @@ describe('ModalRenderer (motor + uiStore)', () => {
     const modal = getModalById('los-farallones') as Modal
     render(<ModalRenderer />)
     act(() => {
-      useUIStore.getState().openModal(modal)
+      useModalStore.getState().openModal(modal)
     })
     const dialog = screen.getByRole('dialog', { name: /Los Farallones/ })
     expect(dialog.querySelector('img[aria-hidden]')).toBeDefined()
@@ -122,14 +122,14 @@ describe('ModalRenderer (motor + uiStore)', () => {
     const close = screen.getByRole('button', { name: 'Cerrar modal' })
     expect(close.querySelector('img')).toBeDefined()
     fireEvent.click(close)
-    expect(useUIStore.getState().activeModal).toBeNull()
+    expect(useModalStore.getState().activeModal).toBeNull()
   })
 
   it('el layout inicio no renderiza header/footer de la shell', () => {
     const modal = getModalById('embalse-calima') as Modal
     render(<ModalRenderer />)
     act(() => {
-      useUIStore.getState().openModal(modal)
+      useModalStore.getState().openModal(modal)
     })
     expect(
       screen.getByRole('dialog', { name: /Embalse Calima/ }),
@@ -141,7 +141,7 @@ describe('ModalRenderer (motor + uiStore)', () => {
     const modal = getModalById('ficha-tecnica') as Modal
     render(<ModalRenderer />)
     act(() => {
-      useUIStore.getState().openModal(modal)
+      useModalStore.getState().openModal(modal)
     })
     expect(screen.getByRole('dialog', { name: /Ficha técnica/ })).toBeDefined()
     expect(screen.getByText(/Proyecto/)).toBeDefined()
@@ -155,7 +155,7 @@ describe('ModalRenderer (motor + uiStore)', () => {
     const modal = getModalById('en-construccion') as Modal
     render(<ModalRenderer />)
     act(() => {
-      useUIStore.getState().openModal(modal)
+      useModalStore.getState().openModal(modal)
     })
     expect(
       screen.getByRole('dialog', { name: /En construcción/ }),

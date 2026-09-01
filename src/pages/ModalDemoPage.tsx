@@ -1,10 +1,10 @@
 import { MODALS } from '@content/modals'
-import { useUIStore } from '@stores/index.ts'
+import { useModalStore } from '@stores/modalStore'
 import { IconButton } from '@components/modal/IconButton'
 import styles from './ModalDemoPage.module.css'
 
 export function ModalDemoPage() {
-  const openModal = useUIStore((s) => s.openModal)
+  const openModal = useModalStore((s) => s.openModal)
 
   const grouped = Object.entries(
     Object.values(MODALS).reduce<Record<string, typeof MODALS[keyof typeof MODALS][]>>(

@@ -12,7 +12,7 @@
  */
 
 import { getModalById } from '@content/modals'
-import { useUIStore } from '@stores/index.ts'
+import { useModalStore } from '@stores/modalStore'
 import { IconButton } from '@components/modal/IconButton'
 import type { Modal } from '../types/modal'
 import styles from './UiMockupPage.module.css'
@@ -307,7 +307,7 @@ function resolveModal(id: string): Modal | null {
 }
 
 export function UiMockupPage() {
-  const openModal = useUIStore((s) => s.openModal)
+  const openModal = useModalStore((s) => s.openModal)
 
   if (!ENABLE_DEV_TOOLS) {
     return (
