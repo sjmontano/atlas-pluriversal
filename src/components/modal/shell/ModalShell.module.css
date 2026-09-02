@@ -64,8 +64,8 @@
 }
 
 .xl {
-  --modal-w: clamp(800px, 94vw, 85%);
-  --modal-h: 90vh;
+  --modal-w: 65vw;
+  --modal-h: 75vh;
 }
 
 .full {

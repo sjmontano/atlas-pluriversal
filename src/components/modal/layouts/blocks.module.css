@@ -137,18 +137,13 @@
 }
 .carouselDescription {
   margin-top: 16px;
-  padding: 16px;
-  background-color: rgba(173, 216, 230, 0.1);
-  border-radius: 8px;
-  border-left: 4px solid var(--primary-blue, #0599b7);
-  box-shadow: 0 0.4vh 0.8vh rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 .carouselDescription p {
   margin: 0;
   font-size: 0.85rem;
   color: var(--text-secondary, #767575ea);
-  line-height: 1.6;
+  line-height: 1.4;
   font-style: italic;
 }
 .carouselNav {
@@ -177,21 +172,35 @@
   order: 2;
 }
 
-/* ── Columns ──────────────────────────────────────────────────────────── */
+/* ── Columns (estilo v17: flex) ─────────────────────────────────────────── */
 .columns {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 1em;
+  margin: 1em 0;
 }
 .columnsMain {
+  flex: 6 1 0%;
   display: flex;
   flex-direction: column;
+  font-size: 0.8em;
+  color: #444;
+  text-align: start;
+  min-width: 410px;
 }
 .columnsAside {
+  width: 260px;
+  min-width: 220px;
+  max-width: 320px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  border-left: 3px solid var(--primary-blue, #0599b7);
-  padding-left: 16px;
+  border-radius: 8px;
+  font-size: 0.75em;
+  color: #444;
+  text-align: start;
+  line-height: 1.4;
+  box-sizing: border-box;
 }
 
 /* ── Meta (ficha técnica) ─────────────────────────────────────────────── */
