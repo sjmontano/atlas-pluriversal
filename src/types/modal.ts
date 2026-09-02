@@ -41,6 +41,20 @@ export interface ModalTheme {
   bgColor?: string
   /** Tamaño personalizado (sobrescribe el token de la variante) */
   size?: { width: string; height: string }
+
+  /* ── Estilos inyectables por modal ─────────────────────────────────── */
+  /** maxWidth del .bodyOuter (default: '90%') */
+  bodyMaxWidth?: string
+  /** Tamaño del ícono glyph (default: '28px') */
+  iconSize?: string
+  /** Tamaño de fuente del body */
+  fontSize?: string
+  /** Interlineado del body */
+  lineHeight?: string
+  /** Color del texto del body */
+  bodyTextColor?: string
+  /** Espaciado entre bloques */
+  blockSpacing?: string
 }
 
 /* ─── Acciones (footer — solo para botón de cerrar legacy) ─────────────── */

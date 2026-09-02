@@ -19,8 +19,16 @@
 .dialog {
   /* Separación interna fluida: hasta 30px en escritorio y 16px en móvil */
   --modal-padding: clamp(16px, 2.5vw, 30px);
-  --icon-size: clamp(36px, 4vw, 42px);
+  --icon-size: clamp(56px, 7vw, 72px);
+  --icon-glyph-size: 28px;
   --header-gap: clamp(10px, 1.4vw, 18px);
+
+  /* Estilos inyectables por modal (sobrescribibles vía theme) */
+  --body-max-width: 90%;
+  --body-font-size: var(--text-base, 1rem);
+  --body-line-height: 1.6;
+  --body-text-color: var(--text-primary, #4b5563);
+  --block-spacing: 16px;
 
   /* Recálculo exacto para alinear el texto con el título y decorador */
   --content-left-indent: calc(var(--modal-padding) + var(--icon-size) + var(--header-gap));
@@ -79,12 +87,10 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.55) 0%,
-    rgba(255, 255, 255, 0.25) 40%,
-    rgba(255, 255, 255, 0) 75%
-  );
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.25) 40%,
+      rgba(255, 255, 255, 0) 75%);
 }
 
 /* ─── Imagen de fondo full-bleed (modales de inicio) ─────────────────
@@ -146,6 +152,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: var(--icon-glyph-size);
+  height: var(--icon-glyph-size);
 }
 
 /* Bloque central del título y decorador */
@@ -224,11 +232,12 @@
   /* Encima de .dialogBg (z-index 0) */
   z-index: 1;
   overflow: hidden;
+  max-width: var(--body-max-width);
 }
 
 .bodyScrollbar {
   position: absolute;
-  right: 4px;
+  right: 0;
   top: 0;
   bottom: 0;
 }
@@ -236,14 +245,16 @@
 .bodyInner {
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: none;
   position: relative;
   padding-top: clamp(10px, 1.5vh, 16px);
   padding-bottom: var(--modal-padding);
   padding-left: var(--content-left-indent);
   padding-right: 48px;
-  max-width: 100%;
-  color: var(--modal-text-color, inherit);
+  font-size: var(--body-font-size);
+  line-height: var(--body-line-height);
+  color: var(--body-text-color);
 }
 
 .bodyInner::-webkit-scrollbar {
@@ -274,6 +285,7 @@
   cursor: pointer;
   transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
+
 .btnLink:hover,
 .btnLink:focus-visible {
   color: var(--dark-green, #046c81);

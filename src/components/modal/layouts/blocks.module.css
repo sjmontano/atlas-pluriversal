@@ -1,7 +1,7 @@
 /* BLOQUES DEL BODY DEL MODAL */
 
 .block {
-  margin: 0 0 16px;
+  margin: 0 0 var(--block-spacing, 16px);
   font-size: var(--text-base, 1rem);
   line-height: 1.6;
   color: var(--text-primary, #4b5563);
@@ -75,7 +75,6 @@
 /* ── Carousel (slide transition estilo v17) ──────────────────────────── */
 .carousel {
   width: 100%;
-  max-width: 80%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -172,7 +171,7 @@
   order: 2;
 }
 
-/* ── Columns (estilo v17: flex) ─────────────────────────────────────────── */
+/* ── Columns (estilo v17: flex 60/40) ────────────────────────────────── */
 .columns {
   display: flex;
   align-items: flex-start;
@@ -180,19 +179,16 @@
   margin: 1em 0;
 }
 .columnsMain {
-  flex: 6 1 0%;
+  flex: 60 1 0%;
   display: flex;
   flex-direction: column;
   font-size: 0.8em;
   color: #444;
   text-align: start;
-  min-width: 410px;
+  min-width: 0;
 }
 .columnsAside {
-  width: 260px;
-  min-width: 220px;
-  max-width: 320px;
-  flex-shrink: 0;
+  flex: 40 1 0%;
   display: flex;
   flex-direction: column;
   border-radius: 8px;

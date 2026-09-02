@@ -10,13 +10,13 @@
  */
 
 import type { CSSProperties, ReactNode } from 'react'
-import { useEffect, useRef, useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import type { ModalVariant } from '../../../types/modal.ts'
+import type { ModalVariant, ModalTheme } from '../../../types/modal.ts'
 import { Glyph } from '../primitives/Glyph'
 import { CustomScrollbar } from './CustomScrollbar'
-import { ScrollIndicators } from './ScrollIndicators'
 import styles from './ModalShell.module.css'
+import { ScrollIndicators } from './ScrollIndicators'
 
 const FOCUSABLE =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -37,8 +37,8 @@ export interface ModalShellProps {
   bgImage?: string
   /** Activa imagen de fondo + scrim automático sobre el body. */
   fullImage?: boolean
-  /** Tema (CSS variables) — colores personalizados por modal. */
-  theme?: { titleColor?: string; textColor?: string; bgColor?: string }
+  /** Tema (CSS variables) — colores y estilos personalizados por modal. */
+  theme?: ModalTheme
   /** Mostrar indicadores de scroll (flecha bounce + fade bottom). */
   showScrollIndicators?: boolean
   /** Estilos opcionales en línea para dimensionar el diálogo. */
@@ -139,6 +139,12 @@ export function ModalShell({
     ...(theme?.titleColor ? { '--modal-title-color': theme.titleColor } as CSSProperties : {}),
     ...(theme?.textColor ? { '--modal-text-color': theme.textColor } as CSSProperties : {}),
     ...(theme?.bgColor ? { '--modal-bg': theme.bgColor } as CSSProperties : {}),
+    ...(theme?.bodyMaxWidth ? { '--body-max-width': theme.bodyMaxWidth } as CSSProperties : {}),
+    ...(theme?.iconSize ? { '--icon-glyph-size': theme.iconSize } as CSSProperties : {}),
+    ...(theme?.fontSize ? { '--body-font-size': theme.fontSize } as CSSProperties : {}),
+    ...(theme?.lineHeight ? { '--body-line-height': theme.lineHeight } as CSSProperties : {}),
+    ...(theme?.bodyTextColor ? { '--body-text-color': theme.bodyTextColor } as CSSProperties : {}),
+    ...(theme?.blockSpacing ? { '--block-spacing': theme.blockSpacing } as CSSProperties : {}),
   }
 
   return createPortal(
@@ -178,12 +184,10 @@ export function ModalShell({
                     <img
                       src={iconImage}
                       alt=""
-                      width={20}
-                      height={20}
                       aria-hidden="true"
                     />
                   ) : (
-                    <Glyph name={icon} size={20} />
+                    <Glyph name={icon} size={28} />
                   )}
                 </span>
               </span>
