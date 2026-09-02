@@ -46,6 +46,7 @@ export function ModalRenderer() {
       dialogStyle={dialogStyle}
       icon={modal.icon}
       iconImage={modal.iconImage}
+      showScrollIndicators={modal.showScrollIndicators}
       footer={
         modal.actions !== undefined && modal.actions.length > 0
           ? <ModalActions actions={modal.actions} onClose={closeModal} />

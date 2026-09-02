@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom'
 import type { ModalVariant } from '../../../types/modal.ts'
 import { Glyph } from '../primitives/Glyph'
 import { CustomScrollbar } from './CustomScrollbar'
+import { ScrollIndicators } from './ScrollIndicators'
 import styles from './ModalShell.module.css'
 
 const FOCUSABLE =
@@ -38,6 +39,8 @@ export interface ModalShellProps {
   fullImage?: boolean
   /** Tema (CSS variables) — colores personalizados por modal. */
   theme?: { titleColor?: string; textColor?: string; bgColor?: string }
+  /** Mostrar indicadores de scroll (flecha bounce + fade bottom). */
+  showScrollIndicators?: boolean
   /** Estilos opcionales en línea para dimensionar el diálogo. */
   dialogStyle?: CSSProperties
 }
@@ -59,6 +62,7 @@ export function ModalShell({
   bgImage,
   fullImage = false,
   theme,
+  showScrollIndicators = false,
   dialogStyle,
 }: ModalShellProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -222,6 +226,13 @@ export function ModalShell({
             />
             {children}
           </div>
+          {showScrollIndicators && (
+            <ScrollIndicators
+              scrollRef={bodyScrollRef}
+              showArrow={true}
+              showFade={true}
+            />
+          )}
         </div>
 
         {/* Footer opcional (actions legacy) */}

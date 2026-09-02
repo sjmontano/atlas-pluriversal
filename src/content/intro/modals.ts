@@ -19,7 +19,6 @@ const PRESENTACION_ICON = '/assets/modal/feature/presentation.svg'
 const TALLER_1 = '/assets/img/talleres/taller-1.webp'
 const TALLER_2 = '/assets/img/talleres/taller-2.webp'
 const TALLER_3 = '/assets/img/talleres/taller-3.webp'
-const FONDO_TEJIDOS = '/assets/img/background/tejidos.png'
 
 /* ── Presentación del Atlas ────────────────────────────────────────────────
  *  Modal de bienvenida con carrusel + columns + link.
@@ -34,9 +33,6 @@ export const PRESENTACION_MODAL: Modal = {
   highlight: 'El río pensado y sentido desde la cartografía y el dibujo',
   icon: 'presentation',
   iconImage: PRESENTACION_ICON,
-
-  fullImage: true,
-  image: FONDO_TEJIDOS,
 
   body: [
     /* Carrusel de fotos de talleres */
@@ -104,6 +100,8 @@ export const PRESENTACION_MODAL: Modal = {
       label: 'Ver documento completo',
     },
   ],
+
+  showScrollIndicators: true,
 
   trigger: {
     type: 'button',

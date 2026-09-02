@@ -94,6 +94,8 @@ export interface Modal {
   theme?: ModalTheme
   /** Contenido del body (bloques apilables) */
   body: ModalBlock[]
+  /** Mostrar indicadores de scroll (flecha bounce + fade bottom) */
+  showScrollIndicators?: boolean
   /** Footer actions (legacy — preferir blocks link en body) */
   actions?: ModalAction[]
   /** @deprecated Usar block type 'meta' en body */

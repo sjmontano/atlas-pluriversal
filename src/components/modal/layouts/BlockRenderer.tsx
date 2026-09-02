@@ -120,60 +120,96 @@ function renderBlock(block: ModalBlock): React.ReactNode {
   }
 }
 
-/* ─── Carousel inline (sin dependencias externas) ──────────────────────── */
+/* ─── Carousel inline (slide transition estilo v17) ─────────────────────── */
 
 function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel' }> }) {
   const images = block.images
   const [index, setIndex] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+
+  // Auto-play: cambia cada 6s, se pausa al hover
+  useState(() => {
+    let interval: ReturnType<typeof setInterval>
+    if (!isPaused && images.length > 1) {
+      interval = setInterval(() => {
+        setIndex((prev) => (prev + 1) % images.length)
+      }, 6000)
+    }
+    return () => clearInterval(interval)
+  })
 
   if (images.length === 0) return null
 
-  const current = images[index] ?? images[0]
   const prev = () => setIndex((i) => (i - 1 + images.length) % images.length)
   const next = () => setIndex((i) => (i + 1) % images.length)
 
   return (
-    <div className={`${styles.block} ${styles.carousel}`}>
-      <div className={styles.carouselMain}>
-        <img className={styles.carouselImg} src={current?.src} alt={current?.alt} />
+    <div
+      className={`${styles.block} ${styles.carousel}`}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div className={styles.carouselInner}>
+        {/* Botón anterior */}
         {images.length > 1 && (
-          <>
-            <button
-              type="button"
-              className={`${styles.carouselNav} ${styles.carouselPrev}`}
-              onClick={prev}
-              aria-label="Anterior"
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              className={`${styles.carouselNav} ${styles.carouselNext}`}
-              onClick={next}
-              aria-label="Siguiente"
-            >
-              ›
-            </button>
-            <span className={styles.carouselCount}>
-              {index + 1} / {images.length}
-            </span>
-          </>
+          <button
+            type="button"
+            className={`${styles.carouselNav} ${styles.carouselPrev}`}
+            onClick={prev}
+            aria-label="Imagen anterior"
+          >
+            ‹
+          </button>
+        )}
+
+        {/* Contenedor de imágenes con slide */}
+        <div className={styles.carouselTrackContainer}>
+          <div
+            className={styles.carouselTrack}
+            style={{ transform: `translateX(-${index * 100}%)` }}
+          >
+            {images.map((img, i) => (
+              <img
+                key={i}
+                className={styles.carouselSlide}
+                src={img.src}
+                alt={img.alt}
+              />
+            ))}
+          </div>
+
+          {/* Dots dentro de la imagen */}
+          {images.length > 1 && (
+            <div className={styles.carouselDots}>
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  className={`${styles.carouselDot}${i === index ? ` ${styles.carouselDotActive}` : ''}`}
+                  onClick={() => setIndex(i)}
+                  aria-label={`Ir a imagen ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Botón siguiente */}
+        {images.length > 1 && (
+          <button
+            type="button"
+            className={`${styles.carouselNav} ${styles.carouselNext}`}
+            onClick={next}
+            aria-label="Siguiente imagen"
+          >
+            ›
+          </button>
         )}
       </div>
-      {current?.description && (
-        <p className={styles.carouselDescription}>{current.description}</p>
-      )}
-      {images.length > 1 && (
-        <div className={styles.carouselThumbs}>
-          {images.map((img, i) => (
-            <img
-              key={i}
-              className={`${styles.carouselThumb}${i === index ? ` ${styles.carouselThumbActive}` : ''}`}
-              src={img.src}
-              alt={img.alt}
-              onClick={() => setIndex(i)}
-            />
-          ))}
+
+      {/* Descripción de la imagen actual */}
+      {images[index]?.description && (
+        <div className={styles.carouselDescription}>
+          <p>{images[index].description}</p>
         </div>
       )}
     </div>

@@ -1,0 +1,49 @@
+/* SCROLL INDICATORS — Flecha bounce + fade inferior */
+
+.arrow {
+  position: absolute;
+  bottom: 1vh;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 2s infinite;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--primary-blue, #0599b7);
+}
+
+.arrow svg {
+  width: 30px;
+  height: 30px;
+}
+
+.fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 254, 238, 0),
+    rgba(255, 254, 238, 1)
+  );
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(1px);
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  40% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+  60% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
