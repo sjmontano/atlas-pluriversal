@@ -2,8 +2,8 @@
  * 🏔️ MODALES DE INICIO — los 16 POIs de la home como modales
  * ============================================================
  * Mapeo de `content/inicio/pois.ts` al contrato `Modal` del sistema:
- * todos usan el layout `inicio` (large · imagen de fondo 100%, gota +
- * título + decorador repetido). El agregado maestro vive en `index.ts`.
+ * todos usan `fullImage: true` (imagen de fondo 100% + scrim).
+ * El agregado maestro vive en `index.ts`.
  */
 
 import type { Modal } from '../../types/modal.ts'
@@ -13,13 +13,13 @@ export const INICIO_MODALS: Modal[] = POIS.map((poi) => ({
   id: poi.id,
   section: 'inicio',
   variant: 'xl',
-  layout: 'inicio',
+  fullImage: true,
   title: poi.title,
   icon: 'marker',
   image: poi.image,
-  texto: poi.texto,
-  body: [],
-  actions: [{ label: 'Cerrar', variant: 'ghost' }],
+  body: poi.texto
+    ? [{ type: 'paragraph', id: `${poi.id}-p1`, text: poi.texto }]
+    : [],
 
   trigger: {
     type: 'poi',
@@ -29,14 +29,11 @@ export const INICIO_MODALS: Modal[] = POIS.map((poi) => ({
   },
 }))
 
-/* ── MEDIUM · layout text · créditos del proyecto ────────────────────────
-   Consolidación de los modales 19–21 de v17 (modalsData) en un solo
-   registro data-driven. Trigger: botón "Créditos" del panel de la home. */
+/* ── Créditos del proyecto ────────────────────────────────────────────── */
 export const CREDITOS_MODAL: Modal = {
   id: 'creditos',
   section: 'inicio',
   variant: 'medium',
-  layout: 'text',
   title: 'Créditos',
   highlight: 'Atlas Pluriversal del Río Cauca',
   icon: 'credits',

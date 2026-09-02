@@ -1,7 +1,9 @@
 /**
- * 🏔️ INICIO LAYOUT
- * La imagen de fondo full-bleed la renderiza ModalShell (prop bgImage);
- * este layout aporta solo el contenido superpuesto (texto con scrim).
+ * 🏔️ INICIO LAYOUT — Contenido para modales con fullImage
+ * =========================================================
+ * Se usa cuando fullImage=true. La imagen de fondo y el scrim
+ * los renderiza ModalShell; este layout solo apila los blocks
+ * con estilo especial para legibilidad sobre la foto.
  */
 
 import type { Modal } from '../../../types/modal.ts'
@@ -11,8 +13,6 @@ import styles from './layouts.module.css'
 export function InicioLayout({ modal }: { modal: Modal }) {
   return (
     <div className={styles.inicio}>
-      {modal.texto && <p className={styles.inicioTexto}>{modal.texto}</p>}
-
       {modal.body && modal.body.length > 0 && (
         <BlockRenderer blocks={modal.body} />
       )}

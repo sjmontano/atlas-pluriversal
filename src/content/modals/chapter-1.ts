@@ -14,12 +14,8 @@
  *   cap1-voz-<slug>           4 tramos Voz del río (click en capa)
  */
 
-import type { Modal, ModalAction, ModalBlock } from '../../types/modal.ts'
+import type { Modal, ModalBlock } from '../../types/modal.ts'
 import { CAP1_TEXTOS } from './cap1-textos.generated.ts'
-
-/** El cierre siempre lo maneja la X del shell; el footer es solo para links. */
-const DOC_ACTION = (link: string): ModalAction[] =>
-  [{ label: 'Ver documento completo', href: link, variant: 'primary' }]
 
 /** Divide el texto literal de v17 (separado por \n\n) en bloques párrafo. */
 function paragraphs(texto: string | null, base: string): ModalBlock[] {
@@ -36,16 +32,18 @@ function paragraphs(texto: string | null, base: string): ModalBlock[] {
 function presentacion(mapKey: string, textoId: string): Modal {
   const entry = CAP1_TEXTOS[textoId]
   if (entry === undefined) throw new Error(`CAP1_TEXTOS sin id ${textoId}`)
+  const blocks = paragraphs(entry.texto, textoId)
+  if (entry.link !== '') {
+    blocks.push({ type: 'link', id: `${textoId}-link`, href: entry.link, label: 'Ver documento completo' })
+  }
   return {
     id: `cap1-presentacion-${mapKey}`,
     section: 'capitulo-1',
     variant: 'large',
-    layout: 'text',
     title: entry.highLight ?? 'Presentación',
     highlight: 'Capítulo I',
     icon: 'presentation',
-    body: paragraphs(entry.texto, textoId),
-    actions: entry.link !== '' ? DOC_ACTION(entry.link) : [],
+    body: blocks,
     trigger: {
       type: 'button',
       icon: 'presentation',
@@ -71,7 +69,6 @@ const ATLAS_PROYECTO: Modal = {
   id: 'cap1-atlas-proyecto',
   section: 'intro',
   variant: 'large',
-  layout: 'text',
   title: 'El río pensado y sentido desde la cartografía y el dibujo',
   highlight: 'Atlas Pluriversal del Río Cauca',
   icon: 'presentation',
@@ -93,7 +90,6 @@ const ATLAS_PROYECTO: Modal = {
       source: 'Diagnóstico de Paz Territorial Pluriversal, 2024: 6',
     },
   ],
-  actions: [{ label: 'Ver documento', href: CAP1_TEXTOS['1']?.link ?? '', variant: 'primary' }],
   trigger: { type: 'button', icon: 'presentation', frame: '1', label: 'El proyecto', mapId: 'intro' },
 }
 
@@ -103,16 +99,20 @@ const PERFIL_CUENCA: Modal = {
   id: 'cap1-perfil-cuenca',
   section: 'capitulo-1',
   variant: 'large',
-  layout: 'gallery',
   title: 'Perfil de la cuenca',
   highlight: 'Capítulo I',
   icon: 'perfil',
-  gallery: [
-    '/assets/ui/perfil/perfil-1.svg',
-    '/assets/ui/perfil/perfil-3.svg',
-    '/assets/ui/perfil/perfil-2.svg',
+  body: [
+    {
+      type: 'carousel',
+      id: 'perfil-carousel',
+      images: [
+        { src: '/assets/ui/perfil/perfil-1.svg', alt: 'Perfil 1' },
+        { src: '/assets/ui/perfil/perfil-3.svg', alt: 'Perfil 3' },
+        { src: '/assets/ui/perfil/perfil-2.svg', alt: 'Perfil 2' },
+      ],
+    },
   ],
-  body: [],
   trigger: {
     type: 'button',
     icon: 'perfil',
@@ -151,7 +151,6 @@ function cuenca(def: CuencaDef): Modal {
     id: `cap1-cuenca-${def.slug}`,
     section: 'capitulo-1',
     variant: 'medium',
-    layout: 'text',
     title: entry.highLight ?? 'Cuenca',
     highlight: 'Tejidos del agua',
     icon: 'marker',
@@ -172,7 +171,6 @@ function voz(textoId: string, slug: string): Modal {
     id: `cap1-voz-${slug}`,
     section: 'capitulo-1',
     variant: 'medium',
-    layout: 'text',
     title: entry.highLight ?? 'Voz del río',
     highlight: 'Voz del río',
     icon: 'fichatecnica',

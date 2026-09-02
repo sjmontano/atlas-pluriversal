@@ -1,5 +1,5 @@
-import type { MapContent } from '../../types/content'
 import { makeTilesConfig } from '@data/tiles'
+import type { MapContent } from '../../types/content'
 
 const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
 
@@ -28,7 +28,7 @@ export default {
     title: 'Iniciamos nuestro recorrido',
     minimap: 'cuenca',
     sidebar: [
-      { id: 'intro-presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cuenca-cauca' },
+      { id: 'intro-presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'presentacion' },
       { id: 'intro-recursos', type: 'link', icon: 'gallery', label: 'Recursos', frame: '2', href: 'https://drive.google.com/file/d/1AEAngJNFZ7GfjTYXwGPhhS2bbJGz9XCq/view?usp=sharing' },
       { id: 'intro-tejidos', type: 'modal', icon: 'credits', label: 'Tejidos para el atlas', frame: '4', target: 'en-construccion' },
     ],

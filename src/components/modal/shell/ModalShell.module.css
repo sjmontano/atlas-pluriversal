@@ -73,16 +73,18 @@
   --modal-h: 100dvh;
 }
 
-/* Variante Hero (Full bleed) */
-.hero {
-  background: #ffffff;
-}
-
-.heroBody {
-  flex: 1;
-  min-height: 0;
-  position: relative;
-  overflow: hidden;
+/* Scrim automático para fullImage (legibilidad del contenido sobre la foto) */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.25) 40%,
+    rgba(255, 255, 255, 0) 75%
+  );
 }
 
 /* ─── Imagen de fondo full-bleed (modales de inicio) ─────────────────
@@ -163,7 +165,7 @@
   font-size: clamp(0.65rem, 1.2vw, 0.72rem);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--primary-blue, #0599b7);
+  color: var(--modal-title-color, var(--primary-blue, #0599b7));
   white-space: nowrap;
 }
 
@@ -171,7 +173,7 @@
   margin: 2px 0 0;
   font-size: clamp(1.1rem, 2.5vw, 1.5rem);
   line-height: 1.2;
-  color: var(--dark-green, #046c81);
+  color: var(--modal-title-color, var(--dark-green, #046c81));
   overflow-wrap: break-word;
   white-space: nowrap;
 }
@@ -241,6 +243,7 @@
   padding-left: var(--content-left-indent);
   padding-right: 48px;
   max-width: 100%;
+  color: var(--modal-text-color, inherit);
 }
 
 .bodyInner::-webkit-scrollbar {

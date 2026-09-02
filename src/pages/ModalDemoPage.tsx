@@ -20,9 +20,9 @@ export function ModalDemoPage() {
     <div className={styles.container}>
       <h1 className={styles.title}>Sistema de Modales — Maqueta</h1>
       <p className={styles.subtitle}>
-        3 tamaños responsive (small / medium / large) · 5 layouts (text,
-        gallery, datasheet, alert, feature). Abre los modales desde aquí o
-        desde los triggers sobre el mapa.
+        6 variantes de tamaño (xs / small / medium / large / xl / full) ·
+        Bloques apilables (paragraph, heading, quote, image, carousel, columns, meta, link).
+        Abre los modales desde aquí o desde los triggers sobre el mapa.
       </p>
 
       {grouped.map(([variant, modals]) => (
@@ -37,7 +37,7 @@ export function ModalDemoPage() {
                 className={`${styles.card} ${styles[variant]}`}
               >
                 <h3 className={styles.cardTitle}>{modal.title}</h3>
-                <p className={styles.cardLayout}>layout · {modal.layout}</p>
+                <p className={styles.cardLayout}>blocks · {modal.body.length}</p>
                 <IconButton
                   icon={modal.icon}
                   label={modal.title}

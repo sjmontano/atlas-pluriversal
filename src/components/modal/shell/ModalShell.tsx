@@ -1,8 +1,12 @@
 /**
- * 🖼️ MODAL SHELL — Estructura base del modal (Atomic Design)
- * ===========================================================
+ * 🖼️ MODAL SHELL — Estructura base del modal
+ * ===========================================
  * Componente contenedor reocupable para modales.
- * Maneja overlay, accesibilidad (Focus trap, ESC, ARIA) y tres variantes responsive.
+ * Maneja overlay, accesibilidad (Focus trap, ESC, ARIA), tres variantes responsive,
+ * imagen de fondo full-bleed (fullImage) y tema personalizable (CSS variables).
+ *
+ * Header SIEMPRE visible: icono → highlight → título → decorador → X
+ * Body = children (scrollable, con scrollbar custom)
  */
 
 import type { CSSProperties, ReactNode } from 'react'
@@ -26,14 +30,14 @@ export interface ModalShellProps {
   footer?: ReactNode
   /** Ícono dinámico del header (p.ej. 'marker', 'presentation', 'gallery'...). */
   icon?: string
-  /** Imagen de icono propia (p.ej. iconos de cuencas Tejidos del Agua).
-   *  Si está presente sustituye al glyph en el badge del header. */
+  /** Imagen de icono propia (sustituye al glyph en el badge del header). */
   iconImage?: string
-  /** Sin cromo básico, el layout interno toma el control total de la superficie. */
-  hero?: boolean
-  /** Imagen de fondo full-bleed a nivel del diálogo (detrás del header y del
-   *  body). Solo la usan los modales de inicio; el resto queda intacto. */
+  /** Imagen de fondo full-bleed a nivel del diálogo. */
   bgImage?: string
+  /** Activa imagen de fondo + scrim automático sobre el body. */
+  fullImage?: boolean
+  /** Tema (CSS variables) — colores personalizados por modal. */
+  theme?: { titleColor?: string; textColor?: string; bgColor?: string }
   /** Estilos opcionales en línea para dimensionar el diálogo. */
   dialogStyle?: CSSProperties
 }
@@ -52,8 +56,9 @@ export function ModalShell({
   footer,
   icon,
   iconImage,
-  hero = false,
   bgImage,
+  fullImage = false,
+  theme,
   dialogStyle,
 }: ModalShellProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -126,6 +131,12 @@ export function ModalShell({
 
   if (!open) return null
 
+  const themeVars: CSSProperties = {
+    ...(theme?.titleColor ? { '--modal-title-color': theme.titleColor } as CSSProperties : {}),
+    ...(theme?.textColor ? { '--modal-text-color': theme.textColor } as CSSProperties : {}),
+    ...(theme?.bgColor ? { '--modal-bg': theme.bgColor } as CSSProperties : {}),
+  }
+
   return createPortal(
     <div className={styles.root}>
       <div className={styles.overlay} onClick={onClose} aria-hidden="true" />
@@ -134,9 +145,10 @@ export function ModalShell({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`${styles.dialog} ${styles[variant]}${hero ? ` ${styles.hero}` : ''}`}
-        style={dialogStyle}
+        className={`${styles.dialog} ${styles[variant]}`}
+        style={{ ...themeVars, ...dialogStyle }}
       >
+        {/* Imagen de fondo full-bleed (fullImage) */}
         {bgImage && (
           <img
             className={styles.dialogBg}
@@ -146,80 +158,74 @@ export function ModalShell({
           />
         )}
 
-        {hero ? (
-          <div className={styles.heroBody}>{children}</div>
-        ) : (
-          <>
-            {/* Encabezado del modal */}
-            <div className={styles.head}>
-              <div className={styles.headerGroup}>
-                {icon && (
-                  <span className={styles.iconBadge}>
+        {/* Header SIEMPRE visible */}
+        <div className={styles.head}>
+          <div className={styles.headerGroup}>
+            {icon && (
+              <span className={styles.iconBadge}>
+                <img
+                  className={styles.iconBg}
+                  src={ICON_BG_URL}
+                  alt=""
+                  aria-hidden="true"
+                />
+                <span className={styles.iconGlyph}>
+                  {iconImage !== undefined ? (
                     <img
-                      className={styles.iconBg}
-                      src={ICON_BG_URL}
+                      src={iconImage}
                       alt=""
+                      width={20}
+                      height={20}
                       aria-hidden="true"
                     />
-                    <span className={styles.iconGlyph}>
-                      {iconImage !== undefined ? (
-                        <img
-                          src={iconImage}
-                          alt=""
-                          width={20}
-                          height={20}
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <Glyph name={icon} size={20} />
-                      )}
-                    </span>
-                  </span>
-                )}
+                  ) : (
+                    <Glyph name={icon} size={20} />
+                  )}
+                </span>
+              </span>
+            )}
 
-                <div className={styles.titleColumn}>
-                  {highlight ? (
-                    <p className={styles.highlight}>{highlight}</p>
-                  ) : null}
-                  <h2 className={styles.title}>{title}</h2>
-                  <span
-                    className={styles.decor}
-                    style={{ backgroundImage: `url(${DECORATOR_URL})` }}
-                    aria-hidden="true"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="button"
-                className={styles.close}
-                onClick={onClose}
-                aria-label="Cerrar modal"
-              >
-                <img src={SALIR_URL} alt="" aria-hidden="true" />
-              </button>
+            <div className={styles.titleColumn}>
+              {highlight ? (
+                <p className={styles.highlight}>{highlight}</p>
+              ) : null}
+              <h2 className={styles.title}>{title}</h2>
+              <span
+                className={styles.decor}
+                style={{ backgroundImage: `url(${DECORATOR_URL})` }}
+                aria-hidden="true"
+              />
             </div>
+          </div>
 
-            {/* Contenido principal alineado */}
-            <div className={styles.bodyOuter}>
-              <div
-                ref={bodyScrollRef}
-                className={styles.bodyInner}
-                onScroll={syncScrollbar}
-                id="scroll-content"
-              >
-                <CustomScrollbar
-                  scrollRef={bodyScrollRef}
-                  className={styles.bodyScrollbar}
-                />
-                {children}
-              </div>
-            </div>
+          <button
+            type="button"
+            className={styles.close}
+            onClick={onClose}
+            aria-label="Cerrar modal"
+          >
+            <img src={SALIR_URL} alt="" aria-hidden="true" />
+          </button>
+        </div>
 
-            {/* Acciones o pie opcional */}
-            {footer ? <div className={styles.foot}>{footer}</div> : null}
-          </>
-        )}
+        {/* Body scrollable + scrim (si fullImage) */}
+        <div className={styles.bodyOuter}>
+          {fullImage && <div className={styles.scrim} aria-hidden="true" />}
+          <div
+            ref={bodyScrollRef}
+            className={styles.bodyInner}
+            onScroll={syncScrollbar}
+          >
+            <CustomScrollbar
+              scrollRef={bodyScrollRef}
+              className={styles.bodyScrollbar}
+            />
+            {children}
+          </div>
+        </div>
+
+        {/* Footer opcional (actions legacy) */}
+        {footer ? <div className={styles.foot}>{footer}</div> : null}
       </div>
     </div>,
     document.body,

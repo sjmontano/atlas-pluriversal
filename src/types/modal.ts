@@ -1,38 +1,17 @@
 /**
  * 🧩 MODAL — Tipos del sistema de modales del Atlas
  * ==================================================
- * Contrato de datos y presentación del sistema de modales (3 tamaños).
+ * Contrato de datos y presentación del sistema de modales.
  * La fuente de verdad de los datos vive en `src/content/modals/`
  * (registro por id + índice por mapa); estos tipos tipan su consumo.
+ *
+ * Arquitectura:
+ * - 1 solo header (icono + título + decorador + X)
+ * - Body = ModalBlock[] (bloques apilables: text, image, carousel, columns, meta, link)
+ * - Sin footer (el botón X ya está en el header)
  */
 
 export type ModalVariant = 'xs' | 'small' | 'medium' | 'large' | 'xl' | 'full'
-
-export type ModalLayout =
-  /** medium · carrusel de imágenes con miniaturas */
-  | 'gallery'
-  /** small · ficha técnica (tabla de `meta`) */
-  | 'datasheet'
-  /** medium · bloques editoriales con scroll */
-  | 'text'
-  /** small · aviso / en construcción */
-  | 'alert'
-  /** large · modal de inicio (POIs): imagen de fondo 100% + gota + decorador */
-  | 'inicio'
-  /** large · modal completo (bienvenida): carrusel + 2 columnas + scroll indicators */
-  | 'feature'
-
-/* ─── Tema (modelo plantilla + configuración, sin Tailwind) ───────────────
-   Cada modal fuera del estándar puede sobrescribir los colores del layout
-   vía CSS custom properties. El layout aporta los valores por defecto. */
-export interface ModalTheme {
-  /** Color del título (default: --modal-inicio-title) */
-  titleColor?: string
-  /** Color del cuerpo de texto (default: --modal-inicio-text) */
-  textColor?: string
-  /** Tamaño personalizado (sobrescribe el token de la variante) */
-  size?: { width: string; height: string }
-}
 
 /* ─── Bloques tipados del body ─────────────────────────────────────────── */
 
@@ -40,15 +19,31 @@ export type ModalBlock =
   | { type: 'paragraph'; id: string; text: string }
   | { type: 'heading'; id: string; level?: 2 | 3; text: string }
   | { type: 'list'; id: string; ordered?: boolean; items: string[] }
-  | {
-    type: 'datatable'
-    id: string
-    columns: string[]
-    rows: string[][]
-  }
   | { type: 'quote'; id: string; text: string; source?: string }
+  | { type: 'image'; id: string; src: string; alt: string; caption?: string }
+  | {
+    type: 'carousel'
+    id: string
+    images: { src: string; alt: string; description?: string }[]
+  }
+  | { type: 'columns'; id: string; main: ModalBlock[]; aside?: ModalBlock[] }
+  | { type: 'meta'; id: string; data: Record<string, string> }
+  | { type: 'link'; id: string; href: string; label: string }
 
-/* ─── Acciones (footer) ────────────────────────────────────────────────── */
+/* ─── Tema (CSS variables por modal) ──────────────────────────────────── */
+
+export interface ModalTheme {
+  /** Color del título (default: --dark-green) */
+  titleColor?: string
+  /** Color del cuerpo de texto (default: --text-primary) */
+  textColor?: string
+  /** Color de fondo del modal (default: --modal-bg) */
+  bgColor?: string
+  /** Tamaño personalizado (sobrescribe el token de la variante) */
+  size?: { width: string; height: string }
+}
+
+/* ─── Acciones (footer — solo para botón de cerrar legacy) ─────────────── */
 
 export interface ModalAction {
   label: string
@@ -72,11 +67,9 @@ export interface ModalTrigger {
   mapId?: string
   /** Posición % del marker sobre el mapa */
   position?: { top: string; left: string }
-  /** Si está presente, el trigger abre esta URL externa en vez de un modal
-   *  (caso v17: fichas técnicas/descargas en Google Drive). */
+  /** Si está presente, el trigger abre esta URL externa en vez de un modal */
   href?: string
-  /** Si está presente, el trigger navega a este mapa en vez de abrir modal
-   *  (caso v17: "Síntesis" → onMapChange). */
+  /** Si está presente, el trigger navega a este mapa en vez de abrir modal */
   gotoMapId?: string
 }
 
@@ -87,45 +80,23 @@ export interface Modal {
   /** "inicio" | "intro" | "capitulo-1" | "legales" | ... */
   section: string
   variant: ModalVariant
-  layout: ModalLayout
   title: string
   highlight?: string
   /** Nombre del glyph del header/trigger */
   icon: string
-  /** Imagen de icono propia (p.ej. iconos de cuencas). Sustituye al glyph
-   *  en el badge del header del modal. */
+  /** Imagen de icono propia (sustituye al glyph en el badge) */
   iconImage?: string
-  /** Imagen hero (URL) — layouts gallery / inicio / feature */
+  /** Imagen de fondo (se usa con fullImage=true) */
   image?: string
-  /** Cuerpo largo (párrafo) — layout inicio (soporta `\n`) */
-  texto?: string
-  /** Tema (CSS variables) — layout inicio / feature */
+  /** Activa imagen de fondo full-bleed + scrim automático */
+  fullImage?: boolean
+  /** Tema (CSS variables) — colores y tamaño personalizado */
   theme?: ModalTheme
-  /** Galería de imágenes (URLs) — layout gallery */
-  gallery?: string[]
+  /** Contenido del body (bloques apilables) */
   body: ModalBlock[]
+  /** Footer actions (legacy — preferir blocks link en body) */
   actions?: ModalAction[]
-  /** Tabla de la ficha técnica (layout datasheet) */
+  /** @deprecated Usar block type 'meta' en body */
   meta?: Record<string, string>
   trigger: ModalTrigger
-
-  /* ─── Campos específicos para layout 'feature' (modal completo/bienvenida) ─── */
-  /** Imágenes para carrusel (id=1 bienvenida) */
-  carouselImages?: { src: string; alt: string; description?: string }[];
-  /** Cuerpo a dos columnas (60/40) — layout feature */
-  twoColumnBody?: {
-    main: ModalBlock[];
-    aside?: ModalBlock[];
-  };
-  /** Imagen con caption — layout feature */
-  imageWithCaption?: {
-    src: string;
-    alt: string;
-    caption?: string;
-    maxWidth?: string;
-  };
-  /** Link "Ver documento completo" (href) — layout feature */
-  fullDocLink?: string;
-  /** Mostrar indicadores de scroll (flecha bounce + fade bottom) */
-  showScrollIndicators?: boolean;
 }
