@@ -5,21 +5,27 @@
  * en un solo registro tipado: id → Modal.
  *
  * - `MODALS`          : id → Modal
- * - Los triggers abren el modal vía `uiStore.openModal(modal)`.
+ * - Los triggers abren el modal vía `modalStore.openModal(modal)`.
  *
  * ⚠️ Convención del proyecto: los DATOS viven en `content/` (este módulo),
  * los motores (components/modal) solo conocen interfaces y no se tocan
  * al agregar contenido. El contenido se agrega AQUÍ sin tocar componentes.
  *
  * Estructura por secciones:
- * - `intro/modals.ts` : modales del mapa intro (presentación, en construcción)
- * - `inicio.ts`       : los 16 POIs de la home (fullImage)
- * - este archivo      : demo y legales (modales estándar)
+ * - `../intro/modals.ts` : modales del mapa intro (presentación, en construcción)
+ * - `inicio.ts`          : los 16 POIs de la home (fullImage)
+ * - `chapter-{1,2,3,4}.ts` : modales por capítulo (ids `capN-…`)
+ * - este archivo         : demo y legales (modales estándar)
+ *
+ * Helpers compartidos (no duplicar): `./_helpers.ts` (`paragraphs`, `presentacion`).
  */
 
 import type { Modal } from '../../types/modal.ts'
 import { INICIO_MODALS, CREDITOS_MODAL } from './inicio.ts'
 import { CHAPTER1_MODALS } from './chapter-1.ts'
+import { CHAPTER2_MODALS } from './chapter-2.ts'
+import { CHAPTER3_MODALS } from './chapter-3.ts'
+import { CHAPTER4_MODALS } from './chapter-4.ts'
 import { INTRO_MODALS } from '../intro/modals.ts'
 
 /* ── Galería de imágenes ──────────────────────────────────────────────── */
@@ -92,11 +98,15 @@ const FICHA_TECNICA: Modal = {
 }
 
 /* ── Agregado maestro ──────────────────────────────────────────────── */
-const ALL_MODALS: Modal[] = [
+/** Lista plana (exportada para el test de ids duplicados). */
+export const ALL_MODALS: Modal[] = [
   ...INTRO_MODALS,
   ...INICIO_MODALS,
   CREDITOS_MODAL,
   ...CHAPTER1_MODALS,
+  ...CHAPTER2_MODALS,
+  ...CHAPTER3_MODALS,
+  ...CHAPTER4_MODALS,
   GALERIA_EJEMPLO,
   FICHA_TECNICA,
 ]
