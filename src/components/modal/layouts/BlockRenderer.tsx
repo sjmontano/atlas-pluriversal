@@ -162,43 +162,45 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
           </button>
         )}
 
-        {/* Contenedor de imágenes con slide */}
-        <div className={styles.carouselTrackContainer}>
-          <div
-            className={styles.carouselTrack}
-            style={{ transform: `translateX(-${index * 100}%)` }}
-          >
-            {images.map((img, i) => (
-              <img
-                key={i}
-                className={styles.carouselSlide}
-                src={img.src}
-                alt={img.alt}
-              />
-            ))}
-          </div>
-
-          {/* Dots dentro de la imagen */}
-          {images.length > 1 && (
-            <div className={styles.carouselDots}>
-              {images.map((_, i) => (
-                <button
+        {/* Contenedor de imágenes + descriptor (mismo ancho) */}
+        <div className={styles.carouselContent}>
+          <div className={styles.carouselTrackContainer}>
+            <div
+              className={styles.carouselTrack}
+              style={{ transform: `translateX(-${index * 100}%)` }}
+            >
+              {images.map((img, i) => (
+                <img
                   key={i}
-                  className={`${styles.carouselDot}${i === index ? ` ${styles.carouselDotActive}` : ''}`}
-                  onClick={() => setIndex(i)}
-                  aria-label={`Ir a imagen ${i + 1}`}
+                  className={styles.carouselSlide}
+                  src={img.src}
+                  alt={img.alt}
                 />
               ))}
             </div>
+
+            {/* Dots dentro de la imagen */}
+            {images.length > 1 && (
+              <div className={styles.carouselDots}>
+                {images.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`${styles.carouselDot}${i === index ? ` ${styles.carouselDotActive}` : ''}`}
+                    onClick={() => setIndex(i)}
+                    aria-label={`Ir a imagen ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Descripción de la imagen actual */}
+          {images[index]?.description && (
+            <div className={styles.carouselDescription}>
+              <p>{images[index].description}</p>
+            </div>
           )}
         </div>
-
-        {/* Descripción de la imagen actual (mismo ancho que la imagen) */}
-        {images[index]?.description && (
-          <div className={styles.carouselDescription}>
-            <p>{images[index].description}</p>
-          </div>
-        )}
 
         {/* Botón siguiente */}
         {images.length > 1 && (
