@@ -217,18 +217,18 @@ export function ModalShell({
           </button>
         </div>
 
-        {/* Body scrollable + scrim (si fullImage) */}
+        {/* Body scrollable + scrollbar + scrim (si fullImage) */}
         <div className={styles.bodyOuter}>
           {fullImage && <div className={styles.scrim} aria-hidden="true" />}
+          <CustomScrollbar
+            scrollRef={bodyScrollRef}
+            className={styles.bodyScrollbar}
+          />
           <div
             ref={bodyScrollRef}
             className={styles.bodyInner}
             onScroll={syncScrollbar}
           >
-            <CustomScrollbar
-              scrollRef={bodyScrollRef}
-              className={styles.bodyScrollbar}
-            />
             {children}
           </div>
           {showScrollIndicators && (

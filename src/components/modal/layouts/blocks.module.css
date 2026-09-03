@@ -346,13 +346,17 @@
   }
 
   .carouselDots {
-    gap: 10px;
-    bottom: 8px;
+    gap: 8px;
+    bottom: 6px;
   }
 
   .carouselDot {
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
+  }
+
+  .carouselDotActive {
+    transform: scale(1.2);
   }
 
   .carouselDescription {
@@ -360,6 +364,10 @@
     padding: 10px 12px;
     border-left: none;
     border-top: 3px solid var(--primary-blue, #0599b7);
+  }
+
+  .carouselDescription p {
+    font-size: 0.75rem;
   }
 
   .columns {
@@ -397,5 +405,9 @@
 
   .columns {
     gap: calc(var(--column-gap, 1em) * 0.7);
+  }
+
+  .carouselDescription p {
+    font-size: 0.8rem;
   }
 }
