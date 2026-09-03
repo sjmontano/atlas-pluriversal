@@ -144,13 +144,14 @@
   color: var(--text-secondary, #767575ea);
   line-height: 1.4;
   font-style: italic;
+  text-align: center;
 }
 .carouselNav {
   position: static;
   background: none;
   border: none;
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 46px;
   cursor: pointer;
   z-index: 15;
   display: flex;
@@ -158,8 +159,15 @@
   justify-content: center;
   transition: transform 0.2s ease;
   flex-shrink: 0;
-  color: var(--primary-blue, #0599b7);
-  font-size: 2rem;
+  background-image: url('/assets/ui/sidebar/fondo-icon.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 0;
+}
+.carouselNav img {
+  width: 24px;
+  height: 24px;
 }
 .carouselNav:hover {
   transform: scale(1.1);
@@ -191,7 +199,6 @@
   flex: 40 1 0%;
   display: flex;
   flex-direction: column;
-  border-radius: 8px;
   font-size: 0.75em;
   color: #444;
   text-align: start;

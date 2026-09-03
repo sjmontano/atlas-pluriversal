@@ -96,6 +96,12 @@ export const PRESENTACION_MODAL: Modal = {
     label: 'Presentación',
     mapId: 'intro',
   },
+  theme: {
+    bodyMaxWidth: '85%',
+    iconSize: '48px',
+    fontSize: '0.15rem',
+    lineHeight: '1.6',
+  },
 }
 
 /* ── Presentación del mapa (confines del sur) ────────────────────────────── */

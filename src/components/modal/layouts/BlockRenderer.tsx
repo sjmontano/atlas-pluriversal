@@ -158,7 +158,7 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
             onClick={prev}
             aria-label="Imagen anterior"
           >
-            ‹
+            <img src="/assets/ui/icons/line/arrow-left.svg" alt="" aria-hidden="true" />
           </button>
         )}
 
@@ -201,7 +201,7 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
             onClick={next}
             aria-label="Siguiente imagen"
           >
-            ›
+            <img src="/assets/ui/icons/line/arrow-right.svg" alt="" aria-hidden="true" />
           </button>
         )}
       </div>

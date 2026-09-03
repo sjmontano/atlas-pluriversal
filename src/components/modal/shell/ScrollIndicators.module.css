@@ -11,12 +11,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--primary-blue, #0599b7);
+  width: 45px;
+  height: 46px;
+  background-image: url('/assets/ui/sidebar/fondo-icon.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
-.arrow svg {
-  width: 30px;
-  height: 30px;
+.arrow img {
+  width: 24px;
+  height: 24px;
 }
 
 .fade {

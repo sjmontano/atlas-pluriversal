@@ -19,8 +19,8 @@
 .dialog {
   /* Separación interna fluida: hasta 30px en escritorio y 16px en móvil */
   --modal-padding: clamp(16px, 2.5vw, 30px);
-  --icon-size: clamp(56px, 7vw, 72px);
-  --icon-glyph-size: 28px;
+  --icon-size: clamp(36px, 4vw, 46px);
+  --icon-glyph-size: 38px;
   --header-gap: clamp(10px, 1.4vw, 18px);
 
   /* Estilos inyectables por modal (sobrescribibles vía theme) */

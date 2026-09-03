@@ -60,9 +60,7 @@ export function ScrollIndicators({
           style={{ opacity: arrowOpacity }}
           aria-hidden="true"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 6v12M9 12l3 3 3-3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <img src="/assets/ui/icons/line/arrow-down.svg" alt="" />
         </div>
       )}
 
