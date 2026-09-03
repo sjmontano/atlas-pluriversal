@@ -11,8 +11,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 45px;
-  height: 46px;
+  width: 32px;
+  height: 33px;
   background-image: url('/assets/ui/sidebar/fondo-icon.svg');
   background-size: contain;
   background-repeat: no-repeat;
@@ -20,8 +20,8 @@
 }
 
 .arrow img {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
 }
 
 .fade {

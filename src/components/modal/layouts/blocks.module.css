@@ -135,6 +135,7 @@
   background: var(--primary-blue, #0599b7) !important;
 }
 .carouselDescription {
+  flex: 1;
   margin-top: 16px;
   padding: 12px 16px;
   border-left: 3px solid var(--primary-blue, #0599b7);
