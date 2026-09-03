@@ -191,6 +191,13 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
               ))}
             </div>
           )}
+
+          {/* Descripción de la imagen actual (mismo ancho que la imagen) */}
+          {images[index]?.description && (
+            <div className={styles.carouselDescription}>
+              <p>{images[index].description}</p>
+            </div>
+          )}
         </div>
 
         {/* Botón siguiente */}
@@ -205,13 +212,6 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
           </button>
         )}
       </div>
-
-      {/* Descripción de la imagen actual */}
-      {images[index]?.description && (
-        <div className={styles.carouselDescription}>
-          <p>{images[index].description}</p>
-        </div>
-      )}
     </div>
   )
 }

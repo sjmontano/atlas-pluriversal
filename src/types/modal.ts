@@ -55,6 +55,8 @@ export interface ModalTheme {
   bodyTextColor?: string
   /** Espaciado entre bloques */
   blockSpacing?: string
+  /** Espaciado entre columnas (columns block) */
+  columnGap?: string
 }
 
 /* ─── Acciones (footer — solo para botón de cerrar legacy) ─────────────── */
