@@ -1,53 +1,63 @@
+/**
+ * 🧪 TEST MAP PAGE — visor simple de desarrollo (/test/:mapId)
+ * ============================================================
+ * A propósito SIN el ShellLayout completo: mapa a pantalla completa +
+ * topbar mínima + paginación + DevToolsOverlay. La UI completa vive
+ * solo en las rutas de producción (/capitulo/:n/:mapId, /intro).
+ */
+
 import { useParams, Link } from 'react-router-dom'
-import { useRef, useState } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import { getAllMaps } from '@data/chapters/chapters.ts'
 import { AtlasMap } from '@components/map/AtlasMap.tsx'
-import { CalibrationPanel } from '@components/dev/calibration/CalibrationPanel'
+import { DevToolsOverlay } from '@components/dev/DevToolsOverlay'
+import { useMapStore } from '@stores/mapStore'
 import type { MapController } from '@services/MapRenderer'
 import styles from './TestMapPage.module.css'
 
-const ENABLE_DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
-
 export function TestMapPage() {
   const { mapId } = useParams<{ mapId: string }>()
-  const allMaps = getAllMaps()
+  const allMaps = useMemo(() => getAllMaps(), [])
   const currentIndex = allMaps.findIndex((m) => m.mapId === mapId)
   const currentMap = allMaps[currentIndex]
   const prevMap = currentIndex > 0 ? allMaps[currentIndex - 1] : null
   const nextMap = currentIndex < allMaps.length - 1 ? allMaps[currentIndex + 1] : null
 
   const controllerRef = useRef<MapController | null>(null)
-  const [rebuildKey] = useState(0)
+
+  useEffect(() => {
+    if (mapId !== undefined && useMapStore.getState().activeMapId !== mapId) {
+      useMapStore.getState().setActiveMap(mapId)
+    }
+  }, [mapId])
 
   if (!currentMap) {
     return (
-      <div className={styles.container}>
-        <h1>Mapa no encontrado: {mapId}</h1>
+      <div className={styles.missing}>
+        <p>Mapa no encontrado: {mapId}</p>
         <Link to="/dev" className={styles.backLink}>← Volver al menú</Link>
       </div>
     )
   }
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <Link to="/dev" className={styles.backLink}>← Dev Menu</Link>
-        <div className={styles.info}>
-          <span className={styles.id}>{currentMap.mapId}</span>
-          <h1 className={styles.title}>{currentMap.title}</h1>
-        </div>
-      </header>
+    <div className={styles.root}>
+      <AtlasMap
+        key={currentMap.mapId}
+        mapId={currentMap.mapId}
+        controllerRef={controllerRef}
+      />
+      <DevToolsOverlay
+        mapId={currentMap.mapId}
+        controllerRef={controllerRef}
+      />
 
-      <div className={styles.mapArea}>
-        <AtlasMap key={`${currentMap.mapId}-${rebuildKey}`} mapId={currentMap.mapId} controllerRef={controllerRef} />
-
-        {ENABLE_DEV_TOOLS && (
-          <CalibrationPanel
-            key={currentMap.mapId}
-            mapId={currentMap.mapId}
-            controllerRef={controllerRef}
-          />
-        )}
+      <div className={styles.topbar}>
+        <Link to="/dev" className={styles.backLink}>← /dev</Link>
+        <span className={styles.topTitle}>{currentMap.title}</span>
+        <span className={styles.counter}>
+          {currentIndex + 1} / {allMaps.length}
+        </span>
       </div>
 
       <nav className={styles.pagination}>
@@ -58,9 +68,6 @@ export function TestMapPage() {
         ) : (
           <span />
         )}
-        <span className={styles.counter}>
-          {currentIndex + 1} / {allMaps.length}
-        </span>
         {nextMap ? (
           <Link to={`/test/${nextMap.mapId}`} className={styles.navBtn}>
             {nextMap.title} →

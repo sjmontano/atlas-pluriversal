@@ -27,6 +27,7 @@ interface Tracked {
   sources: string[]
   layers: string[]
   markers: Marker[]
+  layerHandlers: Array<{ layer: string; type: 'click' | 'mouseenter' | 'mouseleave'; fn: (ev: unknown) => void }>
 }
 
 const trackedByMap = new WeakMap<maplibregl.Map, Tracked>()
@@ -34,19 +35,40 @@ const trackedByMap = new WeakMap<maplibregl.Map, Tracked>()
 function track(map: maplibregl.Map): Tracked {
   let t = trackedByMap.get(map)
   if (t === undefined) {
-    t = { sources: [], layers: [], markers: [] }
+    t = { sources: [], layers: [], markers: [], layerHandlers: [] }
     trackedByMap.set(map, t)
   }
   return t
 }
 
-function labelElement(encuadre: Encuadre, onNavigate: (target: string) => void): HTMLButtonElement {
+interface EncuadreHighlight {
+  on: () => void
+  off: () => void
+}
+
+const NO_HIGHLIGHT: EncuadreHighlight = { on: () => undefined, off: () => undefined }
+
+function labelElement(
+  encuadre: Encuadre,
+  onNavigate: (target: string) => void,
+  highlight: EncuadreHighlight,
+): HTMLButtonElement {
   const el = document.createElement('button')
   el.type = 'button'
   el.setAttribute('aria-label', `Ir a: ${encuadre.name}`)
+  /* OJO: MapLibre posiciona el marker escribiendo `transform` en este
+     elemento. NO tocar el.style.transform aquí (rompe la posición);
+     lo visual va en el wrapper interno. */
   Object.assign(el.style, {
     all: 'unset',
     cursor: 'pointer',
+    position: 'relative',
+    display: 'block',
+    maxWidth: '220px',
+  } satisfies Partial<CSSStyleDeclaration>)
+
+  const inner = document.createElement('span')
+  Object.assign(inner.style, {
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
@@ -59,7 +81,6 @@ function labelElement(encuadre: Encuadre, onNavigate: (target: string) => void):
     textAlign: 'center',
     color: '#ffffff',
     whiteSpace: 'normal',
-    maxWidth: '220px',
     textShadow: '0 1px 3px rgba(3, 9, 30, 0.85)',
     transition: 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), filter 0.25s ease',
   } satisfies Partial<CSSStyleDeclaration>)
@@ -78,19 +99,22 @@ function labelElement(encuadre: Encuadre, onNavigate: (target: string) => void):
     borderRadius: '6px',
     pointerEvents: 'none',
   } satisfies Partial<CSSStyleDeclaration>)
-  el.appendChild(bg)
+  inner.appendChild(bg)
 
   const text = document.createElement('span')
   text.textContent = encuadre.name
-  el.appendChild(text)
+  inner.appendChild(text)
+  el.appendChild(inner)
 
   el.addEventListener('mouseenter', () => {
-    el.style.transform = 'scale(1.06)'
-    el.style.filter = 'brightness(1.15)'
+    inner.style.transform = 'scale(1.06)'
+    inner.style.filter = 'brightness(1.15)'
+    highlight.on()
   })
   el.addEventListener('mouseleave', () => {
-    el.style.transform = ''
-    el.style.filter = ''
+    inner.style.transform = ''
+    inner.style.filter = ''
+    highlight.off()
   })
   el.addEventListener('click', (e) => {
     e.stopPropagation()
@@ -134,20 +158,50 @@ export async function addEncuadres(
           })
 
           const go = () => onNavigate(encuadre.targetMapId)
+          const pointerOn = () => { map.getCanvas().style.cursor = 'pointer' }
+          const pointerOff = () => { map.getCanvas().style.cursor = '' }
           map.on('click', fillId, go)
           map.on('click', lineId, go)
-          map.on('mouseenter', fillId, () => { map.getCanvas().style.cursor = 'pointer' })
-          map.on('mouseleave', fillId, () => { map.getCanvas().style.cursor = '' })
+          map.on('mouseenter', fillId, pointerOn)
+          map.on('mouseenter', lineId, pointerOn)
+          map.on('mouseleave', fillId, pointerOff)
+          map.on('mouseleave', lineId, pointerOff)
 
           t.sources.push(sid)
           t.layers.push(fillId, lineId)
+          t.layerHandlers.push(
+            { layer: fillId, type: 'click', fn: go },
+            { layer: lineId, type: 'click', fn: go },
+            { layer: fillId, type: 'mouseenter', fn: pointerOn },
+            { layer: lineId, type: 'mouseenter', fn: pointerOn },
+            { layer: fillId, type: 'mouseleave', fn: pointerOff },
+            { layer: lineId, type: 'mouseleave', fn: pointerOff },
+          )
         } catch {
           /* polígono ausente: la etiqueta sigue navegable */
         }
       }
 
+      /* Resaltado sutil del cuadrante al hover de la etiqueta */
+      const highlight: EncuadreHighlight = encuadre.url === undefined
+        ? NO_HIGHLIGHT
+        : {
+            on: () => {
+              try {
+                map.setPaintProperty(`${PREFIX}-fill-${encuadre.id}`, 'fill-opacity', 0.25)
+                map.setPaintProperty(`${PREFIX}-line-${encuadre.id}`, 'line-width', 3)
+              } catch { /* capa aún no lista */ }
+            },
+            off: () => {
+              try {
+                map.setPaintProperty(`${PREFIX}-fill-${encuadre.id}`, 'fill-opacity', 0.08)
+                map.setPaintProperty(`${PREFIX}-line-${encuadre.id}`, 'line-width', 1.5)
+              } catch { /* noop */ }
+            },
+          }
+
       /* Etiqueta clickeable */
-      const marker = new Marker({ element: labelElement(encuadre, onNavigate) })
+      const marker = new Marker({ element: labelElement(encuadre, onNavigate, highlight) })
         .setLngLat(encuadre.labelCoords)
         .addTo(map)
       t.markers.push(marker)
@@ -158,6 +212,9 @@ export async function addEncuadres(
 export function removeEncuadres(map: maplibregl.Map): void {
   const t = trackedByMap.get(map)
   if (t === undefined) return
+  for (const h of t.layerHandlers) {
+    try { map.off(h.type, h.layer, h.fn) } catch { /* noop */ }
+  }
   for (const id of t.layers) {
     try { if (map.getLayer(id)) map.removeLayer(id) } catch { /* noop */ }
   }

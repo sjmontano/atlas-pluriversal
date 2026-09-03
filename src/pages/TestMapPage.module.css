@@ -1,76 +1,74 @@
-.container {
+.root {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: 100vh;
   background: var(--fondo-oscuro);
 }
 
-.header {
+/* Topbar mínima de desarrollo (título + contador) */
+.topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   gap: var(--space-md);
   padding: var(--space-sm) var(--space-md);
+  background: rgba(3, 9, 30, 0.85);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 100;
+  pointer-events: none;
+}
+.topbar > * {
+  pointer-events: auto;
+}
+
+.topTitle {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.missing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: var(--space-md);
+  color: var(--text-secondary);
 }
 
 .backLink {
   font-size: var(--text-sm);
   color: var(--primary-blue);
   transition: opacity 0.15s;
-  white-space: nowrap;
 }
 .backLink:hover {
   opacity: 0.7;
 }
 
-.info {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-}
-
-.id {
-  font-size: 11px;
-  color: var(--text-secondary);
-  font-family: monospace;
-}
-
-.title {
-  font-size: var(--text-base);
-  font-weight: 400;
-}
-
-.mapArea {
-  flex: 1;
-  display: flex;
-  min-height: 0;
-}
-
-.placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-md);
-  color: var(--text-secondary);
-}
-
-.mapId_display {
-  font-size: var(--text-xl);
-  font-family: monospace;
-  color: var(--primary-blue);
-  opacity: 0.4;
-}
-
-.hint {
-  font-size: var(--text-sm);
-}
-
 .pagination {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: var(--space-sm) var(--space-md);
+  background: rgba(3, 9, 30, 0.85);
+  backdrop-filter: blur(8px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 100;
 }
 
 .navBtn {

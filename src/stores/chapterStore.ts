@@ -3,17 +3,20 @@ import { getChapterMapIds } from '@data/chapters/chapters.ts'
 import { useMapStore } from './mapStore.ts'
 
 export interface ChapterStoreState {
-  activeChapter: number
+  /** null = ningún capítulo seleccionado (ej. /intro: todos los tabs navegables). */
+  activeChapter: number | null
   activeTerritory: string | null
   chapterMaps: string[]
   goToChapter: (chapter: number) => void
+  /** Limpia la selección (volver a /intro). */
+  clearChapter: () => void
   goToTerritory: (territory: string) => void
 }
 
 export const useChapterStore = create<ChapterStoreState>()((set) => ({
-  activeChapter: 1,
+  activeChapter: null,
   activeTerritory: null,
-  chapterMaps: getChapterMapIds(1),
+  chapterMaps: [],
 
   goToChapter: (chapter) => {
     const maps = getChapterMapIds(chapter)
@@ -23,6 +26,8 @@ export const useChapterStore = create<ChapterStoreState>()((set) => ({
       useMapStore.getState().setActiveMap(maps[0]!)
     }
   },
+
+  clearChapter: () => set({ activeChapter: null, activeTerritory: null, chapterMaps: [] }),
 
   goToTerritory: (territory) => set({ activeTerritory: territory }),
 }))
