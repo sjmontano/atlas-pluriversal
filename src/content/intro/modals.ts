@@ -15,7 +15,7 @@ import type { Modal } from '../../types/modal.ts'
 
 /* ── Assets ──────────────────────────────────────────────────────────────── */
 
-const PRESENTACION_ICON = '/assets/modal/feature/presentation.svg'
+const PRESENTACION_ICON = '/assets/modal/inicio/presentation.svg'
 const TALLER_1 = '/assets/img/talleres/taller-1.webp'
 const TALLER_2 = '/assets/img/talleres/taller-2.webp'
 const TALLER_3 = '/assets/img/talleres/taller-3.webp'
