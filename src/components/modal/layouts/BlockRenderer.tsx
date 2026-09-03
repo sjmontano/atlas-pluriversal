@@ -7,7 +7,7 @@
  * añadir caso aquí y estilo en blocks.module.css.
  */
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { ModalBlock } from '../../../types/modal.ts'
 import styles from './blocks.module.css'
 
@@ -126,28 +126,64 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
   const images = block.images
   const [index, setIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchDelta, setTouchDelta] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  // Auto-play: cambia cada 6s, se pausa al hover
-  useState(() => {
-    let interval: ReturnType<typeof setInterval>
-    if (!isPaused && images.length > 1) {
-      interval = setInterval(() => {
-        setIndex((prev) => (prev + 1) % images.length)
-      }, 6000)
-    }
+  const next = useCallback(() => setIndex((i) => (i + 1) % images.length), [images.length])
+  const prev = useCallback(() => setIndex((i) => (i - 1 + images.length) % images.length), [images.length])
+
+  // Auto-play con cleanup correcto
+  useEffect(() => {
+    if (isPaused || images.length <= 1) return
+    const interval = setInterval(next, 6000)
     return () => clearInterval(interval)
-  })
+  }, [isPaused, images.length, next])
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev() }
+    if (e.key === 'ArrowRight') { e.preventDefault(); next() }
+  }, [next, prev])
+
+  // Touch/swipe
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0]
+    if (!touch) return
+    setTouchStart(touch.clientX)
+    setTouchDelta(0)
+  }, [])
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (touchStart === null) return
+    const touch = e.touches[0]
+    if (!touch) return
+    setTouchDelta(touch.clientX - touchStart)
+  }, [touchStart])
+
+  const onTouchEnd = useCallback(() => {
+    if (Math.abs(touchDelta) > 50) {
+      if (touchDelta > 0) prev()
+      else next()
+    }
+    setTouchStart(null)
+    setTouchDelta(0)
+  }, [touchDelta, next, prev])
 
   if (images.length === 0) return null
 
-  const prev = () => setIndex((i) => (i - 1 + images.length) % images.length)
-  const next = () => setIndex((i) => (i + 1) % images.length)
+  const slideOffset = touchStart !== null ? touchDelta * 0.3 : 0
 
   return (
     <div
+      ref={containerRef}
       className={`${styles.block} ${styles.carousel}`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="region"
+      aria-label="Carrusel de imágenes"
     >
       <div className={styles.carouselInner}>
         {/* Botón anterior */}
@@ -162,12 +198,17 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
           </button>
         )}
 
-        {/* Contenedor de imágenes + descriptor (mismo ancho) */}
+        {/* Contenedor de imágenes + descriptor */}
         <div className={styles.carouselContent}>
-          <div className={styles.carouselTrackContainer}>
+          <div
+            className={styles.carouselTrackContainer}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
             <div
               className={styles.carouselTrack}
-              style={{ transform: `translateX(-${index * 100}%)` }}
+              style={{ transform: `translateX(calc(-${index * 100}% + ${slideOffset}px))` }}
             >
               {images.map((img, i) => (
                 <img
@@ -175,11 +216,12 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
                   className={styles.carouselSlide}
                   src={img.src}
                   alt={img.alt}
+                  loading={i === 0 ? 'eager' : 'lazy'}
                 />
               ))}
             </div>
 
-            {/* Dots dentro de la imagen */}
+            {/* Dots */}
             {images.length > 1 && (
               <div className={styles.carouselDots}>
                 {images.map((_, i) => (
@@ -194,12 +236,12 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
             )}
           </div>
 
-          {/* Descripción de la imagen actual */}
-          {images[index]?.description && (
-            <div className={styles.carouselDescription}>
+          {/* Descripción con transición */}
+          <div className={styles.carouselDescription} key={index}>
+            {images[index]?.description && (
               <p>{images[index].description}</p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Botón siguiente */}
