@@ -14,53 +14,31 @@
  *   cap1-voz-<slug>           4 tramos Voz del río (click en capa)
  */
 
-import type { Modal, ModalBlock } from '../../types/modal.ts'
+import type { Modal } from '../../types/modal.ts'
 import { CAP1_TEXTOS } from './cap1-textos.generated.ts'
-
-/** Divide el texto literal de v17 (separado por \n\n) en bloques párrafo. */
-function paragraphs(texto: string | null, base: string): ModalBlock[] {
-  if (texto === null) return []
-  return texto
-    .split('\n\n')
-    .map((t) => t.trim())
-    .filter((t) => t !== '')
-    .map((text, i) => ({ type: 'paragraph' as const, id: `${base}-p${i + 1}`, text }))
-}
+import { paragraphs, presentacion, type PresentacionEntry } from './_helpers.ts'
 
 /* ── Presentaciones por mapa (ids 2–7 de v17) ─────────────────────────── */
 
-function presentacion(mapKey: string, textoId: string): Modal {
+/** Adapta la forma generada { highLight, texto, link } a PresentacionEntry. */
+function cap1Entry(textoId: string): PresentacionEntry {
   const entry = CAP1_TEXTOS[textoId]
   if (entry === undefined) throw new Error(`CAP1_TEXTOS sin id ${textoId}`)
-  const blocks = paragraphs(entry.texto, textoId)
-  if (entry.link !== '') {
-    blocks.push({ type: 'link', id: `${textoId}-link`, href: entry.link, label: 'Ver documento completo' })
-  }
   return {
-    id: `cap1-presentacion-${mapKey}`,
-    section: 'capitulo-1',
-    variant: 'large',
     title: entry.highLight ?? 'Presentación',
     highlight: 'Capítulo I',
-    icon: 'presentation',
-    body: blocks,
-    trigger: {
-      type: 'button',
-      icon: 'presentation',
-      frame: '1',
-      label: 'Presentación',
-      mapId: `chapter1-${mapKey}`,
-    },
+    texto: entry.texto,
+    link: entry.link,
   }
 }
 
 const PRESENTACIONES: Modal[] = [
-  presentacion('encuadres', '2'),
-  presentacion('bredunco', '3'),
-  presentacion('formas-paisaje', '4'),
-  presentacion('ecosistemas', '5'),
-  presentacion('mosaicos-del-agua', '6'),
-  presentacion('un-rio-cauca', '7'),
+  presentacion(1, 'encuadres', cap1Entry('2')),
+  presentacion(1, 'bredunco', cap1Entry('3')),
+  presentacion(1, 'formas-paisaje', cap1Entry('4')),
+  presentacion(1, 'ecosistemas', cap1Entry('5')),
+  presentacion(1, 'mosaicos-del-agua', cap1Entry('6')),
+  presentacion(1, 'un-rio-cauca', cap1Entry('7')),
 ]
 
 /* ── Presentación del proyecto (id 1 de v17 — texto JSX portado a bloques) ─ */
