@@ -29,7 +29,7 @@
   --body-line-height: 1.6;
   --body-text-color: var(--text-primary, #4b5563);
   --block-spacing: 16px;
-  --column-gap: 1em;
+  --column-gap: 1.5em;
 
   /* Recálculo exacto para alinear el texto con el título y decorador */
   --content-left-indent: calc(var(--modal-padding) + var(--icon-size) + var(--header-gap));
