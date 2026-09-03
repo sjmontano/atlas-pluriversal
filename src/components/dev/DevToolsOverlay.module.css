@@ -1,0 +1,101 @@
+/* Barra de lectura siempre visible: arriba-derecha (zoom, Z, cursor) */
+.infoBar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 250;
+  display: flex;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(12, 12, 28, 0.97);
+  border: 1px solid #2a2a4e;
+  border-radius: 12px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  color: #c8d8ff;
+  backdrop-filter: blur(16px);
+  pointer-events: auto;
+}
+
+.infoItem {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.infoLabel {
+  color: #6a8cff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.infoValue {
+  color: #e8e8ff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Botón abrir/cerrar: debajo de la infoBar, arriba-derecha */
+.toggleBtn {
+  position: absolute;
+  top: 56px;
+  right: 12px;
+  z-index: 250;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #2a2a4e;
+  background: rgba(12, 12, 28, 0.95);
+  color: #e8e8ff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition: all 0.15s ease;
+}
+
+.toggleBtn:hover {
+  background: rgba(30, 30, 60, 0.98);
+  border-color: #4a6aff;
+}
+
+/* Panel de herramientas: a la IZQUIERDA (capas, calibración, basemap, mapas) */
+.panel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  bottom: 64px;
+  width: 360px;
+  max-width: calc(100vw - 24px);
+  z-index: 200;
+  overflow-y: auto;
+  border-radius: 12px;
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .toggleBtn {
+    top: auto;
+    bottom: 64px;
+    right: 12px;
+  }
+
+  .infoBar {
+    top: auto;
+    bottom: 108px;
+    right: 12px;
+    justify-content: center;
+  }
+
+  .panel {
+    top: auto;
+    bottom: 152px;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-height: 45vh;
+  }
+}

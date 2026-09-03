@@ -5,7 +5,7 @@ vi.hoisted(() => {
 })
 
 import { render, screen, fireEvent, act } from '@testing-library/react'
-import { CalibrationPanel } from '@components/calibration/CalibrationPanel'
+import { CalibrationPanel } from '@components/dev/calibration/CalibrationPanel'
 import { useLayerStore } from '@stores/layerStore'
 import { processBounds } from '@services/BoundsCalculator'
 

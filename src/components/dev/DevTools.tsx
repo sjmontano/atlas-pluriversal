@@ -1,17 +1,22 @@
 import { useState, useCallback, useMemo } from 'react'
+import type { RefObject } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useMapUIStore } from '@stores/mapUIStore'
 import { useMapStore } from '@stores/mapStore'
 import { DevLayerMenu } from './DevLayerMenu'
 import { CalibrationPanel } from './calibration/CalibrationPanel'
 import { getAllMaps } from '@data/chapters/chapters'
 import type { BasemapStyle } from '@services/BasemapManager'
+import type { MapController } from '@services/MapRenderer'
 import styles from './DevTools.module.css'
 
 interface Props {
   mapId: string
+  controllerRef?: RefObject<MapController | null>
 }
 
-export function DevTools({ mapId }: Props) {
+export function DevTools({ mapId, controllerRef }: Props) {
+  const navigate = useNavigate()
   const { basemapVisible, basemapStyle, imageOpacity, toggleBasemap, setBasemapStyle, setImageOpacity } = useMapUIStore()
   const { activeMapId, setActiveMap } = useMapStore()
 
@@ -22,7 +27,8 @@ export function DevTools({ mapId }: Props) {
 
   const handleMapChange = useCallback((newMapId: string) => {
     setActiveMap(newMapId)
-  }, [setActiveMap])
+    navigate(`/test/${newMapId}`)
+  }, [setActiveMap, navigate])
 
   const tabs = [
     { id: 'layers', label: 'Capas', icon: '🗂' },
@@ -49,7 +55,9 @@ export function DevTools({ mapId }: Props) {
 
       <div className={styles.content}>
         {activeTab === 'layers' && <DevLayerMenu mapId={mapId} />}
-        {activeTab === 'calibration' && <CalibrationPanel mapId={mapId} />}
+        {activeTab === 'calibration' && controllerRef && (
+          <CalibrationPanel mapId={mapId} controllerRef={controllerRef} />
+        )}
         {activeTab === 'basemap' && (
           <BasemapDevControls
             visible={basemapVisible}
