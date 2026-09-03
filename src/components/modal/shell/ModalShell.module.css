@@ -233,7 +233,6 @@
   /* Encima de .dialogBg (z-index 0) */
   z-index: 1;
   overflow: hidden;
-  max-width: var(--body-max-width);
 }
 
 .bodyScrollbar {
@@ -253,6 +252,8 @@
   padding-bottom: var(--modal-padding);
   padding-left: var(--content-left-indent);
   padding-right: 48px;
+  max-width: var(--body-max-width, 90%);
+  margin: 0 auto;
   font-size: var(--body-font-size);
   line-height: var(--body-line-height);
   color: var(--body-text-color);
