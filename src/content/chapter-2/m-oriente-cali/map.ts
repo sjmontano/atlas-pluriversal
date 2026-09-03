@@ -1,35 +1,24 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762486120/geoImages/jnqo25dhvenvrseezvlt.webp'
-
-const geo = {
-  pgw: [0, 0.000600802103, 0.000600804878, 0, -79.19033199235821, 1.5356283868726415] as const,
-  width: 5138,
-  height: 9037,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 10,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter2-m-oriente-cali',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762485986/geoImages/xa15iigitokhfyvek9s5.webp',
-    placeholder: ph(base),
+  ui: {
+    title: 'Síntesis territorial del Oriente de Cali',
+    minimap: 'cali',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap2-sintesis-cali' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1T5Q5cW324L6SKpVvUx9KkePi5CZns6gR/view?usp=sharing' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/118xtXBCisNiXLEXiWVNYAsRAZFYbMzmC/view' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter2-m-oriente-cali', geo, config.initialBearing, config.zoomMax),
-  layers: LAYERS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 0.000600802103, 0.000600804878, 0, -79.19033199235821, 1.5356283868726415] as const,
+    width: 5138,
+    height: 9037,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762486120/geoImages/jnqo25dhvenvrseezvlt.webp',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762485986/geoImages/xa15iigitokhfyvek9s5.webp',
+  zoomMax: 10,
+  extras: { layers: LAYERS },
+})

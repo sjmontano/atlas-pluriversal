@@ -1,35 +1,23 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LEGENDS } from './legends'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/smdehdeaewwwasco6wt5.png'
-
-const geo = {
-  pgw: [0, 2.38227e-7, 2.38244e-7, 0, -76.2901666061832, 3.2244952203163693] as const,
-  width: 7015,
-  height: 12472,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 21,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter4-la-virginia',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765993236/geoImages/gikolsdb7i25mvhakxds.png',
-    placeholder: ph(base),
+  ui: {
+    title: 'Finca La Virginia',
+    minimap: 'sur',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-la-virginia' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1MJJDDs-F_2J7zeGJ1nhWn4rCaErNXfew/view?usp=sharing' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter4-la-virginia', geo, config.initialBearing, config.zoomMax),
-  legends: LEGENDS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 2.38227e-7, 2.38244e-7, 0, -76.2901666061832, 3.2244952203163693] as const,
+    width: 7015,
+    height: 12472,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/smdehdeaewwwasco6wt5.png',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765993236/geoImages/gikolsdb7i25mvhakxds.png',
+  zoomMax: 21,
+  extras: { legends: LEGENDS },
+})

@@ -1,39 +1,26 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 import { GROUPS } from './groups'
 import { LEGENDS } from './legends'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1763852352/geoImages/maiachqmczyrhmph1rql.webp'
-
-const geo = {
-  pgw: [0, 0.000065247158, 0.000065249271, 0, -76.744923302940, 3.108582581431] as const,
-  width: 4960,
-  height: 8822,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 13,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter3-cali-deseca',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1763852262/geoImages/llovghvucpft64ea6zad.webp',
-    placeholder: ph(base),
+  ui: {
+    title: 'Cali deseca',
+    minimap: 'cali',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap3-presentacion-cali-deseca' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/10kcf3ObSpEdLuzZdFZiDh_yJIZlTKHEH/view?usp=sharing' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1CGHbXCMCqEJIbxw7sNKpM88R9QBA8twX/view?usp=sharing' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter3-cali-deseca', geo, config.initialBearing, config.zoomMax),
-  layers: LAYERS,
-  groups: GROUPS,
-  legends: LEGENDS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 0.000065247158, 0.000065249271, 0, -76.744923302940, 3.108582581431] as const,
+    width: 4960,
+    height: 8822,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1763852352/geoImages/maiachqmczyrhmph1rql.webp',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1763852262/geoImages/llovghvucpft64ea6zad.webp',
+  zoomMax: 13,
+  extras: { layers: LAYERS, groups: GROUPS, legends: LEGENDS },
+})

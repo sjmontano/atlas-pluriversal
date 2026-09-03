@@ -1,37 +1,25 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 import { LEGENDS } from './legends'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762998575/geoImages/ladieazp24oyoyqszzlo.webp'
-
-const geo = {
-  pgw: [0, 0.000035559180, 0.000035560332, 0, -76.801058760121, 2.743972429392] as const,
-  width: 4960,
-  height: 8822,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 14,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter3-encharcaron',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762997781/geoImages/b8zivpviw5iz5yz6cgbz.webp',
-    placeholder: ph(base),
+  ui: {
+    title: 'Nos encharcaron el río',
+    minimap: 'suarez',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap3-presentacion-encharcaron' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1Hj4e_Mlq5JzRbv_Ns38Wlo_IWLwsEEyX/view' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1serO1G5GM5kWplw8Ax4UhGOce0t6o-29/view' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter3-encharcaron', geo, config.initialBearing, config.zoomMax),
-  layers: LAYERS,
-  legends: LEGENDS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 0.000035559180, 0.000035560332, 0, -76.801058760121, 2.743972429392] as const,
+    width: 4960,
+    height: 8822,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762998575/geoImages/ladieazp24oyoyqszzlo.webp',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762997781/geoImages/b8zivpviw5iz5yz6cgbz.webp',
+  zoomMax: 14,
+  extras: { layers: LAYERS, legends: LEGENDS },
+})

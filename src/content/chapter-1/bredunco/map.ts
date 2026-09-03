@@ -1,30 +1,8 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { POIS } from './pois'
 import { LAYERS, GROUPS } from './layers'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752360535/geoImages/kv5mawmj8cefhcqho8np.webp'
-const full =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752360577/geoImages/zvluewqlzmf9hw9fua6x.avif'
-
-const geo = {
-  pgw: [0, 0.001181998411, 0.001182047579, 0, -78.907953240108, -0.290036434033] as const,
-  width: 5649,
-  height: 11141,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 9,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter1-bredunco',
   ui: {
     title: 'Bredunco',
@@ -35,11 +13,13 @@ export default {
       { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/19t24x_n0A_Fe_tgzWX57uP6azJc-PHyo/view' },
     ],
   },
-  geo,
-  images: { base, full, placeholder: ph(base) },
-  config,
-  tiles: makeTilesConfig('chapter1-bredunco', geo, config.initialBearing, config.zoomMax),
-  layers: LAYERS,
-  groups: GROUPS,
-  pois: POIS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 0.001181998411, 0.001182047579, 0, -78.907953240108, -0.290036434033] as const,
+    width: 5649,
+    height: 11141,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752360535/geoImages/kv5mawmj8cefhcqho8np.webp',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752360577/geoImages/zvluewqlzmf9hw9fua6x.avif',
+  zoomMax: 9,
+  extras: { layers: LAYERS, groups: GROUPS, pois: POIS },
+})

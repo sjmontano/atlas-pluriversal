@@ -1,35 +1,24 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { POIS } from './pois'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759512015/geoImages/roog2p6gjo3dnnqpcfel.webp'
-
-const geo = {
-  pgw: [0, 0.000015918409, 0.000015918925, 0, -76.53676820822001, 3.348181582808] as const,
-  width: 4960,
-  height: 8822,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 15,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter2-cali',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759511931/geoImages/ku7ikq6ottmty9pl91u0.webp',
-    placeholder: ph(base),
+  ui: {
+    title: 'Entramado territorial Oriente de Cali con sus alternativas transformadoras',
+    minimap: 'cali',
+    sidebar: [
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1cDppV8K6vz00NcfmmbNmpl2Eb7RCdHq9/view?usp=sharing' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1y97OfUXrTP9R8mo2FZKOhBI_po8SFUoH/view' },
+      { id: 'sintesis', type: 'goto', icon: 'datos', label: 'Síntesis', frame: '4', to: '/capitulo/4/chapter4-problematicas' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter2-cali', geo, config.initialBearing, config.zoomMax),
-  pois: POIS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 0.000015918409, 0.000015918925, 0, -76.53676820822001, 3.348181582808] as const,
+    width: 4960,
+    height: 8822,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759512015/geoImages/roog2p6gjo3dnnqpcfel.webp',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759511931/geoImages/ku7ikq6ottmty9pl91u0.webp',
+  zoomMax: 15,
+  extras: { pois: POIS },
+})

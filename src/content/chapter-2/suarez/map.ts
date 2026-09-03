@@ -1,35 +1,24 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { POIS } from './pois'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761061326/geoImages/mwz79qubfmr0x5zqtzto.webp'
-
-const geo = {
-  pgw: [0, 0.0000220378935, 0.000022038657, 0, -76.771441329681, 2.758437617084] as const,
-  width: 6300,
-  height: 11200,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 14,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter2-suarez',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761061249/geoImages/nkxiwrxtbovp66gobcdq.webp',
-    placeholder: ph(base),
+  ui: {
+    title: 'Entramado territorial Suárez con sus alternativas transformadoras',
+    minimap: 'suarez',
+    sidebar: [
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1tx_X8KsUHx0q4mJvhJ-MhvTbMI3ENkz0/view?usp=sharing' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1ndp-Y4eOTq62w20vqb72DrwD8SfkjmNH/view' },
+      { id: 'sintesis', type: 'goto', icon: 'datos', label: 'Síntesis', frame: '4', to: '/capitulo/4/chapter4-problematicas' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter2-suarez', geo, config.initialBearing, config.zoomMax),
-  pois: POIS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 0.0000220378935, 0.000022038657, 0, -76.771441329681, 2.758437617084] as const,
+    width: 6300,
+    height: 11200,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761061326/geoImages/mwz79qubfmr0x5zqtzto.webp',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761061249/geoImages/nkxiwrxtbovp66gobcdq.webp',
+  zoomMax: 14,
+  extras: { pois: POIS },
+})

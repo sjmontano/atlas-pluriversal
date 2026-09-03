@@ -1,35 +1,26 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LEGENDS } from './legends'
-
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
 
 const base =
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765986412/geoImages/u2dqe5dcdqzn1am0whlj.png'
 
-const geo = {
-  pgw: [0, 5.06536e-7, 5.06572e-7, 0, -76.68490913590671, 2.9357762363425706] as const,
-  width: 3578,
-  height: 6361,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 21,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter4-asoyoge',
-  geo,
-  images: {
-    base,
-    full: base,
-    placeholder: ph(base),
+  ui: {
+    title: 'Centro agropecuario ASOYOGE',
+    minimap: 'sur',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-asoyoge' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1zU1brROKItcLuutpzRhmLOoSCu_rPHL5/view?usp=sharing' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter4-asoyoge', geo, config.initialBearing, config.zoomMax),
-  legends: LEGENDS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 5.06536e-7, 5.06572e-7, 0, -76.68490913590671, 2.9357762363425706] as const,
+    width: 3578,
+    height: 6361,
+  },
+  base,
+  full: base,
+  zoomMax: 21,
+  extras: { legends: LEGENDS },
+})

@@ -1,30 +1,27 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 
-const geo = {
-  pgw: [0, -0.000079124151, -0.000079131596, 0, -76.32673887696231, 3.119152348416211] as const,
-  width: 9448,
-  height: 5314,
-} as const
-const config = {
-  initialBearing: 180,
-  useTransformConstrain: true,
-  zoomMax: 12,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
+const base = '/assets/maps/cap2/modelo-territorial-suarez.png'
 
-export default {
+export default makeMap({
   mapId: 'chapter2-m-suarez',
-  geo,
-  images: {
-    base: '/assets/maps/cap2/modelo-territorial-suarez.png',
-    full: '/assets/maps/cap2/modelo-territorial-suarez.png',
-    placeholder: '/assets/maps/cap2/modelo-territorial-suarez.png',
+  ui: {
+    title: 'Síntesis territorial de Suárez',
+    minimap: 'suarez',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap2-sintesis-suarez' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1OU4oDKbB7ZBrgZ2ZNqUrzpL2A3JwRdM2/view?usp=sharing' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1FV4jcrdxeRRdOmRuYUlaozv0t4Vq1Ocd/view' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter2-m-suarez', geo, config.initialBearing, config.zoomMax),
-  layers: LAYERS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, -0.000079124151, -0.000079131596, 0, -76.32673887696231, 3.119152348416211] as const,
+    width: 9448,
+    height: 5314,
+  },
+  base,
+  full: base,
+  zoomMax: 12,
+  bearing: 180,
+  extras: { layers: LAYERS },
+})

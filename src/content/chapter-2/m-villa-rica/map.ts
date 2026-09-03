@@ -1,35 +1,24 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759612261/geoImages/pabcndrbg0gjx29iuccg.webp'
-
-const geo = {
-  pgw: [0, 0.000036518263, 0.000036520866, 0, -76.53721204001468, 2.9674982215900085] as const,
-  width: 7015,
-  height: 12472,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 13,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter2-m-villa-rica',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1767891949/geoImages/knk721fgkqtvdxnppxzr.webp',
-    placeholder: ph(base),
+  ui: {
+    title: 'Síntesis territorial de Villa Rica',
+    minimap: 'villa-rica',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap2-sintesis-villa-rica' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1mM9vTOorSN0IwCMen3qHezxYXQ5gdmUw/view?usp=sharing' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1MgqxX2ZC73RWk7YBgIqeHe64e78eopG_/view' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter2-m-villa-rica', geo, config.initialBearing, config.zoomMax),
-  layers: LAYERS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 0.000036518263, 0.000036520866, 0, -76.53721204001468, 2.9674982215900085] as const,
+    width: 7015,
+    height: 12472,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759612261/geoImages/pabcndrbg0gjx29iuccg.webp',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1767891949/geoImages/knk721fgkqtvdxnppxzr.webp',
+  zoomMax: 13,
+  extras: { layers: LAYERS },
+})

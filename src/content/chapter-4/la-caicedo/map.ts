@@ -1,35 +1,23 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LEGENDS } from './legends'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/fmyppc7aotckznz2zsah.png'
-
-const geo = {
-  pgw: [0, 3.17488e-7, 3.17511e-7, 0, -76.42831830916282, 3.1837989140567857] as const,
-  width: 6945,
-  height: 12347,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 20,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter4-la-caicedo',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765994205/geoImages/ssdze3oougoysjid5icz.png',
-    placeholder: ph(base),
+  ui: {
+    title: 'Finca La Caicedo',
+    minimap: 'sur',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-la-caicedo' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/12KlWauZzbL7T44OGlV88imoofpFz3fP_/view?usp=sharing' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter4-la-caicedo', geo, config.initialBearing, config.zoomMax),
-  legends: LEGENDS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 3.17488e-7, 3.17511e-7, 0, -76.42831830916282, 3.1837989140567857] as const,
+    width: 6945,
+    height: 12347,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/fmyppc7aotckznz2zsah.png',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765994205/geoImages/ssdze3oougoysjid5icz.png',
+  zoomMax: 20,
+  extras: { legends: LEGENDS },
+})

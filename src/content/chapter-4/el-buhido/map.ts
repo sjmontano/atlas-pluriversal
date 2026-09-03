@@ -1,35 +1,23 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LEGENDS } from './legends'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765986412/geoImages/l5qj5qxh5onul1b26e71.png'
-
-const geo = {
-  pgw: [0, 0.000000316606, 0.000000316628, 0, -76.683480669945, 2.941142661121] as const,
-  width: 7015,
-  height: 12472,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 20,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter4-el-buhido',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765988704/geoImages/p9hryf14z42ilaw0iiez.png',
-    placeholder: ph(base),
+  ui: {
+    title: 'Finca El Buhido',
+    minimap: 'sur',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-el-buhido' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1AB_k7XDR3d17TOzXHgJBwPm1pMxeRslA/view' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter4-el-buhido', geo, config.initialBearing, config.zoomMax),
-  legends: LEGENDS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 0.000000316606, 0.000000316628, 0, -76.683480669945, 2.941142661121] as const,
+    width: 7015,
+    height: 12472,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765986412/geoImages/l5qj5qxh5onul1b26e71.png',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765988704/geoImages/p9hryf14z42ilaw0iiez.png',
+  zoomMax: 20,
+  extras: { legends: LEGENDS },
+})

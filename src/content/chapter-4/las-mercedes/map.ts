@@ -1,35 +1,23 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LEGENDS } from './legends'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/uda3sxgw61nf5tt6mtfp.png'
-
-const geo = {
-  pgw: [0, 2.37423e-7, 2.3744e-7, 0, -76.68619953199119, 2.930137907002091] as const,
-  width: 7015,
-  height: 12472,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 21,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter4-las-mercedes',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765992502/geoImages/xndkrm7tpgdbw881co0v.png',
-    placeholder: ph(base),
+  ui: {
+    title: 'Finca Las Mercedes',
+    minimap: 'sur',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-las-mercedes' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1r8Rf_oQ28OAvHxR7AxKvoE6D1rT_vhJo/view?usp=sharing' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter4-las-mercedes', geo, config.initialBearing, config.zoomMax),
-  legends: LEGENDS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 2.37423e-7, 2.3744e-7, 0, -76.68619953199119, 2.930137907002091] as const,
+    width: 7015,
+    height: 12472,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/uda3sxgw61nf5tt6mtfp.png',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765992502/geoImages/xndkrm7tpgdbw881co0v.png',
+  zoomMax: 21,
+  extras: { legends: LEGENDS },
+})

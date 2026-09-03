@@ -1,35 +1,23 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LEGENDS } from './legends'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/gqczkzh18jqhgatzwiht.png'
-
-const geo = {
-  pgw: [0, 4.90819e-7, 4.90854e-7, 0, -76.67269057988042, 2.953934089665147] as const,
-  width: 7366,
-  height: 13096,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 20,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter4-el-paso',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765992022/geoImages/tljpufqwb78r7nkqt27y.png',
-    placeholder: ph(base),
+  ui: {
+    title: 'Finca El Paso',
+    minimap: 'villa-rica',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-el-paso' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1DAQ5cwhkgnVCpojfYjbnIVJUlBUT9mod/view' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter4-el-paso', geo, config.initialBearing, config.zoomMax),
-  legends: LEGENDS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 4.90819e-7, 4.90854e-7, 0, -76.67269057988042, 2.953934089665147] as const,
+    width: 7366,
+    height: 13096,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/gqczkzh18jqhgatzwiht.png',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765992022/geoImages/tljpufqwb78r7nkqt27y.png',
+  zoomMax: 20,
+  extras: { legends: LEGENDS },
+})

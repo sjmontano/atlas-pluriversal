@@ -1,35 +1,25 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LEGENDS } from './legends'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765986412/geoImages/yodemiucfhtp0iklk2fi.png'
-
-const geo = {
-  pgw: [2.17e-10, -8.75649e-7, -8.75586e-7, -2.17e-10, -76.48242978189349, 3.43619004516839] as const,
-  width: 7015,
-  height: 12472,
-} as const
-const config = {
-  initialBearing: 0,
-  useTransformConstrain: true,
-  zoomMax: 18,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter4-bosque-comestible',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765989453/geoImages/p9npqvcz4r2f7zziqi6e.webp',
-    placeholder: ph(base),
+  ui: {
+    title: 'Bosque comestible',
+    minimap: 'sur',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-bosque-comestible' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1WOTbHyYhsacU0OZOxny76qwoNNud02yH/view?usp=sharing' },
+      { id: 'sintesis', type: 'goto', icon: 'datos', label: 'Síntesis', frame: '4', to: '/capitulo/4/chapter4-problematicas' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter4-bosque-comestible', geo, config.initialBearing, config.zoomMax),
-  legends: LEGENDS,
-} satisfies MapContent
+  geo: {
+    pgw: [2.17e-10, -8.75649e-7, -8.75586e-7, -2.17e-10, -76.48242978189349, 3.43619004516839] as const,
+    width: 7015,
+    height: 12472,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765986412/geoImages/yodemiucfhtp0iklk2fi.png',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765989453/geoImages/p9npqvcz4r2f7zziqi6e.webp',
+  zoomMax: 18,
+  bearing: 0,
+  extras: { legends: LEGENDS },
+})

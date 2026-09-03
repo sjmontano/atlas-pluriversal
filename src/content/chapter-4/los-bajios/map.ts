@@ -1,35 +1,23 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { LEGENDS } from './legends'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/xrssyymmhamqorcf5gb0.png'
-
-const geo = {
-  pgw: [0, 1.98448e-7, 1.98462e-7, 0, -76.4406963166678, 3.191896067095853] as const,
-  width: 7015,
-  height: 12472,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 21,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter4-los-bajios',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991261/geoImages/o0jnbtkeiddi6ielq1ow.png',
-    placeholder: ph(base),
+  ui: {
+    title: 'Finca Los Bajíos',
+    minimap: 'valle',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-los-bajios' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1lFIiuUV5eY1xvbxLIaS0Utn4xAnvUGBy/view?usp=sharing' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter4-los-bajios', geo, config.initialBearing, config.zoomMax),
-  legends: LEGENDS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 1.98448e-7, 1.98462e-7, 0, -76.4406963166678, 3.191896067095853] as const,
+    width: 7015,
+    height: 12472,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/xrssyymmhamqorcf5gb0.png',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991261/geoImages/o0jnbtkeiddi6ielq1ow.png',
+  zoomMax: 21,
+  extras: { legends: LEGENDS },
+})

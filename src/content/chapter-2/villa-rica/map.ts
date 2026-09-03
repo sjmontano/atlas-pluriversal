@@ -1,35 +1,24 @@
-import type { MapContent } from '../../../types/content'
-import { makeTilesConfig } from '@data/tiles'
+import { makeMap } from '../../_map.ts'
 import { POIS } from './pois'
 
-const ph = (url: string): string => url.replace('/upload/', '/upload/w_512,q_25,f_webp/')
-
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759512655/geoImages/pdxepthixmeebgei59yq.webp'
-
-const geo = {
-  pgw: [0, 0.000055581180, 0.000055587544, 0, -76.549878031544, 2.974893043424] as const,
-  width: 4960,
-  height: 8818,
-} as const
-const config = {
-  initialBearing: -90,
-  useTransformConstrain: true,
-  zoomMax: 13,
-  viewportMaxBounds: null,
-  dragPan: true,
-  scrollZoom: true,
-}
-
-export default {
+export default makeMap({
   mapId: 'chapter2-villa-rica',
-  geo,
-  images: {
-    base,
-    full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759512616/geoImages/sj5c6kcyz8oilmta1ra8.webp',
-    placeholder: ph(base),
+  ui: {
+    title: 'Entramado territorial Villa Rica con sus alternativas transformadoras',
+    minimap: 'villa-rica',
+    sidebar: [
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/17le_lgMDZmv4ctlBCOE9b8YBFIxOizhb/view?usp=sharing' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/16zn-XhEFckoZe4zfEIZxPxzabGy1Z14D/view' },
+      { id: 'sintesis', type: 'goto', icon: 'datos', label: 'Síntesis', frame: '4', to: '/capitulo/4/chapter4-problematicas' },
+    ],
   },
-  config,
-  tiles: makeTilesConfig('chapter2-villa-rica', geo, config.initialBearing, config.zoomMax),
-  pois: POIS,
-} satisfies MapContent
+  geo: {
+    pgw: [0, 0.000055581180, 0.000055587544, 0, -76.549878031544, 2.974893043424] as const,
+    width: 4960,
+    height: 8818,
+  },
+  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759512655/geoImages/pdxepthixmeebgei59yq.webp',
+  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759512616/geoImages/sj5c6kcyz8oilmta1ra8.webp',
+  zoomMax: 13,
+  extras: { pois: POIS },
+})
