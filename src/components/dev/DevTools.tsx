@@ -132,7 +132,7 @@ function BasemapDevControls({ visible, style, opacity, onVisibleChange, onStyleC
       </div>
 
       <div className={styles.section}>
-        <div className={styles.sectionTitle}>Opacidad imagen base: {Math.round(opacity * 100)}%</div>
+        <div className={styles.sectionTitle}>Opacidad base (tiles + imagen): {Math.round(opacity * 100)}%</div>
         <input
           type="range"
           className={styles.opacitySlider}

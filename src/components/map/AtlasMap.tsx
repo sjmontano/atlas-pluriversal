@@ -36,9 +36,11 @@ export interface AtlasMapProps {
   controllerRef?: RefObject<MapController | null>
   /** Desplaza el menú de capas debajo de una topbar (solo /test). */
   layerMenuOffsetTop?: boolean
+  /** Oculta el menú de capas del mapa (en /test vive en el panel Dev). */
+  hideLayerMenu?: boolean
 }
 
-export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false }: AtlasMapProps) {
+export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hideLayerMenu = false }: AtlasMapProps) {
   const navigate = useNavigate()
   const containerRef = useRef<HTMLDivElement>(null)
   const { mapRef, error } = useMap({ mapId, containerRef, controllerRef })
@@ -178,7 +180,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false }: A
         </div>
       )}
 
-      {!loading && !error && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} onCalibrate={() => setCalibrationOpen(true)} offsetTop={layerMenuOffsetTop} />}
+      {!loading && !error && !hideLayerMenu && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} onCalibrate={() => setCalibrationOpen(true)} offsetTop={layerMenuOffsetTop} />}
 
       {DEV_TOOLS && calibrationOpen && controllerRef && (
         <CalibrationPanel
