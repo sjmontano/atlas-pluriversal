@@ -54,6 +54,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
   const basemapStyle = useMapUIStore((s) => s.basemapStyle)
   const imageOpacity = useMapUIStore((s) => s.imageOpacity)
   const tilesVisible = useMapUIStore((s) => s.tilesVisible)
+  const lowPowerMode = useMapUIStore((s) => s.lowPowerMode)
 
   const { visibleLayers, opacities } = useLayerStore()
 
@@ -140,8 +141,8 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapBuilt || !pois) return
-    addPois(map, mapId, pois, handlePoiClick)
-  }, [mapRef, mapId, pois, mapBuilt])
+    addPois(map, mapId, pois, handlePoiClick, { static: lowPowerMode })
+  }, [mapRef, mapId, pois, mapBuilt, lowPowerMode])
 
   /* Click en capa → modal (cuencas Tejidos del Agua, Voz del río…) */
   useEffect(() => {

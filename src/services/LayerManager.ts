@@ -21,7 +21,9 @@ function sourceId(layerId: string): string {
 /** Propiedad de opacidad válida según el tipo/geometría de la capa.
  *  Usar 'raster-opacity' en una capa line/fill/symbol lanza dentro de
  *  MapLibre y desmonta el mapa (pantalla azul al togglear). */
-function opacityPaintProp(layer: Layer): string {
+function opacityPaintProp(
+  layer: Layer,
+): 'fill-opacity' | 'line-opacity' | 'circle-opacity' | 'icon-opacity' | 'raster-opacity' {
   if (layer.type === 'geojson') {
     switch ((layer as GeojsonLayer).geometry) {
       case 'fill': return 'fill-opacity'

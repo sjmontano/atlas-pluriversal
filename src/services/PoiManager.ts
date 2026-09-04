@@ -200,7 +200,21 @@ function stopPulse(): void {
   }
 }
 
-function startPulse(map: maplibregl.Map): void {
+export interface PulseOptions {
+  /** true = sin animación (valores medios estáticos). Para lowPower. */
+  static?: boolean
+}
+
+/** ~30fps para todos: indistinguible en un pulso de 2200ms, mitad de CPU/GC. */
+const PULSE_FRAME_MS = 33
+
+function prefersReducedMotion(): boolean {
+  return typeof window !== 'undefined'
+    && typeof window.matchMedia === 'function'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+function startPulse(map: maplibregl.Map, opts?: PulseOptions): void {
   stopPulse()
 
   // 1. Evitar que MapLibre intente animar/suavizar el salto de regreso
@@ -209,7 +223,18 @@ function startPulse(map: maplibregl.Map): void {
     map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-opacity-transition', { duration: 0 })
   } catch { /* por si la capa aún no está lista */ }
 
+  // Sin animación: valores medios fijos, sin loop (lowPower / reduced-motion).
+  // El rAF tampoco corre en pestaña oculta (el navegador lo pausa solo).
+  if (opts?.static === true || prefersReducedMotion()) {
+    try {
+      map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-radius', zoomSize(sizeMatch(POI_RADIUS, POI_RADIUS_LARGE), 1.45))
+      map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-opacity', POI_THEME.pulse.opacity * 0.5)
+    } catch { /* por si la capa aún no está lista */ }
+    return
+  }
+
   const start = performance.now()
+  let lastApply = 0
 
   const tick = (now: number) => {
     if (!map.getLayer(POIS_PULSE_LAYER_ID)) {
@@ -217,24 +242,36 @@ function startPulse(map: maplibregl.Map): void {
       return
     }
 
-    const t = ((now - start) % PULSE_DURATION_MS) / PULSE_DURATION_MS
+    if (now - lastApply >= PULSE_FRAME_MS) {
+      lastApply = now
+      const t = ((now - start) % PULSE_DURATION_MS) / PULSE_DURATION_MS
 
-    // 2. Curva Ease-Out: crece rápido al nacer y se frena suavemente al expandirse
-    const easeOut = 1 - Math.pow(1 - t, 2)
-    const scale = 1 + (PULSE_MAX_SCALE - 1) * easeOut
+      // 2. Curva Ease-Out: crece rápido al nacer y se frena suavemente al expandirse
+      const easeOut = 1 - Math.pow(1 - t, 2)
+      const scale = 1 + (PULSE_MAX_SCALE - 1) * easeOut
 
-    // 3. Opacidad con Fade-In (nace invisible) + Fade-Out (muere invisible)
-    let opacity = 0
-    if (t < 0.15) {
-      // Del 0% al 15% del tiempo: Nace en 0 y sube suavemente a 0.55
-      opacity = POI_THEME.pulse.opacity * (t / 0.15)
-    } else {
-      // Del 15% al 100% del tiempo: Se desvanece de 0.55 a 0
-      opacity = POI_THEME.pulse.opacity * (1 - (t - 0.15) / 0.85)
+      // 3. Opacidad con Fade-In (nace invisible) + Fade-Out (muere invisible).
+      // Clamp defensivo: MapLibre rechaza valores < 0 y el float del borde
+      // del ciclo puede producirlos.
+      const maxOpacity = POI_THEME.pulse.opacity
+      let opacity = 0
+      if (t < 0.15) {
+        // Del 0% al 15% del tiempo: Nace en 0 y sube suavemente a 0.55
+        opacity = maxOpacity * (t / 0.15)
+      } else {
+        // Del 15% al 100% del tiempo: Se desvanece de 0.55 a 0
+        opacity = maxOpacity * (1 - (t - 0.15) / 0.85)
+      }
+      opacity = Math.min(Math.max(opacity, 0), maxOpacity)
+
+      try {
+        map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-radius', zoomSize(sizeMatch(POI_RADIUS, POI_RADIUS_LARGE), scale))
+        map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-opacity', opacity)
+      } catch {
+        pulseRaf = null
+        return
+      }
     }
-
-    map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-radius', zoomSize(sizeMatch(POI_RADIUS, POI_RADIUS_LARGE), scale))
-    map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-opacity', opacity)
 
     pulseRaf = requestAnimationFrame(tick)
   }
@@ -313,6 +350,7 @@ export function addPois(
   _mapId: string,
   pois: Poi[],
   onPoiClick: (poi: Poi) => void,
+  opts?: PulseOptions,
 ): void {
   removePois(map)
 
@@ -421,7 +459,7 @@ export function addPois(
     })
   }
 
-  if (hasDot) startPulse(map)
+  if (hasDot) startPulse(map, opts)
 
   bindPoiEvents(
     map,
