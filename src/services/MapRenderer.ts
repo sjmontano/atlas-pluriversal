@@ -120,6 +120,12 @@ export interface BuildOptions {
   tileProfile?: TileDeliveryProfile
 }
 
+/** Paralelismo de descarga/decodificación según potencia, aplicable en vivo
+ *  (maplibregl lo lee por request). Evita reconstruir el mapa al togglear. */
+export function applyParallelRequests(lowPowerMode: boolean): void {
+  maplibregl.config.MAX_PARALLEL_IMAGE_REQUESTS = lowPowerMode ? 2 : 4
+}
+
 /**
  * Construye el mapa georreferenciado en el contenedor dado.
  * Resuelve cuando el mapa terminó de cargar (evento 'load').

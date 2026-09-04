@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import type * as maplibregl from 'maplibre-gl'
 import { getMapContent } from '@content'
-import { buildGeoreferencedMap, type MapController } from '@services/MapRenderer'
+import { applyParallelRequests, buildGeoreferencedMap, type MapController } from '@services/MapRenderer'
 import { logger } from '@services/MapLogger'
 import { useMapStore } from '@stores/mapStore'
 import { useMapUIStore } from '@stores/mapUIStore'
@@ -115,23 +115,27 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
       setMapBuilt(false)
       logger.debug(CATEGORY, 'effect:cleanup', { mapId })
     }
-    // containerRef es estable (ref de React); mapId + lowPowerMode disparan rebuild.
-    // tileProfile NO va aquí: su cambio se aplica en vivo (effect de swap abajo).
+    // containerRef es estable (ref de React); solo mapId dispara rebuild.
+    // lowPowerMode y tileProfile se aplican en vivo (effect de abajo): un
+    // rebuild en mitad de una conexión degradada = pantalla en negro + refetch.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapId, lowPowerMode])
+  }, [mapId])
 
-  // ── swap de perfil sin reconstruir ─────────────────────────────────────────
+  // ── swap de perfil/potencia sin reconstruir ────────────────────────────────
   // tileProfile cambia (standard ↔ hd) al cambiar la conexión. En lugar de
   // reconstruir el mapa (costoso), se reemplaza el source de tiles en vivo
   // vía MapController.setTileProfile. El mapa se construye con el perfil
   // inicial (primer render); este effect solo aplica los cambios posteriores.
+  // lowPowerMode se aplica igual: paralelismo en vivo + pulse estático
+  // (vía addPois en AtlasMap); sin reconstruir.
   useEffect(() => {
     if (!mapBuilt) return
+    applyParallelRequests(lowPowerMode)
     const controller = controllerRef?.current
     if (!controller) return
     logger.debug(CATEGORY, 'effect:profile-swap', { tileProfile })
     controller.setTileProfile(tileProfile)
-  }, [tileProfile, mapBuilt, controllerRef])
+  }, [tileProfile, lowPowerMode, mapBuilt, controllerRef])
 
   return { mapRef, error }
 }
