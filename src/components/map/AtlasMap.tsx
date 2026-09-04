@@ -122,15 +122,18 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     setImageOpacity(map, imageOpacity)
   }, [imageOpacity, mapRef])
 
+  /* Fallback por contexto: si los tiles no cargan (degraded), se ocultan y
+     queda la imagen base (ya cargada debajo). Vuelve solo al recuperarse. */
   useEffect(() => {
     const map = mapRef.current
     if (!map) return
     try {
       if (map.getLayer('atlas-tiles-layer')) {
-        map.setLayoutProperty('atlas-tiles-layer', 'visibility', tilesVisible ? 'visible' : 'none')
+        const show = tilesVisible && tilesStatus !== 'degraded'
+        map.setLayoutProperty('atlas-tiles-layer', 'visibility', show ? 'visible' : 'none')
       }
     } catch { /* noop */ }
-  }, [tilesVisible, mapRef])
+  }, [tilesVisible, tilesStatus, mapRef])
 
   useEffect(() => {
     const map = mapRef.current

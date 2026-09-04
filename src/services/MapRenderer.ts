@@ -30,6 +30,13 @@ const CATEGORY = 'MapRenderer'
 const TILES_SOURCE_ID = 'atlas-tiles'
 const TILES_LAYER_ID = 'atlas-tiles-layer'
 
+/** Variante de resolución de una URL Cloudinary sin generar assets nuevos.
+ *  URLs locales (sin /upload/): no-op, devuelve la misma URL. */
+export function cloudinaryVariant(url: string, transform: string): string {
+  if (!url.includes('/upload/')) return url
+  return url.replace('/upload/', `/upload/${transform}/`)
+}
+
 /** Estilo en blanco: fondo oscuro del tema, sin fuentes externas */
 const BLANK_STYLE: maplibregl.StyleSpecification = {
   version: 8,
@@ -297,6 +304,32 @@ export async function buildGeoreferencedMap(
   // Esto evita el bloqueo de 10-20s que causaba `await preloadImage(full)`
   // en conexiones lentas (Slow 4G / 2G rural).
   addTilesLayer(map, mapId, entry, bounds, opts)
+
+  // ── 5b. Base intermedia en perfil standard ─────────────────────────────────
+  // Conexión débil: los tiles standard tardan o fallan; el preview de 512px
+  // quedaría borroso como único respaldo. Se mejora la base a w_1280 (misma
+  // URL Cloudinary con transform, sin assets nuevos) una vez cargada.
+  // Perfil hd: sin cambios (los tiles hd aportan la nitidez).
+  // URLs locales (sin /upload/): cloudinaryVariant() no-op.
+  if (opts?.tileProfile === 'standard' && config.useImageBase !== false) {
+    const midUrl = cloudinaryVariant(images.base, 'w_1280,q_auto,f_webp')
+    const currentUrl = entry.tiles?.preview ?? images.placeholder
+    // Locales (sin /upload/): variant() no-op → sube a la base local, igual
+    // de válido como respaldo mejorado sin descargar nada nuevo.
+    if (midUrl !== currentUrl) {
+      preloadImage(midUrl)
+        .then(() => {
+          if (map.getSource(IMAGE_SOURCE_ID)) {
+            const source = map.getSource(IMAGE_SOURCE_ID) as maplibregl.ImageSource
+            source.updateImage({ url: midUrl, coordinates })
+            logger.info(CATEGORY, `Base intermedia cargada: ${mapId}`)
+          }
+        })
+        .catch((err) => {
+          logger.warn(CATEGORY, `Sin base intermedia (sigue preview): ${mapId}`, err)
+        })
+    }
+  }
 
   // ── 6. Imagen full opcional (solo debug/fallback) ─────────────────────────
   // La ruta normal no descarga images.full: preview + tiles evita duplicar
