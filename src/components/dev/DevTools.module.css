@@ -1,9 +1,7 @@
 .devTools {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 360px;
-  max-height: calc(100vh - 80px);
+  /* In-flow dentro del contenedor del overlay (él posiciona y acota) */
+  position: relative;
+  width: 100%;
   background: rgba(12, 12, 28, 0.97);
   border: 1px solid #2a2a4e;
   border-radius: 12px;

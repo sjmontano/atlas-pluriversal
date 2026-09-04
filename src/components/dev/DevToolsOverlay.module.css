@@ -1,7 +1,10 @@
-/* Barra de lectura siempre visible: arriba-derecha (zoom, Z, cursor) */
+/* Columna dev a la DERECHA, debajo de la topbar mínima (/test).
+   Orden vertical: infoBar (lectura) → toggle → panel anclado al botón. */
+
+/* Barra de lectura siempre visible: arriba-derecha, bajo la topbar */
 .infoBar {
   position: absolute;
-  top: 12px;
+  top: 60px;
   right: 12px;
   z-index: 250;
   display: flex;
@@ -35,10 +38,10 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Botón abrir/cerrar: debajo de la infoBar, arriba-derecha */
+/* Botón abrir/cerrar: debajo de la infoBar, alineado derecha */
 .toggleBtn {
   position: absolute;
-  top: 56px;
+  top: 104px;
   right: 12px;
   z-index: 250;
   width: 36px;
@@ -62,11 +65,12 @@
   border-color: #4a6aff;
 }
 
-/* Panel de herramientas: a la IZQUIERDA (capas, calibración, basemap, mapas) */
+/* Panel de herramientas: anclado donde está el botón (derecha),
+   con alto acotado y scroll propio — nunca cortado ni traslapado */
 .panel {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 152px;
+  right: 12px;
   bottom: 64px;
   width: 360px;
   max-width: calc(100vw - 24px);

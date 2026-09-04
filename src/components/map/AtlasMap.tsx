@@ -29,14 +29,16 @@ import { CalibrationPanel } from '@components/dev/calibration/CalibrationPanel'
 import { OfflineBanner } from './OfflineBanner'
 import styles from './AtlasMap.module.css'
 
-const ENABLE_DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
+import { DEV_TOOLS } from '@config'
 
 export interface AtlasMapProps {
   mapId: string
   controllerRef?: RefObject<MapController | null>
+  /** Desplaza el menú de capas debajo de una topbar (solo /test). */
+  layerMenuOffsetTop?: boolean
 }
 
-export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
+export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false }: AtlasMapProps) {
   const navigate = useNavigate()
   const containerRef = useRef<HTMLDivElement>(null)
   const { mapRef, error } = useMap({ mapId, containerRef, controllerRef })
@@ -176,9 +178,9 @@ export function AtlasMap({ mapId, controllerRef }: AtlasMapProps) {
         </div>
       )}
 
-      {!loading && !error && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} onCalibrate={() => setCalibrationOpen(true)} />}
+      {!loading && !error && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} onCalibrate={() => setCalibrationOpen(true)} offsetTop={layerMenuOffsetTop} />}
 
-      {ENABLE_DEV_TOOLS && calibrationOpen && controllerRef && (
+      {DEV_TOOLS && calibrationOpen && controllerRef && (
         <CalibrationPanel
           key={mapId}
           mapId={mapId}

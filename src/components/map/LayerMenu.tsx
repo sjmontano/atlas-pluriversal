@@ -7,6 +7,8 @@ import styles from './LayerMenu.module.css'
 interface Props {
   mapId: string
   onCalibrate: () => void
+  /** Desplaza el panel debajo de una topbar (solo /test). Default: false. */
+  offsetTop?: boolean
 }
 
 function groupTriState(groupId: string, layers: Layer[], visibleLayers: Set<string>): boolean | 'indeterminate' {
@@ -43,7 +45,7 @@ function groupLegends(legends: LegendItem[]): Array<[string | null, LegendItem[]
   return result
 }
 
-export function LayerMenu({ mapId, onCalibrate }: Props) {
+export function LayerMenu({ mapId, onCalibrate, offsetTop = false }: Props) {
   const content = useMemo(() => getMapContent(mapId), [mapId])
   const layers = content?.layers ?? null
   const groups = content?.groups ?? null
@@ -77,7 +79,7 @@ export function LayerMenu({ mapId, onCalibrate }: Props) {
   const masterTriState = allVisible ? true : noneVisible ? false : 'indeterminate'
 
   return (
-    <div className={styles.panel} role="region" aria-label="Capas">
+    <div className={`${styles.panel}${offsetTop ? ` ${styles.offsetTop}` : ''}`} role="region" aria-label="Capas">
       <div className={styles.header}>
         <span className={styles.headerTitle}>🗂 Capas</span>
         <button

@@ -46,6 +46,7 @@ export function TestMapPage() {
         key={currentMap.mapId}
         mapId={currentMap.mapId}
         controllerRef={controllerRef}
+        layerMenuOffsetTop
       />
       <DevToolsOverlay
         mapId={currentMap.mapId}
