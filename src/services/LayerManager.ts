@@ -18,6 +18,21 @@ function sourceId(layerId: string): string {
   return `${SOURCE_PREFIX}${layerId}`
 }
 
+/** Propiedad de opacidad válida según el tipo/geometría de la capa.
+ *  Usar 'raster-opacity' en una capa line/fill/symbol lanza dentro de
+ *  MapLibre y desmonta el mapa (pantalla azul al togglear). */
+function opacityPaintProp(layer: Layer): string {
+  if (layer.type === 'geojson') {
+    switch ((layer as GeojsonLayer).geometry) {
+      case 'fill': return 'fill-opacity'
+      case 'line': return 'line-opacity'
+      case 'circle': return 'circle-opacity'
+      case 'symbol': return 'icon-opacity'
+    }
+  }
+  return 'raster-opacity'
+}
+
 function isDegenerate(coords: ImageCoordinates): boolean {
   let minX = Infinity; let minY = Infinity
   let maxX = -Infinity; let maxY = -Infinity
@@ -217,10 +232,11 @@ export function sync(
       }
       const opacity = store.opacities[layer.id] ?? layer.opacity ?? LAYER_STYLES[layer.category].defaultOpacity ?? 1
       if (map.getLayer(sid)) {
-        const paintProp = layer.type === 'geojson'
-          ? (layer as GeojsonLayer).geometry === 'fill' ? 'fill-opacity' : 'raster-opacity'
-          : 'raster-opacity'
-        map.setPaintProperty(sid, paintProp, opacity)
+        try {
+          map.setPaintProperty(sid, opacityPaintProp(layer), opacity)
+        } catch (e) {
+          logger.warn(CATEGORY, `No se pudo aplicar opacidad a ${layer.id}`, e)
+        }
       }
     }
   }

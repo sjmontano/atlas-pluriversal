@@ -169,6 +169,31 @@ describe('LayerManager', () => {
       )
       expect(map.removeLayer).toHaveBeenCalledWith('atlas-layer-stale')
     })
+
+    it.each([
+      ['fill', 'fill-opacity'],
+      ['line', 'line-opacity'],
+      ['circle', 'circle-opacity'],
+      ['symbol', 'icon-opacity'],
+    ] as const)('usa %s-opacity en capas geojson %s (no raster-opacity)', (geometry, paintProp) => {
+      const map = makeMap()
+      const layer: GeojsonLayer = {
+        ...GEOJSON_LAYER,
+        id: `test-${geometry}`,
+        geometry,
+      }
+      const sid = `atlas-layer-test-${geometry}`
+      map._layers.set(sid, { id: sid })
+      sync(map, 'test', [layer], [], {
+        visibleLayers: new Set([`test-${geometry}`]),
+        opacities: {},
+      })
+      expect(map.setPaintProperty).toHaveBeenCalledWith(
+        `atlas-layer-test-${geometry}`,
+        paintProp,
+        expect.any(Number),
+      )
+    })
   })
 
   describe('updateLayerPGW', () => {
