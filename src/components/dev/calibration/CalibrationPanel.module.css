@@ -1,9 +1,7 @@
 .panel {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 20;
-  max-width: 340px;
+  /* In-flow dentro del contenedor del overlay (él posiciona y acota) */
+  position: relative;
+  width: 100%;
   background: rgba(3, 9, 30, 0.88);
   border: 1px solid rgba(5, 153, 183, 0.35);
   border-radius: 10px;
