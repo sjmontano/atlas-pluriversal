@@ -16,7 +16,9 @@ const waterLayer = (id: string, name: string, group: string, order: number, swat
   width: WATER_W,
   height: WATER_H,
   opacity,
-  visibleByDefault: true,
+  // 7 imágenes de ~60Mpx: entran APAGADAS (el usuario enciende).
+  // Todas visibles a la vez = OOM en equipos modestos.
+  visibleByDefault: false,
   order,
   group,
   legend: { swatch, description: name },
