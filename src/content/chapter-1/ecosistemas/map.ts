@@ -26,6 +26,15 @@ const config = {
 
 export default {
   mapId: 'chapter1-ecosistemas',
+  ui: {
+    title: 'Existencias y transformaciones ecosistémicas',
+    minimap: 'valle',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap1-presentacion-ecosistemas' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/13Fd5C8St_BArPKEgTQC8ZefT0gI_LXpE/view' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/13mmmAcE0odjgSLI2-u00DtReF13ZFy5p/view?usp=drivesdk' },
+    ],
+  },
   geo,
   images: {
     base,

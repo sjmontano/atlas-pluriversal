@@ -58,6 +58,14 @@ const config = {
 
 export default {
   mapId: 'chapter1-encuadres',
+  ui: {
+    title: 'El valle alto del río Cauca, su cuenca y sus mundos',
+    minimap: 'cuenca',
+    sidebar: [
+      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap1-presentacion-encuadres' },
+      { id: 'perfil-cuenca', type: 'modal', icon: 'perfil', label: 'Perfil cuenca', frame: '1', target: 'cap1-perfil-cuenca' },
+    ],
+  },
   geo,
   images: {
     base: '/assets/maps/cap1/encuadres.png',

@@ -15,6 +15,7 @@
 
 import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import { DEV_TOOLS } from '@config'
 import { processBounds, expandBoundsPerAxis, type PGWData, type BoundsResult, type ImageCoordinates, type GeographicBounds } from './BoundsCalculator'
 import { createBearingAwareConstrain } from './TransformConstrain'
 import { constrainMinZoom } from '@utils/tileZoom'
@@ -201,7 +202,7 @@ export async function buildGeoreferencedMap(
 
   // Puente de depuración dev-only: expone la instancia para consola/DevTools
   // (calibración, pruebas de clicks por coordenada). Nunca en producción.
-  if (import.meta.env.VITE_DEV_TOOLS === 'true') {
+  if (DEV_TOOLS) {
     ;(window as unknown as Record<string, unknown>).__atlasMap = map
   }
 

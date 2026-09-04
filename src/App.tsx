@@ -2,6 +2,8 @@ import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ModalRenderer } from '@components/modal/shell/ModalRenderer'
 
+import { DEV_TOOLS } from '@config'
+
 const DevMenu = lazy(() =>
   import('@pages/DevMenu.tsx').then((m) => ({ default: m.DevMenu })),
 )
@@ -29,8 +31,6 @@ const ChapterPage = lazy(() =>
 const ShellMockupPage = lazy(() =>
   import('@pages/ShellMockupPage.tsx').then((m) => ({ default: m.ShellMockupPage })),
 )
-
-const ENABLE_DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
 
 function Fallback() {
   return (
@@ -66,8 +66,8 @@ export function App() {
           <Route path="/capitulo/:chapterId/:mapId" element={<ChapterPage />} />
           <Route path="/dev" element={<DevMenu />} />
           <Route path="/modales" element={<ModalDemoPage />} />
-          {ENABLE_DEV_TOOLS && <Route path="/dev/ui" element={<UiMockupPage />} />}
-          {ENABLE_DEV_TOOLS && <Route path="/dev/shell" element={<ShellMockupPage />} />}
+          {DEV_TOOLS && <Route path="/dev/ui" element={<UiMockupPage />} />}
+          {DEV_TOOLS && <Route path="/dev/shell" element={<ShellMockupPage />} />}
           <Route path="/test/:mapId" element={<TestMapPage />} />
         </Routes>
         <ModalRenderer />

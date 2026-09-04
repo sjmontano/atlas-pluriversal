@@ -14,7 +14,7 @@ import { ShellLayout } from '@components/shell/ShellLayout'
 import type { ToolRailItem } from '@components/shell/ToolRail'
 import styles from './ShellMockupPage.module.css'
 
-const ENABLE_DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
+import { DEV_TOOLS } from '@config'
 
 const RAIL_ITEMS: ToolRailItem[] = [
   { id: 'm-presentacion', icon: 'presentation', label: 'Presentación', frame: '1', action: { kind: 'modal', modalId: 'cuenca-cauca' } },
@@ -42,7 +42,7 @@ function ShellMockup() {
 }
 
 export function ShellMockupPage() {
-  if (!ENABLE_DEV_TOOLS) {
+  if (!DEV_TOOLS) {
     return (
       <div className={styles.devOff}>
         <p>Maqueta del shell desactivada. Ejecuta el dev con <code>VITE_DEV_TOOLS=true</code>.</p>

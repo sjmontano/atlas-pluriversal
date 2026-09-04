@@ -18,6 +18,9 @@ const LABELS: Record<MiniMapKey, string> = {
   cuenca: 'Cuenca del río Cauca',
   valle: 'Valle alto del río Cauca',
   sur: 'Sur del valle alto',
+  suarez: 'Territorio Suárez',
+  'villa-rica': 'Territorio Villa Rica',
+  cali: 'Oriente de Cali',
 }
 
 export function MiniMap({ variant = 'cuenca' }: MiniMapProps) {

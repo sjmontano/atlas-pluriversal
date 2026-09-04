@@ -13,6 +13,7 @@ export default defineConfig({
       '@pages': resolve(__dirname, 'src/pages'),
       '@types': resolve(__dirname, 'src/types'),
       '@utils': resolve(__dirname, 'src/utils'),
+      '@config': resolve(__dirname, 'src/config.ts'),
     },
   },
 

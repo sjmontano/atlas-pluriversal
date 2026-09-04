@@ -17,7 +17,7 @@ import { IconButton } from '@components/modal/primitives/IconButton'
 import type { Modal } from '../types/modal'
 import styles from './UiMockupPage.module.css'
 
-const ENABLE_DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
+import { DEV_TOOLS } from '@config'
 
 /* ─── Placeholder de imagen (data-uri SVG, sin red) ─────────────────────── */
 function ph(label: string, from = '#0599b7', to = '#046c81'): string {
@@ -306,7 +306,7 @@ function resolveModal(id: string): Modal | null {
 export function UiMockupPage() {
   const openModal = useModalStore((s) => s.openModal)
 
-  if (!ENABLE_DEV_TOOLS) {
+  if (!DEV_TOOLS) {
     return (
       <div className={styles.page}>
         <p className={styles.devOff}>

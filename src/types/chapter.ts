@@ -1,5 +1,5 @@
 /** Variante de minimapa de ubicación (esquina superior derecha). */
-export type MiniMapKey = 'cuenca' | 'valle' | 'sur'
+export type MiniMapKey = 'cuenca' | 'valle' | 'sur' | 'suarez' | 'villa-rica' | 'cali'
 
 export interface ChapterMapRef {
   mapId: string

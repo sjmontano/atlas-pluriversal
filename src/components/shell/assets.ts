@@ -15,6 +15,9 @@ export const SHELL_ASSETS = {
     cuenca: '/assets/ui/minimap/mini-map-cuenca.png',
     valle: '/assets/ui/minimap/mini-map-valle.webp',
     sur: '/assets/ui/minimap/mini-map-sur.webp',
+    suarez: '/assets/ui/minimap/suarez.webp',
+    'villa-rica': '/assets/ui/minimap/villa-rica.webp',
+    cali: '/assets/ui/minimap/cali.webp',
   },
   buttons: {
     home: '/assets/ui/buttons/logo-home.svg',
