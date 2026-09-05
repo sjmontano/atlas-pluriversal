@@ -8,8 +8,9 @@ export default makeMap({
     minimap: 'villa-rica',
     sidebar: [
       { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/17le_lgMDZmv4ctlBCOE9b8YBFIxOizhb/view?usp=sharing' },
+      { id: 'galeria', type: 'modal', icon: 'gallery', label: 'Galería de imágenes', frame: '2', target: 'cap2-galeria-villa-rica' },
       { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/16zn-XhEFckoZe4zfEIZxPxzabGy1Z14D/view' },
-      { id: 'sintesis', type: 'goto', icon: 'datos', label: 'Síntesis', frame: '4', to: '/capitulo/4/chapter4-problematicas' },
+      { id: 'sintesis', type: 'goto', icon: 'sintesis', label: 'Síntesis', frame: '2', to: '/capitulo/2/chapter2-m-villa-rica' },
     ],
   },
   geo: {

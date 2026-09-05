@@ -9,7 +9,7 @@ export default makeMap({
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-bosque-comestible' },
       { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1WOTbHyYhsacU0OZOxny76qwoNNud02yH/view?usp=sharing' },
-      { id: 'sintesis', type: 'goto', icon: 'datos', label: 'Síntesis', frame: '4', to: '/capitulo/4/chapter4-problematicas' },
+      { id: 'sintesis', type: 'goto', icon: 'sintesis', label: 'Síntesis', frame: '2', to: '/capitulo/4/chapter4-problematicas' },
     ],
   },
   geo: {

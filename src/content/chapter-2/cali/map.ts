@@ -8,8 +8,9 @@ export default makeMap({
     minimap: 'cali',
     sidebar: [
       { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1cDppV8K6vz00NcfmmbNmpl2Eb7RCdHq9/view?usp=sharing' },
+      { id: 'galeria', type: 'modal', icon: 'gallery', label: 'Galería de imágenes', frame: '2', target: 'cap2-galeria-cali' },
       { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1y97OfUXrTP9R8mo2FZKOhBI_po8SFUoH/view' },
-      { id: 'sintesis', type: 'goto', icon: 'datos', label: 'Síntesis', frame: '4', to: '/capitulo/4/chapter4-problematicas' },
+      { id: 'sintesis', type: 'goto', icon: 'sintesis', label: 'Síntesis', frame: '2', to: '/capitulo/2/chapter2-m-oriente-cali' },
     ],
   },
   geo: {

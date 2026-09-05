@@ -6,9 +6,9 @@
  *
  * Convención de ids:
  *   cap1-presentacion-<mapa>  Presentación por mapa (rail)
- *   cap1-ficha-<mapa>         Ficha técnica Drive (rail · trigger.href)
- *   cap1-descargar-<mapa>     Descarga Drive (rail · trigger.href)
- *   cap1-perfil-cuenca        Perfil de la cuenca (rail · gallery)
+ *   (ficha/descargar son links Drive del sidebar por diseño v17,
+ *   no modales: no existen cap1-ficha-*/cap1-descargar-*)
+ *   cap1-perfil-cuenca        Perfil de la cuenca (rail · carousel)
  *   cap1-atlas-proyecto       Presentación del proyecto (id 1 de v17)
  *   cap1-cuenca-<slug>        11 cuencas Tejidos del Agua (click en capa)
  *   cap1-voz-<slug>           4 tramos Voz del río (click en capa)

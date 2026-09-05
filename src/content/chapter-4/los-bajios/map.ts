@@ -9,6 +9,7 @@ export default makeMap({
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-los-bajios' },
       { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1lFIiuUV5eY1xvbxLIaS0Utn4xAnvUGBy/view?usp=sharing' },
+      { id: 'mapa-arbol', type: 'modal', icon: 'mapa-arbol', label: 'Mapa de árbol', frame: '1', target: 'cap4-arbol-los-bajios' },
     ],
   },
   geo: {

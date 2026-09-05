@@ -1,0 +1,12 @@
+/* GLYPH — caja del icono (el SVG de referencia llena la caja) */
+
+.box {
+  display: grid;
+  place-items: center;
+}
+
+.box svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}

@@ -12,6 +12,7 @@ export default makeMap({
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-asoyoge' },
       { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1zU1brROKItcLuutpzRhmLOoSCu_rPHL5/view?usp=sharing' },
+      { id: 'perfil', type: 'modal', icon: 'perfil', label: 'Perfil', frame: '1', target: 'cap4-perfil-asoyoge' },
     ],
   },
   geo: {

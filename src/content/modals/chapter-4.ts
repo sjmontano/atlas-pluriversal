@@ -127,6 +127,220 @@ const CAP4_PRESENTACION_PROBLEMACAS: Modal = presentacion(4, 'problematicas', {
   triggerLabel: 'Presentacion',
 })
 
+/* ── Diagramas de zonificación (portados de v17 iconsCap4) ────────────────
+ * Perfil  = corte transversal de zonificación (v17: botón Perfil/Datos).
+ * Árbol   = treemap de % por zona (v17: botón Mapa de árbol).
+ * Solo existen donde la comunidad produjo el diagrama (v17 tampoco los
+ * tiene para bosque-comestible; sus offsets +63/+72 apuntan a contenido
+ * de otros capítulos — bug que aquí se corrige por mapeo nominal).
+ */
+
+function diagrama(
+  id: string,
+  title: string,
+  highlight: string,
+  icon: 'perfil' | 'mapa-arbol' | 'datos',
+  frame: string,
+  src: string,
+  alt: string,
+  caption: string,
+  mapId: string,
+  label: string,
+): Modal {
+  return {
+    id,
+    section: 'capitulo-4',
+    variant: 'large',
+    title,
+    highlight,
+    icon,
+    body: [{ type: 'image', id: `${id}-img`, src, alt, caption }],
+    trigger: { type: 'button', icon, frame, label, mapId },
+  }
+}
+
+const CAP4_DATO_INTRODUCCION: Modal = diagrama(
+  'cap4-dato-introduccion',
+  'Datos del capítulo',
+  'Capitulo IV',
+  'datos',
+  '3',
+  '/assets/modal/chapter-4/dato-intro-cap4.png',
+  'Diagrama de datos del Capítulo IV',
+  'Diagrama de datos de las fincas y centros agropecuarios del Capítulo IV.',
+  'chapter4-introduccion',
+  'Datos',
+)
+
+const CAP4_PERFIL_ASOYOGE: Modal = diagrama(
+  'cap4-perfil-asoyoge',
+  'Centro agropecuario ASOYOGE',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-asoyoge.png',
+  'Perfil de zonificación de ASOYOGE, Suárez',
+  'Corte Casa–Procesadora–Vía–Compostera con bosque y vivienda asociada.',
+  'chapter4-asoyoge',
+  'Perfil',
+)
+
+const CAP4_PERFIL_EL_BUHIDO: Modal = diagrama(
+  'cap4-perfil-el-buhido',
+  'Finca El Buhido',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-el-buhido.png',
+  'Perfil de zonificación de la finca El Buhido, Suárez',
+  'Transecto A–B: cultivos diversos, vivienda, cría de animales y bosque.',
+  'chapter4-el-buhido',
+  'Perfil',
+)
+
+const CAP4_ARBOL_EL_BUHIDO: Modal = diagrama(
+  'cap4-arbol-el-buhido',
+  'Finca El Buhido (1 ha)',
+  'Mapa de árbol',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-4/arbol-el-buhido.png',
+  'Mapa de árbol de la finca El Buhido',
+  'Porcentaje por zona: cultivos diversos 61,91 %, productivas especiales, transición y bosque.',
+  'chapter4-el-buhido',
+  'Mapa de árbol',
+)
+
+const CAP4_PERFIL_EL_PASO: Modal = diagrama(
+  'cap4-perfil-el-paso',
+  'Finca El Paso',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-el-paso.png',
+  'Perfil de zonificación de la finca El Paso, Suárez',
+  'Transecto A–B: río Ovejas, rotación de cultivos, guadual y bosque.',
+  'chapter4-el-paso',
+  'Perfil',
+)
+
+const CAP4_ARBOL_EL_PASO: Modal = diagrama(
+  'cap4-arbol-el-paso',
+  'Finca El Paso',
+  'Mapa de árbol',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-4/arbol-el-paso.png',
+  'Mapa de árbol de la finca El Paso',
+  'Porcentaje por zona de la finca El Paso.',
+  'chapter4-el-paso',
+  'Mapa de árbol',
+)
+
+const CAP4_PERFIL_LA_VIRGINIA: Modal = diagrama(
+  'cap4-perfil-la-virginia',
+  'Finca La Virginia',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-la-virginia.png',
+  'Perfil de zonificación de la finca La Virginia, Padilla',
+  'Transecto A–B: caña de azúcar, burilico, limón y plátano entre vías.',
+  'chapter4-la-virginia',
+  'Perfil',
+)
+
+const CAP4_ARBOL_LA_VIRGINIA: Modal = diagrama(
+  'cap4-arbol-la-virginia',
+  'Finca La Virginia',
+  'Mapa de árbol',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-4/arbol-la-virginia.png',
+  'Mapa de árbol de la finca La Virginia',
+  'Porcentaje por zona de la finca La Virginia.',
+  'chapter4-la-virginia',
+  'Mapa de árbol',
+)
+
+const CAP4_PERFIL_LA_CAICEDO: Modal = diagrama(
+  'cap4-perfil-la-caicedo',
+  'Finca La Caicedo',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-la-caicedo.png',
+  'Perfil de zonificación de la finca La Caicedo, Guachené',
+  'Transecto B–A: plátano y cacao, galpón, casa y vía.',
+  'chapter4-la-caicedo',
+  'Perfil',
+)
+
+const CAP4_ARBOL_LA_CAICEDO: Modal = diagrama(
+  'cap4-arbol-la-caicedo',
+  'Finca La Caicedo',
+  'Mapa de árbol',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-4/arbol-la-caicedo.png',
+  'Mapa de árbol de la finca La Caicedo',
+  'Porcentaje por zona de la finca La Caicedo.',
+  'chapter4-la-caicedo',
+  'Mapa de árbol',
+)
+
+const CAP4_PERFIL_CENTRO_AGROPECUARIO: Modal = diagrama(
+  'cap4-perfil-centro-agropecuario',
+  'Centro agropecuario',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-centro-agropecuario.png',
+  'Zonificación del Centro agropecuario Casa del Niño y de la Niña',
+  'Distribución por zonas del centro agropecuario (4,19 ha).',
+  'chapter4-centro-agropecuario',
+  'Perfil',
+)
+
+const CAP4_ARBOL_CENTRO_AGROPECUARIO: Modal = diagrama(
+  'cap4-arbol-centro-agropecuario',
+  'Centro agropecuario Casa del Niño y de la Niña (4,19 ha)',
+  'Mapa de árbol',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-4/arbol-centro-agropecuario.png',
+  'Mapa de árbol del centro agropecuario',
+  'Porcentaje por zona: pastoreo 42,76 %, productivas especiales, cría y cultivos.',
+  'chapter4-centro-agropecuario',
+  'Mapa de árbol',
+)
+
+const CAP4_ARBOL_LOS_BAJIOS: Modal = diagrama(
+  'cap4-arbol-los-bajios',
+  'Finca Los Bajíos',
+  'Mapa de árbol',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-4/arbol-los-bajios.png',
+  'Mapa de árbol de la finca Los Bajíos',
+  'Porcentaje por zona de la finca Los Bajíos.',
+  'chapter4-los-bajios',
+  'Mapa de árbol',
+)
+
+const CAP4_ARBOL_LAS_MERCEDES: Modal = diagrama(
+  'cap4-arbol-las-mercedes',
+  'Finca Las Mercedes',
+  'Mapa de árbol',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-4/arbol-las-mercedes.png',
+  'Mapa de árbol de la finca Las Mercedes',
+  'Porcentaje por zona de la finca Las Mercedes.',
+  'chapter4-las-mercedes',
+  'Mapa de árbol',
+)
+
 /* ── Export ────────────────────────────────────────────────────────────── */
 
 export const CHAPTER4_MODALS: Modal[] = [
@@ -141,4 +355,18 @@ export const CHAPTER4_MODALS: Modal[] = [
   CAP4_PRESENTACION_CENTRO_AGROPECUARIO,
   CAP4_PRESENTACION_LA_CAICEDO,
   CAP4_PRESENTACION_PROBLEMACAS,
+  CAP4_DATO_INTRODUCCION,
+  CAP4_PERFIL_ASOYOGE,
+  CAP4_PERFIL_EL_BUHIDO,
+  CAP4_ARBOL_EL_BUHIDO,
+  CAP4_PERFIL_EL_PASO,
+  CAP4_ARBOL_EL_PASO,
+  CAP4_PERFIL_LA_VIRGINIA,
+  CAP4_ARBOL_LA_VIRGINIA,
+  CAP4_PERFIL_LA_CAICEDO,
+  CAP4_ARBOL_LA_CAICEDO,
+  CAP4_PERFIL_CENTRO_AGROPECUARIO,
+  CAP4_ARBOL_CENTRO_AGROPECUARIO,
+  CAP4_ARBOL_LOS_BAJIOS,
+  CAP4_ARBOL_LAS_MERCEDES,
 ]

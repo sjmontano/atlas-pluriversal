@@ -9,6 +9,8 @@ export default makeMap({
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-el-buhido' },
       { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1AB_k7XDR3d17TOzXHgJBwPm1pMxeRslA/view' },
+      { id: 'perfil', type: 'modal', icon: 'perfil', label: 'Perfil', frame: '1', target: 'cap4-perfil-el-buhido' },
+      { id: 'mapa-arbol', type: 'modal', icon: 'mapa-arbol', label: 'Mapa de árbol', frame: '1', target: 'cap4-arbol-el-buhido' },
     ],
   },
   geo: {

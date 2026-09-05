@@ -32,6 +32,58 @@ export interface PresentacionEntry {
 }
 
 /**
+ * Ficha de perfil (texto): imagen de cabecera + localización/incidencia/
+ * influencia/descripción + listas de problemáticas y acciones.
+ * Forma compartida de las fichas de Alternativas Transformadoras (C2).
+ * Los perfiles del C4 son diagramas (modales de imagen), otra forma.
+ */
+export function fichaPerfil(
+  id: string,
+  title: string,
+  highlight: string,
+  image: string,
+  localizacion: string,
+  incidencia: string,
+  influencia: string,
+  descripcion: string,
+  problematicas: string[],
+  acciones: string[],
+  mapId: string,
+): Modal {
+  const blocks: ModalBlock[] = [
+    { type: 'paragraph', id: `${id}-loc`, text: `Localizacion: ${localizacion}` },
+    { type: 'paragraph', id: `${id}-inc`, text: `Incidencia: ${incidencia}` },
+    { type: 'paragraph', id: `${id}-inf`, text: `Influencia: ${influencia}` },
+    { type: 'paragraph', id: `${id}-desc`, text: descripcion },
+  ]
+  if (problematicas.length > 0) {
+    blocks.push({ type: 'heading', id: `${id}-ph`, level: 2, text: 'Problematicas que afrontamos' })
+    blocks.push({ type: 'list', id: `${id}-pl`, items: problematicas })
+  }
+  if (acciones.length > 0) {
+    blocks.push({ type: 'heading', id: `${id}-ah`, level: 2, text: 'Nuestras acciones' })
+    blocks.push({ type: 'list', id: `${id}-al`, items: acciones })
+  }
+  return {
+    id,
+    section: 'capitulo-2',
+    variant: 'large',
+    title,
+    highlight,
+    icon: 'marker',
+    image,
+    body: blocks,
+    trigger: {
+      type: 'marker',
+      icon: 'marker',
+      frame: '1',
+      label: title,
+      mapId,
+    },
+  }
+}
+
+/**
  * Modal de presentación por mapa.
  * id: `cap{cap}-presentacion-{mapKey}` · trigger al mapa `chapter{cap}-{mapKey}`
  * (o al `mapId` explícito si se pasa).

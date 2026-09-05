@@ -3,8 +3,8 @@
  * Fuentes: modalsData.jsx ids 27-54
  */
 
-import type { Modal, ModalBlock } from '../../types/modal.ts'
-import { paragraphs } from './_helpers.ts'
+import type { Modal } from '../../types/modal.ts'
+import { paragraphs, fichaPerfil } from './_helpers.ts'
 
 /* ── ID 27: Introduction ──────────────────────────────────────────────── */
 
@@ -97,55 +97,9 @@ const SINTESIS_SUAREZ: Modal = {
   },
 }
 
-/* ── IDs 34-52: Alternativas Transformadoras ──────────────────────────── */
+/* ── IDs 34-52: Alternativas Transformadoras (fichaPerfil en _helpers.ts) ── */
 
-function atModal(
-  id: string,
-  title: string,
-  highlight: string,
-  image: string,
-  localizacion: string,
-  incidencia: string,
-  influencia: string,
-  descripcion: string,
-  problematicas: string[],
-  acciones: string[],
-  mapId: string,
-): Modal {
-  const blocks: ModalBlock[] = [
-    { type: 'paragraph', id: `${id}-loc`, text: `Localizacion: ${localizacion}` },
-    { type: 'paragraph', id: `${id}-inc`, text: `Incidencia: ${incidencia}` },
-    { type: 'paragraph', id: `${id}-inf`, text: `Influencia: ${influencia}` },
-    { type: 'paragraph', id: `${id}-desc`, text: descripcion },
-  ]
-  if (problematicas.length > 0) {
-    blocks.push({ type: 'heading', id: `${id}-ph`, level: 2, text: 'Problematicas que afrontamos' })
-    blocks.push({ type: 'list', id: `${id}-pl`, items: problematicas })
-  }
-  if (acciones.length > 0) {
-    blocks.push({ type: 'heading', id: `${id}-ah`, level: 2, text: 'Nuestras acciones' })
-    blocks.push({ type: 'list', id: `${id}-al`, items: acciones })
-  }
-  return {
-    id,
-    section: 'capitulo-2',
-    variant: 'large',
-    title,
-    highlight,
-    icon: 'marker',
-    image,
-    body: blocks,
-    trigger: {
-      type: 'marker',
-      icon: 'marker',
-      frame: '1',
-      label: title,
-      mapId,
-    },
-  }
-}
-
-const AT_ASOYOGE: Modal = atModal(
+const AT_ASOYOGE: Modal = fichaPerfil(
   'cap2-at-asoyoge',
   'Asoyoge',
   'Asociacion de agroindustrial de productos agropecuarios y mineros afrodescendientes',
@@ -159,7 +113,7 @@ const AT_ASOYOGE: Modal = atModal(
   'chapter2-suarez',
 )
 
-const AT_GUARDIA_CIMARRONA: Modal = atModal(
+const AT_GUARDIA_CIMARRONA: Modal = fichaPerfil(
   'cap2-at-guardia-cimarrona',
   'Guardia Cimarrona',
   'Alternativa Transformadora Guardia Cimarrona Suarez, Cauca',
@@ -173,7 +127,7 @@ const AT_GUARDIA_CIMARRONA: Modal = atModal(
   'chapter2-suarez',
 )
 
-const AT_ASOCOMS: Modal = atModal(
+const AT_ASOCOMS: Modal = fichaPerfil(
   'cap2-at-asocoms',
   'ASOCOMS',
   'Asociacion de Consejos Comunitarios de Suarez',
@@ -187,7 +141,7 @@ const AT_ASOCOMS: Modal = atModal(
   'chapter2-suarez',
 )
 
-const AT_PLATAFORMA_JUVENTUDES: Modal = atModal(
+const AT_PLATAFORMA_JUVENTUDES: Modal = fichaPerfil(
   'cap2-at-plataforma-juventudes',
   'Plataforma de Juventudes Suarez',
   'Plataforma de Juventudes Suarez, Cauca',
@@ -201,7 +155,7 @@ const AT_PLATAFORMA_JUVENTUDES: Modal = atModal(
   'chapter2-suarez',
 )
 
-const AT_CASA_NINO: Modal = atModal(
+const AT_CASA_NINO: Modal = fichaPerfil(
   'cap2-at-casa-nino',
   'Casa del Nino y de la Nina',
   'Asociacion cultural Casa del Nino y de la Nina',
@@ -215,7 +169,7 @@ const AT_CASA_NINO: Modal = atModal(
   'chapter2-villa-rica',
 )
 
-const AT_UOAFROC: Modal = atModal(
+const AT_UOAFROC: Modal = fichaPerfil(
   'cap2-at-uoafroc',
   'UOAFROC',
   'Unidad de organizaciones afrocaucanas',
@@ -229,7 +183,7 @@ const AT_UOAFROC: Modal = atModal(
   'chapter2-villa-rica',
 )
 
-const AT_TERRITORIO_Y_PAZ: Modal = atModal(
+const AT_TERRITORIO_Y_PAZ: Modal = fichaPerfil(
   'cap2-at-territorio-paz',
   'Territorio y Paz',
   'Consejo comunitario Territorio y Paz',
@@ -243,7 +197,7 @@ const AT_TERRITORIO_Y_PAZ: Modal = atModal(
   'chapter2-villa-rica',
 )
 
-const AT_ESCUELA_ITINERANTE: Modal = atModal(
+const AT_ESCUELA_ITINERANTE: Modal = fichaPerfil(
   'cap2-at-escuela-itinerante',
   'Escuela Itinerante Casilda Cundumi',
   'Alternativa Transformadora Escuela Itinerante Casilda Cundumi',
@@ -257,7 +211,7 @@ const AT_ESCUELA_ITINERANTE: Modal = atModal(
   'chapter2-villa-rica',
 )
 
-const AT_PALENQUES_JUVENILES: Modal = atModal(
+const AT_PALENQUES_JUVENILES: Modal = fichaPerfil(
   'cap2-at-palenques-juveniles',
   'Palenques Juveniles',
   'Colectivo socio-juvenil huellas',
@@ -271,7 +225,7 @@ const AT_PALENQUES_JUVENILES: Modal = atModal(
   'chapter2-villa-rica',
 )
 
-const AT_RED_NATIVOS: Modal = atModal(
+const AT_RED_NATIVOS: Modal = fichaPerfil(
   'cap2-at-red-nativos',
   'Red Nativos',
   'Huerta Madre La Laguna',
@@ -285,7 +239,7 @@ const AT_RED_NATIVOS: Modal = atModal(
   'chapter2-cali',
 )
 
-const AT_RED_MUJERES: Modal = atModal(
+const AT_RED_MUJERES: Modal = fichaPerfil(
   'cap2-at-red-mujeres',
   'Red de Mujeres y Organizaciones del Oriente',
   'Alternativa Transformadora Red de Mujeres y Organizaciones del Oriente',
@@ -299,7 +253,7 @@ const AT_RED_MUJERES: Modal = atModal(
   'chapter2-cali',
 )
 
-const AT_CHICAS_COMUNICATIVAS: Modal = atModal(
+const AT_CHICAS_COMUNICATIVAS: Modal = fichaPerfil(
   'cap2-at-chicas-comunicativas',
   'Chicas Comunicativas',
   'Alternativa Transformadora Chicas Comunicativas',
@@ -313,7 +267,7 @@ const AT_CHICAS_COMUNICATIVAS: Modal = atModal(
   'chapter2-cali',
 )
 
-const AT_MATAMBA: Modal = atModal(
+const AT_MATAMBA: Modal = fichaPerfil(
   'cap2-at-matamba',
   'Matamba Fundacion',
   'Alternativa Transformadora Matamba fundacion',
@@ -327,7 +281,7 @@ const AT_MATAMBA: Modal = atModal(
   'chapter2-cali',
 )
 
-const AT_CASA_CULTURAL: Modal = atModal(
+const AT_CASA_CULTURAL: Modal = fichaPerfil(
   'cap2-at-casa-cultural',
   'Casa Cultural El Chontaduro',
   'Asociacion Casa cultural El Chontaduro',
@@ -341,7 +295,7 @@ const AT_CASA_CULTURAL: Modal = atModal(
   'chapter2-cali',
 )
 
-const AT_AFRO_YOGA: Modal = atModal(
+const AT_AFRO_YOGA: Modal = fichaPerfil(
   'cap2-at-afro-yoga',
   'Afro Yoga',
   'Alternativa Transformadora Afro Yoga',
@@ -355,6 +309,92 @@ const AT_AFRO_YOGA: Modal = atModal(
   'chapter2-cali',
 )
 
+/* ── Galerías de imágenes (portadas de v17 galeriasChapter2) ───────────── */
+
+function galeria(
+  id: string,
+  highlight: string,
+  base: string,
+  files: string[],
+  descripciones: string[],
+  mapId: string,
+): Modal {
+  return {
+    id,
+    section: 'capitulo-2',
+    variant: 'large',
+    title: 'Galería de imágenes',
+    highlight,
+    icon: 'gallery',
+    body: [
+      {
+        type: 'carousel',
+        id: `${id}-carousel`,
+        images: files.map((f, i) => ({
+          src: `${base}/${f}`,
+          alt: `${highlight} ${i + 1}`,
+          description: descripciones[i] ?? '',
+        })),
+      },
+    ],
+    trigger: {
+      type: 'button',
+      icon: 'gallery',
+      frame: '2',
+      label: 'Galería de imágenes',
+      mapId,
+    },
+  }
+}
+
+const GALERIA_SUAREZ: Modal = galeria(
+  'cap2-galeria-suarez',
+  'Suárez',
+  '/assets/modal/chapter-2/galeria/suarez',
+  ['suarez1.webp', 'suarez2.webp', 'suarez3.webp', 'suarez4.webp', 'suarez6.webp', 'suarez7.webp'],
+  [
+    'Tejido de las Alternativas Transformadoras del nodo Suárez, Cauca. Encuentro en la Asociación Cultural Casa del Niño y de la Niña, Villa Rica, Cauca. Marzo de 2023.',
+    'Visual del área urbana de Suárez y del río Cauca desde La Toma. Diciembre de 2024.',
+    'Taller del Colaboratorio de Cartografias críticas y codiseño territorial. Mirador de La Toma. Suárez, Cauca. Diciembre de 2023.',
+    'Taller del Colaboratorio de Narrativas para las Transiciones Mirador de La Toma. Suárez, Cauca. 2024.',
+    'Visita a la represa Salvajina. Encuentro de Alternativas Transformadoras. Asnazú. Suárez, Cauca. Noviembre de 2023.',
+    'Visita a la Asociación Agroindustrial de Productores Agropecuarios y Mineros Afrodescendientes de Yolombó y Gelima - Asoyogé. La Toma. Suárez, Cauca. Noviembre de 2023.',
+  ],
+  'chapter2-suarez',
+)
+
+const GALERIA_VILLA_RICA: Modal = galeria(
+  'cap2-galeria-villa-rica',
+  'Villa Rica',
+  '/assets/modal/chapter-2/galeria/villa-rica',
+  ['villaRica1.webp', 'villaRica2.webp', 'villaRica3.webp', 'villaRica4.webp', 'villaRica5.webp', 'villaRica6.webp'],
+  [
+    'Finca tradicional Bajíos II. Vereda La Primavera. Villa Rica, Cauca.',
+    'Línea de tiempo del territorio de las alternativas transformadoras de Villa Rica. Cali, junio 2023.',
+    'Fruto del cacao en cultivos de Villa Rica, Cauca.',
+    'Visita a la finca tradicional La Caicedo. Vereda La Caponera. Guachené, Cauca. Al fondo el mayor Robertino Caicedo. Noviembre de 2024.',
+    'Primer encuentro de Alternativas Transformadoras del trayecto de diseño de transiciones ecosociales justas en sur del valle alto del río Cauca. Asociación Cultural Casa del Niño y de la Niña, Villa Rica, Cauca. 2023.',
+    'Rincón de una finca tradicional en las visitas de caracterización. Guachené, Cauca. 2024.',
+  ],
+  'chapter2-villa-rica',
+)
+
+const GALERIA_CALI: Modal = galeria(
+  'cap2-galeria-cali',
+  'Oriente de Cali',
+  '/assets/modal/chapter-2/galeria/cali',
+  ['cali1.webp', 'cali2.webp', 'cali4.webp', 'cali5.webp', 'cali6.webp', 'cali7.webp'],
+  [
+    'Visita Huerta Madre La Laguna - Red Nativos. Encuentro de Alternativas Transformadoras en la Casa Cultural El Chontaduro. Cali, Valle. 2023.',
+    'Taller Aguas que van, aguas que llegan. Colaboratorio de Cartografías críticas y Codiseño territorial. Asociación Cultural Casa El Chontaduro. Cali, Valle. Febrero, 2025.',
+    'Mayora Elena Hinestroza. Encuentro de Alternativas Transformadoras en la Casa Cultural El Chontaduro. Cali, Valle. 2023.',
+    'Taller de Lineas de tiempo. Encuentro de Alternativas Transformadoras en la Casa Cultural El Chontaduro. Cali, Valle. 2023.',
+    'Mayora Edy Serrano. Encuentro de Alternativas Transformadoras en la Casa Cultural El Chontaduro. Cali, Valle. 2023.',
+    'Taller del Colaboratorio de Narrativas para las Transiciones. Universidad del Valle. Cali, Valle. 2024.',
+  ],
+  'chapter2-cali',
+)
+
 /* ── Export ────────────────────────────────────────────────────────────── */
 
 export const CHAPTER2_MODALS: Modal[] = [
@@ -362,6 +402,9 @@ export const CHAPTER2_MODALS: Modal[] = [
   SINTESIS_CALI,
   SINTESIS_VILLA_RICA,
   SINTESIS_SUAREZ,
+  GALERIA_SUAREZ,
+  GALERIA_VILLA_RICA,
+  GALERIA_CALI,
   AT_ASOYOGE,
   AT_GUARDIA_CIMARRONA,
   AT_ASOCOMS,

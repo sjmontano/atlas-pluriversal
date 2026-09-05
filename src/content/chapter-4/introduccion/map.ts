@@ -9,6 +9,7 @@ export default makeMap({
     minimap: 'valle',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-intro' },
+      { id: 'datos', type: 'modal', icon: 'datos', label: 'Datos', frame: '3', target: 'cap4-dato-introduccion' },
     ],
   },
   geo: {

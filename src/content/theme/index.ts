@@ -1,3 +1,5 @@
 export { POI_THEME } from './poi'
 export { LAYER_STYLES } from './layers'
 export { SWATCH } from './swatches'
+export { ICON_SRC, ICON_FALLBACK, NON_TINTABLE_ICONS } from './icons'
+export type { IconName } from './icons'
