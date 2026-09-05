@@ -157,6 +157,10 @@ function tilesServePlugin(): Plugin {
 }
 
 export default defineConfig({
+  // Despliegue final: https://www.unriocauca.com/atlas/ (subcarpeta WP).
+  // Dev local sin cambios: `pnpm build` usa '/'. Build WP:
+  // `VITE_ATLAS_BASE=/atlas/ pnpm build`. Ver docs/BITACORA (deploy WP).
+  base: process.env.VITE_ATLAS_BASE ?? '/',
   plugins: [react(), calibrationSavePlugin(), tilesServePlugin()],
 
   resolve: {

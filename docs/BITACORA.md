@@ -1213,3 +1213,72 @@ const config = {
 - **Basemap**: OSM tiles con toggle, 3 estilos (Light/Streets/Satellite), slider opacidad. CARTO light sin `{r}` (v6 usa `{ratio}`)
 - **Dev tool**: MapControls funcional solo en dev (VITE_DEV_TOOLS=true); panel de calibración compatible con mapas rotados (preserva A/E)
 - **Pendiente**: Extraer contenido v17 (modales, audio, galerías, iconos, entramados, GeoJSON, assets)
+
+---
+
+## Sesión 2026-09-04 — Auditoría contenido + refactor + fixes shell/devtools + rendimiento (09:00–10:40 aprox.)
+
+### Contexto
+Continuación sin re-contextualizar: auditoría de configuración (modales por carpeta vs centralizados), refactors Fase A/B, 4 correcciones shell/devtools pedidas por el usuario, y plan de rendimiento P1–P4 ejecutado. Verificación con chrome-devtools contra `http://localhost:5173`.
+
+### Lo que YA funcionaba (verificado, no se tocó)
+- `connectionStore` (isSlow/isConstrained/tileProfile + listeners) — base sólida.
+- `useTilePrefetch` y `usePrefetchAdjacent` ya respetan `isConstrained`.
+- Swap de perfil standard↔hd en vivo sin rebuild (`controller.setTileProfile`).
+- `resolveTileCacheSize()` (110/160/220/400), `MAX_PARALLEL_IMAGE_REQUESTS` 2/4, `fade: 0` en lowPower.
+- `lowPowerMode` inicial por `hardwareConcurrency <= 4` o `isSlow`.
+- Propuestas retiradas del plan por ya existir: deshabilitar prefetch en 3G, forzar standard/fade.
+
+### Errores hallados (con causa raíz)
+1. **Pantalla azul en bredunco al togglear capas**: `LayerManager.sync()` usaba `'raster-opacity'` en capas geojson `line` → MapLibre lanza dentro de `setPaintProperty` → React desmonta `AtlasMap`. Consola del usuario lo probaba (`LayerManager.ts:223` ← `AtlasMap.tsx:137`).
+2. **Warning `circle-opacity < 0`**: loop de pulso POI a 60fps sin clamp ni frenos.
+3. **Calibración invisible**: commit `1f5707f` borró el panel funcional (928 líneas) y dejó un stub; además el overlay capturaba el mapa una vez (null) y las capas geojson sin PGW rompían `initLayerStates`.
+4. **Hover de encuadres saltaba a la izquierda**: escribía `transform` en el elemento del marker, sobrescribiendo el posicionamiento de MapLibre.
+5. **ChapterTabs en /intro marcaba Cap. I**: `activeChapter` iniciaba en `1`.
+6. **Paneles dev cortados** (DevTools, DevLayerMenu, CalibrationPanel): triple `position: absolute` anidado. Regla fijada: el overlay posiciona, los contenidos van in-flow.
+7. **Slider de opacidad no opacaba**: solo tocaba la imagen base bajo los tiles opacos.
+
+### Lo implementado (commits, en orden)
+- `39c4e06` test(content): modals.test.ts al esquema variant/body + test de integridad sidebar.target/poi.modalId (6/6).
+- `b4c43f0` refactor(content): `modals/_helpers.ts` (`paragraphs` + `presentacion`), migración cap-1/2/3/4.
+- `25c7972` refactor(content): `content/_map.ts` (`makeMap`), 26 mapas migrados; `intro/encuadres/ecosistemas` quedan literales (atípicos). A3 abortado con justificación (imports `../shared` ya intra-capítulo).
+- `f8e0fed` fix(shell): `activeChapter` nullable + `clearChapter`, hover encuadres estático con highlight de polígono, `/test` con UI mínima.
+- `49d3d37` fix(devtools): calibración restaurada byte-limpia desde `1f5707f^` + filtro solo `raster-pgw` + overlay suscrito al controller + panel a la izquierda.
+- `8eccebd`, `50d9961`, `c764b3e` fix(devtest): layout dev sin cortes, menú capas único en /test, opacidad en tiles+imagen.
+- `695f546` (sesión anterior) + extensión: P1 paint por geometría.
+- P2 (`0177976` mezclado): pulse 30fps + clamp + estático en lowPower/reduced-motion.
+- `6fdbb97` perf(power): lowPower bidireccional en vivo, sin rebuild (`applyParallelRequests`).
+- `e49092d` perf(mosaicos): 7 capas gigantes entran apagadas.
+
+### Decisiones registradas (no re-preguntar)
+- Modales siguen por capítulo (no por carpeta de mapa); test de integridad lo amarra.
+- `ui.sidebar` no se abstrae en `makeMap` (es contenido).
+- Límite B1: firma > ~6 parámetros = abortar (no ocurrió; quedó en 7 campos con `bearing` justificado por m-suarez 180, bosque-comestible 0, problematicas −30).
+- Mosaicos arranca todo apagado (decisión editorial del usuario).
+- Flakiness conocido: `BoundsCalculator` (ecosistemas) + `ContentRegistry` fallan a veces bajo paralelismo total; con `--maxWorkers=2` da 155/155. No es regresión.
+
+### Pendiente de esta sesión
+- Investigación profunda de tiles/assets (ver entrada siguiente).
+
+---
+
+## Investigación tiles/assets — medición real y estrategia por contexto (2026-09-04)
+
+### Pesos medidos en disco
+- `tiles/mapas/` (copia vieja): 5136 archivos, **267.7 MB**, 0 referencias en `src/` ni `scripts/` (generador actual escribe a `mapas-standard/` + `mapas-hd/`). Un tile testigo difiere byte-a-byte de standard y hd → es un set obsoleto, no copia exacta. **Candidato a eliminar** (regenerable desde PNGs vía `scripts/generate-tiles.mjs`).
+- `tiles/mapas-hd/`: 320.4 MB · `tiles/mapas-standard/`: 205.6 MB (5136 archivos c/u). Ratio hd/std ≈ 1.6× (mosaicos: 179 KB vs 109 KB por tile).
+- Originales `cap{1-4}/` (+intro): 31 PNG, **797.5 MB**. Son fuente del generador (`LOCAL_TILE_SOURCES`) y 2 mapas los usan como base runtime (formas-paisaje, m-suarez). **No eliminar**.
+- `previews/`: 31 archivos, 8.5 MB. Placeholder instantáneo runtime. Conservar.
+- GeoJSON total: 20 archivos, 2.9 MB. Barato en bytes; el costo es nº de fetches + parse + draw calls (bredunco: 16+16).
+
+### Medición de red real (chrome-devtools, mosaicos, perfil hd)
+Preview (304) + 7 imágenes de capas `raster-pgw` + 2 previews adyacentes + ~18 tiles hd z10. Capas en red: 0.24–1.54 MB c/u (~4 MB total) — en red están bien; el costo real es **memoria decodificada**: 5846×10394×4B ≈ 243 MB por imagen ×7 ≈ **1.7 GB**. OOM garantizado en 4 GB. Por eso P4 (todo apagado).
+
+### Corrección a hipótesis previa
+Mosaicos NO es vectorial: son 7 `raster-pgw` gigantes (memoria). Bredunco SÍ es geojson (16+16) pero liviano en bytes (parte de los 2.9 MB); su riesgo es nº de requests y draw calls, no peso. Ecosistemas es fluido por imágenes chicas (1374×2443 ≈ 13 MB decodificada c/u), no por "ser raster".
+
+### Lo que ya funciona (conservar)
+Perfil standard/hd por `connectionStore` con swap en vivo; `degraded` a 15s sin tiles; `resolveTileCacheSize`; prefetch ya gated por `isConstrained`; preview local como base instantánea; overzoom sin requests extra.
+
+### Propuesta pendiente de aprobación (detalle en chat)
+Cadena de fallback por contexto (preview → tiles perfil → base Cloudinary con transform → preview offline), Cloudinary con transforms on-the-fly (sin generar nada), `tiles/` off + base visible en `degraded`, y fusión futura de geojson por categoría. **Aprobado y ejecutado 2026-09-04 (commit `aeaf51f`)**: fallback degraded en `AtlasMap` + `cloudinaryVariant()` + base w_1280 en perfil standard en `MapRenderer` + test. `mapas/` lo borró el usuario (no se tocó en código).

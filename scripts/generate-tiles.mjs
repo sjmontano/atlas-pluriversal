@@ -115,10 +115,13 @@ async function download(url, dest) {
 async function resolveSource(tiles, geo, tmpDir) {
   const full = tiles.source
   if (!full) throw new Error('Tiles sin source local explícito')
-  const isLocal = full.startsWith('/assets/')
+  const isLocal = full.startsWith('/assets-raw/') || full.startsWith('/assets/')
   let raw
   if (isLocal) {
-    raw = join(ROOT, 'public', full.replace(/^\//, ''))
+    // Fuentes del generador viven en assets-raw/ (fuera de public/, no se
+    // despliegan); compat con rutas legacy dentro de public/.
+    const rel = full.replace(/^\//, '')
+    raw = full.startsWith('/assets-raw/') ? join(ROOT, rel) : join(ROOT, 'public', rel)
     if (!existsSync(raw)) throw new Error(`imagen local no existe: ${raw}`)
   } else {
     const ext = extname(new URL(full).pathname) || '.webp'

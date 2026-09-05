@@ -1,0 +1,24 @@
+# =============================================================
+# ATLAS PLURIVERSAL — /atlas/ (convive con WordPress en la raíz)
+# Este archivo viaja dentro de public/ → termina en /atlas/.htaccess.
+# NO tocar el .htaccess raíz de WordPress salvo el bloque documentado
+# en BITACORA (deploy WP): redirección /assets/* → /atlas/assets/*.
+# =============================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /atlas/
+
+  # SPA: rutas /atlas/capitulo/... → index.html (solo si no es archivo/dir)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /atlas/index.html [L]
+</IfModule>
+
+# Tiles y assets versionados (?v=) o con hash: caché agresiva 1 año.
+# index.html NO entra aquí (sin extensión matcheada) → siempre fresco.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(webp|png|svg|json|geojson|woff2?|js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>

@@ -57,7 +57,7 @@ export function App() {
   }, [])
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.VITE_ATLAS_BASE ?? '/'}>
       <Suspense fallback={<Fallback />}>
         <Routes>
           <Route path="/" element={<InicioPage />} />
