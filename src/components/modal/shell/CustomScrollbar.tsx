@@ -31,6 +31,7 @@ export function CustomScrollbar({
   const trackRef = useRef<HTMLDivElement>(null)
   const [thumbHeight, setThumbHeight] = useState(30)
   const [thumbTop, setThumbTop] = useState(0)
+  const [isOverflowing, setIsOverflowing] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const dragStart = useRef({ y: 0, scrollTop: 0 })
 
@@ -39,7 +40,9 @@ export function CustomScrollbar({
     if (!el) return
 
     const { scrollHeight, clientHeight, scrollTop } = el
-    if (scrollHeight <= clientHeight) {
+    const overflowing = scrollHeight > clientHeight
+    setIsOverflowing(overflowing)
+    if (!overflowing) {
       setThumbHeight(0)
       return
     }
@@ -59,6 +62,25 @@ export function CustomScrollbar({
     const el = scrollRef.current
     if (!el) return
     updateThumb()
+    // Re-medición tras layout/fuentes/imágenes (el primer efecto puede
+    // correr antes de que el contenido tenga su altura final).
+    // Guard para entornos sin rAF (jsdom).
+    const raf = typeof requestAnimationFrame !== 'undefined'
+      ? requestAnimationFrame(updateThumb)
+      : 0
+    el.addEventListener('scroll', updateThumb, { passive: true })
+    // ResizeObserver cubre cambios de tamaño del contenido (texto, imágenes,
+    // carrusel, viewport). Guard para entornos sin ResizeObserver (jsdom).
+    let ro: ResizeObserver | null = null
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(updateThumb)
+      ro.observe(el)
+    }
+    return () => {
+      if (raf !== 0) cancelAnimationFrame(raf)
+      el.removeEventListener('scroll', updateThumb)
+      ro?.disconnect()
+    }
   }, [scrollRef, updateThumb])
 
   const handleTrackClick = useCallback(
@@ -119,6 +141,10 @@ export function CustomScrollbar({
       document.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isDragging, scrollRef, thumbHeight])
+
+  // Sin overflow no hay nada que desplazar: ocultar el riel completo
+  // (no solo el thumb) para no mostrar un track vacío.
+  if (!isOverflowing) return null
 
   return (
     <div

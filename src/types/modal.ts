@@ -43,7 +43,7 @@ export interface ModalTheme {
   size?: { width: string; height: string }
 
   /* ── Estilos inyectables por modal ─────────────────────────────────── */
-  /** maxWidth del .bodyOuter (default: '90%') */
+  /** maxWidth del .bodyInner (default: '90%'). El riel queda fijo al diálogo. */
   bodyMaxWidth?: string
   /** Tamaño del ícono glyph (default: '28px') */
   iconSize?: string

@@ -233,12 +233,14 @@
   /* Encima de .dialogBg (z-index 0) */
   z-index: 1;
   overflow: hidden;
-  max-width: var(--body-max-width);
+  /* Ancho completo: el riel, el fade, la flecha y el scrim se anclan
+     al diálogo (posición fija), no al ancho del contenido. */
 }
 
 .bodyScrollbar {
   position: absolute;
-  right: 0;
+  /* Riel centrado bajo el botón X (44px): padding + (44 - 8) / 2 */
+  right: calc(var(--modal-padding) + 18px);
   top: 0;
   bottom: 0;
 }
@@ -249,10 +251,13 @@
   overflow-x: hidden;
   scrollbar-width: none;
   position: relative;
+  /* El max-width vive aquí: el contenido conserva su ancho (90% / 85% /
+     100% por tema) mientras el riel queda fijo al borde del modal. */
+  max-width: var(--body-max-width);
   padding-top: clamp(10px, 1.5vh, 16px);
   padding-bottom: var(--modal-padding);
   padding-left: var(--content-left-indent);
-  padding-right: 20px;
+
   font-size: var(--body-font-size);
   line-height: var(--body-line-height);
   color: var(--body-text-color);
@@ -344,7 +349,7 @@
   }
 
   /* Body: maxWidth 100%, contenido con margen simple (sin align-header) */
-  .bodyOuter {
+  .bodyInner {
     max-width: 100% !important;
   }
 
@@ -364,8 +369,9 @@
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
+
   /* Body: maxWidth 100% en tablet */
-  .bodyOuter {
+  .bodyInner {
     max-width: 100% !important;
   }
 }

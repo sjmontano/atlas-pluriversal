@@ -10,7 +10,7 @@
  */
 
 import type { CSSProperties, ReactNode } from 'react'
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import type { ModalVariant, ModalTheme } from '../../../types/modal.ts'
 import { Glyph } from '../primitives/Glyph'
@@ -67,32 +67,6 @@ export function ModalShell({
 }: ModalShellProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   const bodyScrollRef = useRef<HTMLDivElement>(null)
-
-  const syncScrollbar = useCallback(() => {
-    const el = bodyScrollRef.current
-    if (!el) return
-    const track = el.parentElement?.querySelector<HTMLElement>('[role="scrollbar"]')
-    if (!track) return
-    const thumb = track.querySelector<HTMLElement>(':scope > div')
-    if (!thumb) return
-
-    const { scrollHeight, clientHeight, scrollTop } = el
-    if (scrollHeight <= clientHeight) {
-      thumb.style.height = '0px'
-      return
-    }
-
-    const ratio = clientHeight / scrollHeight
-    const trackH = track.clientHeight
-    const thumbH = Math.max(24, ratio * trackH)
-    const maxScroll = scrollHeight - clientHeight
-    const maxTop = trackH - thumbH
-    const top = maxScroll > 0 ? (scrollTop / maxScroll) * maxTop : 0
-
-    thumb.style.height = `${thumbH}px`
-    thumb.style.transform = `translateY(${top}px)`
-    thumb.style.opacity = '1'
-  }, [])
 
   useEffect(() => {
     if (!open) return
@@ -227,7 +201,6 @@ export function ModalShell({
           <div
             ref={bodyScrollRef}
             className={styles.bodyInner}
-            onScroll={syncScrollbar}
           >
             {children}
           </div>

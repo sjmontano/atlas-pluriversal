@@ -7,7 +7,7 @@
  * Convención de ids:
  *   cap1-presentacion-<mapa>  Presentación por mapa (rail)
  *   (ficha/descargar son links Drive del sidebar por diseño v17,
- *   no modales: no existen cap1-ficha-*/cap1-descargar-*)
+ *   no modales: no existen ids cap1-ficha-… ni cap1-descargar-…)
  *   cap1-perfil-cuenca        Perfil de la cuenca (rail · carousel)
  *   cap1-atlas-proyecto       Presentación del proyecto (id 1 de v17)
  *   cap1-cuenca-<slug>        11 cuencas Tejidos del Agua (click en capa)
