@@ -1282,3 +1282,36 @@ Perfil standard/hd por `connectionStore` con swap en vivo; `degraded` a 15s sin 
 
 ### Propuesta pendiente de aprobación (detalle en chat)
 Cadena de fallback por contexto (preview → tiles perfil → base Cloudinary con transform → preview offline), Cloudinary con transforms on-the-fly (sin generar nada), `tiles/` off + base visible en `degraded`, y fusión futura de geojson por categoría. **Aprobado y ejecutado 2026-09-04 (commit `aeaf51f`)**: fallback degraded en `AtlasMap` + `cloudinaryVariant()` + base w_1280 en perfil standard en `MapRenderer` + test. `mapas/` lo borró el usuario (no se tocó en código).
+---
+
+## 2026-09-06 — Toolbar por mapa con iconos oficiales + inventario MODALES.md
+
+### Contexto
+
+El `ToolRail` pedia iconos que `Glyph.tsx` resolvia con SVG genericos inline
+y su mapeo vs v17 estaba desviado (C4 sin Perfil/Arbol, C2 sin Galeria ni
+Sintesis real — el goto apuntaba a `/capitulo/4` — y los offsets
+`modalsData[selectedMap+63/+72]` de v17 apuntan hoy a contenido ajeno).
+
+### Que se hizo (commit `26e24da` en `main`)
+
+1. **Arte:** 9 SVG oficiales normalizados a `currentColor` + nuevos
+   `datos.svg`, `mapa-arbol.svg`, `sintesis.svg` (trebol del `modelo.webp`).
+2. **Catalogo** `src/content/theme/icons.ts` (`IconName` -> `svg?raw`,
+   fallback `info`); `Glyph` sin SVG inline, API intacta.
+3. **Contenido v17 -> bloques:** 14 diagramas C4 (`cap4-perfil-*`,
+   `cap4-arbol-*`, `cap4-dato-introduccion`), 3 galerias C2
+   (`cap2-galeria-*`, 18 webp + descripciones), `atModal()` unificado como
+   `fichaPerfil()` en `_helpers.ts`, 2 imagenes AT rotas reparadas.
+4. **Sidebars** (13 `map.ts` solo-datos, orden v17).
+5. **Guarda** `tests/content/sidebarIcons.test.tsx` (icon en catalogo,
+   target en MODALS, goto valido).
+6. **Doc** `docs/MODALES.md`: inventario completo por capitulo (donde vive
+   cada modal, forma, trigger, cableado, reglas y gaps).
+
+### Verificacion
+
+typecheck OK - lint OK (solo pre-existentes) - 165/166 tests OK (1 timeout
+flaky en `BoundsCalculator` bajo paralelismo, pasa aislado) - build OK -
+QA chrome-devtools en `/capitulo/4/chapter4-el-buhido` y
+`/capitulo/2/chapter2-suarez` (rails, modales y galeria abriendo bien).
