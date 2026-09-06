@@ -58,51 +58,71 @@ describe('LayerMenu', () => {
     useLayerStore.getState().resetAll('test')
   })
 
-  it('renders group and layer names', () => {
-    render(<LayerMenu mapId="test" onCalibrate={vi.fn()} />)
-    expect(screen.getByText(/Capas/)).toBeDefined()
-    fireEvent.click(screen.getByTitle('Mostrar panel'))
+  it('renders toggle button plus group and layer names', () => {
+    render(<LayerMenu mapId="test" />)
+    expect(screen.getByRole('button', { name: 'Menú de capas' })).toBeDefined()
     expect(screen.getByText(/Group 1/)).toBeDefined()
     expect(screen.getByText(/Layer One/)).toBeDefined()
   })
 
-  it('toggles layer visibility on checkbox click', () => {
-    render(<LayerMenu mapId="test" onCalibrate={vi.fn()} />)
-    fireEvent.click(screen.getByTitle('Mostrar panel'))
+  it('pins the panel open on toggle click', () => {
+    const { container } = render(<LayerMenu mapId="test" />)
+    const toggle = screen.getByRole('button', { name: 'Menú de capas' })
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    fireEvent.click(toggle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(container.querySelector('.pinned')).not.toBeNull()
+  })
+
+  it('pins the panel open on click inside the panel', () => {
+    const { container } = render(<LayerMenu mapId="test" />)
+    fireEvent.click(screen.getByText(/Group 1/))
+    expect(container.querySelector('.pinned')).not.toBeNull()
+  })
+
+  it('toggles layer visibility on eye click', () => {
+    render(<LayerMenu mapId="test" />)
+    fireEvent.click(screen.getByRole('button', { name: 'Menú de capas' }))
     const store = useLayerStore.getState()
     expect(store.visibleLayers.size).toBe(0)
-    const checks = screen.getAllByRole('checkbox')
-    const layerCheck = checks[checks.length - 1]
-    fireEvent.click(layerCheck!)
-    expect(useLayerStore.getState().visibleLayers.has('layer-1') || useLayerStore.getState().visibleLayers.has('layer-2')).toBe(true)
+    fireEvent.click(screen.getByRole('button', { name: 'Mostrar Layer One' }))
+    const after = useLayerStore.getState()
+    expect(after.visibleLayers.has('layer-1')).toBe(true)
+    expect(screen.getByRole('button', { name: 'Ocultar Layer One' })).toBeDefined()
   })
 
   it('renders nothing when map has no layers', () => {
-    const { container } = render(<LayerMenu mapId="empty" onCalibrate={vi.fn()} />)
+    const { container } = render(<LayerMenu mapId="empty" />)
     expect(container.innerHTML).toBe('')
   })
 
   it('toggles group expansion on click', () => {
-    render(<LayerMenu mapId="test" onCalibrate={vi.fn()} />)
-    fireEvent.click(screen.getByTitle('Mostrar panel'))
+    render(<LayerMenu mapId="test" />)
     const groupHeader = screen.getByText(/Group 1/)
     fireEvent.click(groupHeader!)
     expect(useLayerStore.getState().expandedGroups['group-1']).toBe(true)
   })
 
-  it('renders legends without interactivity for a map with only legends', () => {
-    render(<LayerMenu mapId="legend-only" onCalibrate={vi.fn()} />)
-    fireEvent.click(screen.getByTitle('Mostrar panel'))
+  it('toggles whole group visibility on group eye click', () => {
+    render(<LayerMenu mapId="test" />)
+    fireEvent.click(screen.getByRole('button', { name: 'Menú de capas' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Mostrar Group 1' }))
+    const after = useLayerStore.getState()
+    expect(after.visibleLayers.has('layer-1')).toBe(true)
+    expect(after.visibleLayers.has('layer-2')).toBe(true)
+  })
+
+  it('renders legends without eyes for a map with only legends', () => {
+    const { container } = render(<LayerMenu mapId="legend-only" />)
     expect(screen.getByText('Leyenda')).toBeDefined()
     expect(screen.getByText('Río Cauca')).toBeDefined()
     expect(screen.getByText('Represas')).toBeDefined()
     expect(screen.getByText('2022')).toBeDefined()
+    expect(container.querySelectorAll('.eye').length).toBe(0)
   })
 
-  it('does not render a master checkbox when there are no activable layers', () => {
-    render(<LayerMenu mapId="legend-only" onCalibrate={vi.fn()} />)
-    fireEvent.click(screen.getByTitle('Mostrar panel'))
+  it('does not render a master eye when there are no activable layers', () => {
+    render(<LayerMenu mapId="legend-only" />)
     expect(screen.queryByText(/Todas/)).toBeNull()
-    expect(screen.queryByRole('checkbox')).toBeNull()
   })
 })

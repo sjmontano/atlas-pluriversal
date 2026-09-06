@@ -26,6 +26,9 @@ import markerPin from '../../../public/assets/ui/markers/marker-pin.svg?raw'
 import generalInfo from '../../../public/assets/ui/icons/line/general-info.svg?raw'
 import back from '../../../public/assets/ui/icons/line/back.svg?raw'
 import arrowUp from '../../../public/assets/ui/icons/line/arrow-up.svg?raw'
+import show from '../../../public/assets/ui/icons/line/show.svg?raw'
+import hide from '../../../public/assets/ui/icons/line/hide.svg?raw'
+import layers from '../../../public/assets/ui/icons/line/layers.svg?raw'
 
 /** Nombre → SVG de referencia. `perfil` = levels v17, `fichatecnica` = metadata v17. */
 export const ICON_SRC = {
@@ -42,6 +45,9 @@ export const ICON_SRC = {
   info: generalInfo,
   back,
   'arrow-up': arrowUp,
+  show,
+  hide,
+  layers,
 } as const
 
 export type IconName = keyof typeof ICON_SRC

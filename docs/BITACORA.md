@@ -1315,3 +1315,95 @@ typecheck OK - lint OK (solo pre-existentes) - 165/166 tests OK (1 timeout
 flaky en `BoundsCalculator` bajo paralelismo, pasa aislado) - build OK -
 QA chrome-devtools en `/capitulo/4/chapter4-el-buhido` y
 `/capitulo/2/chapter2-suarez` (rails, modales y galeria abriendo bien).
+
+---
+
+## 2026-09-06 — Menu de capas estilo v17 (boton derecho + ojos)
+
+### Contexto
+
+El `LayerMenu` era un panel arriba-izquierda con checkboxes nativos, sin
+imagen ni boton propio. v17 lo resuelve con boton a la derecha gemelo del
+Home (`iconoCapas1.webp` + fondo hover + label), despliegue efimero en
+hover, fijado con click, y on/off con ojo abierto/cerrado (sin checkboxes).
+
+### Que se hizo (sin commitear aun)
+
+1. **Assets:** `icono-capas.webp` + `menu-capas-fondo.webp` portados de v17
+   a `public/assets/ui/layers/` (se descarto `indice-capas-menu.svg`:
+   219 KB solo decoracion). `show/hide/layers.svg` normalizados a
+   `currentColor` y registrados en `ICON_SRC`.
+2. **Boton** (`LayerMenu.tsx/css`): derecha inferior, arte oficial +
+   etiqueta "Menu de capas" en hover; hover expande (CSS), click fija
+   (`pinned`), `pointer-events` como el shell.
+3. **Panel:** textura `menuCapasFinal` con velo legible, ojos `show/hide`
+   en 3 niveles (Todas, grupo, capa) sobre los mismos toggles del
+   `layerStore`; se conservan sliders de opacidad, grupos y leyendas.
+4. **Fuera fila Calibrar** (decision usuario): se retiro `onCalibrate` de
+   `LayerMenu` y el bloque muerto de `CalibrationPanel` en `AtlasMap`
+   (sigue vivo en `DevTools` de /test).
+5. **Tests** `LayerMenu.test.tsx` reescritos a ojos + pin (8/8).
+
+### Decisiones explicitas
+
+- Ojos en 3 niveles (no solo individual); sliders conservados (v17 no los
+  tiene); textura completa (no solo cabecera).
+- `layerStore`/`LayerManager`/datos por mapa intactos: solo presentacion.
+
+### Verificacion
+
+typecheck OK - lint OK (solo pre-existentes) - **168/168 tests** OK -
+build OK - QA chrome-devtools en `/capitulo/1/chapter1-ecosistemas`
+(boton, panel con textura, ojos con glow, sliders; assets 200).
+
+### Revision 2026-09-07 (feedback usuario, sin commitear aun)
+
+- Boton espejo exacto del Home: `right: 0.7%`, `bottom: 3vh`, `3.5vw`
+  (min 44px). Verificado en navegador: misma altura y tamano (y=650 vs
+  y=654, w=57 vs w=54).
+- Fuera sliders de opacidad en produccion (quedan en dev).
+- Panel libre 25vw x 100vh con `menuCapasFinal` como contenedor directo
+  (sin caja, sin header de texto, scroll padding 7vh como v17).
+- Boton con `z-index` sobre el panel para poder despinear; ciclo
+  pin/unpin verificado (`aria-expanded` true/false).
+- QA local vs Vercel lado a lado: misma forma, funcionalidad mejor
+  (master Todas, ojos en 3 niveles, grupos expandibles).
+
+### Revision visual 2026-09-07 (4 puntos usuario, sin commitear aun)
+
+1. Boton espejo exacto del Home (`right: 0.7%`, `bottom: 3vh`, `3.5vw`)
+   con fondo `item-hover-bg` visible SIEMPRE tras el boton colapsado.
+2. Panel sin velo oscuro: `menuCapasFinal` puro como unico fondo.
+3. Panel flush: `right: 0`, `top: 0`, `25vw x 100vh`, sin borde ni radius
+   (el ancla ocupa el filo derecho; antes el `0.7%` dejaba vacio).
+4. Al fijar, el boton se traslada al borde izquierdo limite del panel
+   (`right: calc(25vw + 0.7vw)`, solo en `pinned`, sin loop de hover).
+- Textos a `#fffeee` bold como v17; ojos cream con glow; swatch kept.
+- QA local vs Vercel: misma forma, mejor funcionalidad; consola limpia.
+- Verificacion: typecheck OK - 168/168 tests OK - lint OK (pre-existentes)
+  - build OK.
+
+### Pulido 2026-09-07 (3 puntos usuario, sin commitear aun)
+
+1. Fondo hover como ToolRail: solo en hover/focus y DETRAS del icono
+   (`z-index` + `position` en `.toggleIcon`); antes siempre activo y por
+   encima.
+2. Click dentro del panel fija abierto (`onClick` en panel -> `pinned`).
+3. Linea guia `indice-capas-menu.svg` portada a `ui/layers/`, visible sin
+   hover, como hermana del wrap (`z-index: 5`) para quedar bajo el
+   minimapa (22); el wrap subio a 25 para que el panel tape al minimapa.
+   `title` en nombres de grupo largos.
+- Verificacion: typecheck OK - 169/169 tests OK - lint OK (pre-existentes)
+  - build OK - QA navegador (guia en filo derecho 8vw, panel sobre
+  minimapa con texto completo, pin/unpin).
+
+### Coherencia hover + linea al borde 2026-09-07 (sin commitear aun)
+
+1. Linea decorativa pegada al borde: el wash del SVG vive a la izquierda
+   del arte (verificado renderizando el asset directo); se espeja con
+   `scaleX(-1)` para que lo denso quede contra el filo derecho.
+2. El boton se traslada junto al menu tambien en hover (no solo click):
+   `.wrap:hover .toggle` comparte el offset; sin loop (cursor queda sobre
+   el panel; al salir vuelve a la esquina, medido 1472->1088->1472).
+- Verificacion: typecheck OK - 9/9 LayerMenu OK - lint OK (pre-existentes)
+  - build OK - metricas DOM en navegador.

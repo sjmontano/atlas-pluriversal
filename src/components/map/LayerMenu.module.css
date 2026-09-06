@@ -1,50 +1,171 @@
-.panel {
+/* LAYER MENU — botón espejo del Home + contenedor libre v17 */
+
+/* ── Ancla: filo derecho, alto completo. Solo los hijos interceptan ───── */
+.wrap {
   position: absolute;
-  top: 12px;
-  left: 12px;
-  width: 280px;
-  max-height: calc(100vh - 140px);
-  background: rgba(10, 10, 30, 0.92);
-  border: 1px solid #2a2a4e;
-  border-radius: 10px;
-  z-index: 100;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  backdrop-filter: blur(8px);
+  top: 0;
+  right: 0;
+  height: 100vh;
+  z-index: 25;
+  pointer-events: none;
 }
 
-/* Variante /test: debajo de la topbar mínima */
-.panel.offsetTop {
-  top: 60px;
+/* ── Línea guía derecha (v17 lineaCapas): hermana del wrap, bajo todo ──
+ * Fuera del stacking context del wrap para quedar bajo el minimapa (22).
+ */
+.guideLine {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 8vw;
+  height: 100vh;
+  z-index: 5;
+  pointer-events: none;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  border-bottom: 1px solid #2a2a4e;
+.guideLine img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
 }
 
-.headerTitle {
-  color: #e0e0ff;
-  font-size: 14px;
-  font-weight: 600;
-}
+/* Abierto: el panel (opaco) la tapa solo. Sin reglas de display:
+ * la guía es hermana del wrap y el hover no la alcanza. */
 
-.collapseBtn {
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 14px;
+/* ── Botón (arte oficial icono-capas, espejo exacto del Home) ─────────── */
+.toggle {
+  all: unset;
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 32;
+  right: 0.7vw;
+  bottom: 3vh;
+  display: block;
+  width: 3.5vw;
+  min-width: 44px;
   cursor: pointer;
-  padding: 2px 6px;
+  pointer-events: auto;
+  transition:
+    right 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.3s ease;
+}
+
+.wrap.offsetTop .toggle {
+  bottom: calc(3vh + 48px);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--primary-blue, #0599b7);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.toggleIcon {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.toggle:hover,
+.toggle:focus-visible {
+  transform: translateY(-2px) scale(1.06);
+  filter: brightness(1.15) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+/* Abierto (hover o fijado): el botón se traslada junto al menú, al borde
+ * izquierdo límite del panel. Sin loop: el cursor queda sobre el panel. */
+.wrap:hover .toggle,
+.wrap.pinned .toggle {
+  right: calc(25vw + 0.7vw);
+  transform: none;
+}
+
+/* Fondo decorado visible SIEMPRE tras el botón (como v17) */
+.toggle::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  right: -12px;
+  top: -6px;
+  bottom: -6px;
+  width: 240px;
+  max-width: 60vw;
+  background: url('/assets/ui/sidebar/item-hover-bg.webp') right center / contain no-repeat;
+  transform: scaleX(-1) translateX(-10px);
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.wrap:hover .toggle::before,
+.toggle:focus-visible::before {
+  opacity: 1;
+  transform: scaleX(-1) translateX(0);
+}
+
+.toggleLabel {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(8px);
+  white-space: nowrap;
+  font-size: var(--icon-btn-font);
+  font-weight: 600;
+  color: var(--atlas-cream, #f2eee7);
+  opacity: 0;
+  transition:
+    opacity 0.25s ease,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.wrap:hover .toggleLabel,
+.toggle:focus-visible .toggleLabel {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ── Panel libre: la imagen ES el contenedor (v17) ───────────────────────
+ * Sin caja, sin velo oscuro: fondo directo a filo de viewport.
+ */
+.panel {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 25vw;
+  height: 100vh;
+  overflow-y: auto;
+  background: url('/assets/ui/layers/menu-capas-fondo.webp') center / cover no-repeat;
+  z-index: 31;
+  pointer-events: auto;
+}
+
+.wrap:hover .panel,
+.wrap.pinned .panel {
+  display: block;
+  animation: panelIn 0.2s ease;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .body {
-  overflow-y: auto;
-  padding: 8px 12px 12px;
+  padding: 7vh 24px 7vh 40px;
 }
 
 .masterRow {
@@ -52,41 +173,43 @@
   align-items: center;
   gap: 8px;
   padding: 4px 0 8px;
-  color: #ccc;
-  font-size: 13px;
+  color: #fffeee;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ── Ojo on/off (v17 EyeIcon con glyphs show/hide) ─────────────────────── */
+.eye {
+  all: unset;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
   cursor: pointer;
-}
-
-.calibrateRow {
-  display: flex;
-  gap: 6px;
-  padding: 0 0 8px;
-}
-
-.calibrateBtn {
-  background: #2a2a4e;
-  border: 1px solid #3a3a6e;
-  color: #aaa;
-  font-size: 12px;
-  padding: 4px 10px;
   border-radius: 6px;
-  cursor: pointer;
+  color: #fffeee;
+  opacity: 0.55;
+  transition:
+    color 0.15s ease,
+    filter 0.15s ease,
+    opacity 0.15s ease;
 }
 
-.calibrateActive {
-  background: #3a3a6e;
-  color: #e0e0ff;
+.eye:focus-visible {
+  outline: 2px solid var(--primary-blue, #0599b7);
+  outline-offset: 1px;
 }
 
-.calibrateApplyBtn {
-  background: #2b5a3a;
-  border: 1px solid #3a7a4e;
-  color: #a0e0a0;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  white-space: nowrap;
+.eyeOn {
+  color: #fffeee;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(255, 254, 238, 0.8));
+}
+
+.eyeMixed {
+  opacity: 0.45;
 }
 
 .group {
@@ -102,14 +225,14 @@
 }
 
 .groupName {
-  color: #c0c0e0;
-  font-size: 13px;
-  font-weight: 600;
+  color: #fffeee;
+  font-size: 14px;
+  font-weight: 700;
   flex: 1;
 }
 
 .groupArrow {
-  color: #888;
+  color: #fffeee;
   font-size: 10px;
   transition: transform 0.2s;
 }
@@ -123,15 +246,15 @@
   align-items: center;
   gap: 6px;
   padding: 3px 0 3px 24px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .layerRow:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .layerSelected {
-  background: rgba(100, 140, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .swatch {
@@ -142,30 +265,23 @@
 }
 
 .layerName {
-  color: #bbb;
+  color: #fffeee;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.opacitySlider {
-  width: 60px;
-  height: 4px;
-  accent-color: #6688cc;
-  flex-shrink: 0;
-}
-
 .legendSection {
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid #2a2a4e;
+  border-top: 1px solid rgba(255, 254, 238, 0.25);
 }
 
 .legendSectionTitle {
-  color: #8888aa;
-  font-size: 11px;
-  font-weight: 600;
+  color: #fffeee;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   padding: 0 0 6px;
@@ -176,9 +292,9 @@
 }
 
 .legendGroupName {
-  color: #9999bb;
+  color: #fffeee;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 2px 0 2px 24px;
 }
 
@@ -191,11 +307,11 @@
 }
 
 .legendRow:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .legendName {
-  color: #bbb;
+  color: #fffeee;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -219,7 +335,7 @@
 
 .infoIcon {
   position: relative;
-  color: #6688cc;
+  color: #fffeee;
   font-size: 12px;
   cursor: help;
   flex-shrink: 0;
@@ -230,7 +346,7 @@
   visibility: hidden;
   opacity: 0;
   position: absolute;
-  left: calc(100% + 8px);
+  right: calc(100% + 8px);
   top: 50%;
   transform: translateY(-50%);
   width: 200px;
@@ -250,4 +366,19 @@
 .infoIcon:focus .tooltip {
   visibility: visible;
   opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .guideLine {
+    display: none;
+  }
+
+  .panel {
+    width: 78vw;
+  }
+
+  .wrap:hover .toggle,
+  .wrap.pinned .toggle {
+    right: calc(78vw + 2vw);
+  }
 }

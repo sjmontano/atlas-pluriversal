@@ -25,11 +25,8 @@ import type { MapController } from '@services/MapRenderer'
 import type { Poi } from '../../types/poi.ts'
 import { LayerMenu } from './LayerMenu'
 import { PoiModal } from './PoiModal'
-import { CalibrationPanel } from '@components/dev/calibration/CalibrationPanel'
 import { OfflineBanner } from './OfflineBanner'
 import styles from './AtlasMap.module.css'
-
-import { DEV_TOOLS } from '@config'
 
 export interface AtlasMapProps {
   mapId: string
@@ -68,7 +65,6 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
   const hasLegends = legends !== null && legends.length > 0
   const [activePoi, setActivePoi] = useState<Poi | null>(null)
   const [rebuildKey] = useState(1)
-  const [calibrationOpen, setCalibrationOpen] = useState(false)
 
   const handlePoiClick = (poi: Poi) => {
     if (poi.modalId) {
@@ -184,15 +180,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
         </div>
       )}
 
-      {!loading && !error && !hideLayerMenu && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} onCalibrate={() => setCalibrationOpen(true)} offsetTop={layerMenuOffsetTop} />}
-
-      {DEV_TOOLS && calibrationOpen && controllerRef && (
-        <CalibrationPanel
-          key={mapId}
-          mapId={mapId}
-          controllerRef={controllerRef}
-        />
-      )}
+      {!loading && !error && !hideLayerMenu && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} offsetTop={layerMenuOffsetTop} />}
 
       {activePoi && (
         <PoiModal poi={activePoi} onClose={() => setActivePoi(null)} />
