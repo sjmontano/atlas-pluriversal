@@ -71,6 +71,13 @@
   height: var(--icon-btn-glyph);
 }
 
+/* Con fondo-imagen (drop asimétrico): centra el glyph sobre el centroide
+   visual del drop medido en el asset (+1.8% x, +0.6% y). Solo aplica al
+   contenedor con bg; los frames oficiales quedan intactos. */
+.withBg .glyph {
+  transform: translate(1.8%, 0.6%);
+}
+
 /* ── Etiqueta: aparece fluida al hover/focus (desktop) ──────────────── */
 .label {
   font-size: var(--icon-btn-font);

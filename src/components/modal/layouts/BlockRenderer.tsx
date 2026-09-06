@@ -236,12 +236,13 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
             )}
           </div>
 
-          {/* Descripción con transición */}
-          <div className={styles.carouselDescription} key={index}>
-            {images[index]?.description && (
-              <p>{images[index].description}</p>
-            )}
-          </div>
+          {/* Descripción con transición (solo si la imagen la trae:
+              sin texto no se renderiza ni la caja ni la línea lateral) */}
+          {images[index]?.description ? (
+            <div className={styles.carouselDescription} key={index}>
+              <p>{images[index]?.description}</p>
+            </div>
+          ) : null}
         </div>
 
         {/* Botón siguiente */}

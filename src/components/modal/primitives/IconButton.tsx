@@ -39,7 +39,7 @@ export function IconButton({
       title={label}
       onClick={onClick}
     >
-      <span className={styles.iconBox}>
+      <span className={`${styles.iconBox}${bg !== undefined ? ` ${styles.withBg}` : ''}`}>
         <span className={styles.frame}>
           {bg !== undefined ? (
             <img src={bg} alt="" draggable={false} />
