@@ -8,8 +8,7 @@
  * Header: mismo sistema que los capítulos — `SectionHeader` (glyph `back`
  * + decorador titulo-*.webp + título), back a /entramados.
  *
- * Desvío explícito vs beta live: el fondo es el degradado + `fondo.webp`
- * del código v17 (la foto grupal del beta no existe como asset en v17).
+ * Fondo: `fondo.webp` (foto grupal) en cover + center, ocupa todo el fondo.
  */
 
 import { Link } from 'react-router-dom'
@@ -79,6 +78,9 @@ export function CreditsPage() {
         className={styles.top}
         style={{
           background: `linear-gradient(rgba(4, 69, 82, 0.52), rgba(4, 72, 86, 0.6)), url('${BASE}/fondo.webp')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
       >
         <div className={styles.container}>

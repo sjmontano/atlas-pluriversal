@@ -139,22 +139,24 @@
   display: flex;
 }
 
-/* ─── Botón Equipos de trabajo (arriba-derecha) ─── */
+/* ─── Botón Equipos de trabajo (arriba-derecha, alineado con btnLogo:
+   mismo top y misma altura para compartir eje central) ─── */
 .btnCredits {
   display: flex;
   align-items: center;
   position: absolute;
   top: 5%;
   left: 80vw;
-  height: 13%;
+  height: 3.2vw;
+  min-height: 40px;
   z-index: 10;
   cursor: pointer;
   text-decoration: none;
 }
 
 .btnCredits img {
-  width: 50%;
-  height: 50%;
+  height: 80%;
+  width: auto;
   object-fit: contain;
 }
 
@@ -171,12 +173,13 @@
   max-width: 100%;
 }
 
-/* ─── Footer absoluto ─── */
+/* ─── Footer pegado a la pared inferior (sin franja blanca) ─── */
 .footer {
   position: absolute;
   width: 100%;
   overflow: hidden;
-  top: 92vh;
+  top: auto;
+  bottom: 0;
   left: 0;
 }
 

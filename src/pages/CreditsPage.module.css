@@ -98,16 +98,22 @@
   display: flex;
 }
 
-/* Sección superior */
+/* Sección superior: ocupa toda la página para que el footer
+   (bottom:0) quede pegado a la pared inferior */
 .top {
   background-size: cover;
-  height: 96vh;
+  height: 100%;
   position: relative;
 }
 
+/* Gutter único de alineación: coincide con el x del título del header
+   de capítulos (back 2vw + glyph 24px + paddings 12px + wrapper 1vw).
+   Título, texto, filas, "conoce", pills y logos comparten este borde. */
 .container {
   position: relative;
-  padding-left: 3.5rem;
+  padding-left: calc(3vw + 36px);
+  /* Despeja el header de capítulos (flecha + decorador + título) */
+  padding-top: 7.5vh;
   display: flex;
   flex-direction: column;
   padding-bottom: 2vh;
@@ -117,20 +123,20 @@
    decorador titulo-*.webp + título). Sin estilos propios. */
 
 .description {
-  left: -2%;
-  margin-top: 3vh;
+  left: 0;
+  margin-top: 0;
   position: relative;
   z-index: 1;
-  max-width: 38rem;
+  max-width: 44rem;
 }
 
 .description p {
-  margin-left: 6.5%;
-  font-size: 12.8px;
-  line-height: 1.6;
+  margin-left: 0;
+  font-size: 14px;
+  line-height: 1.7;
   color: #fff;
-  opacity: 0.9;
-  font-style: italic;
+  opacity: 1;
+  font-style: normal;
   font-weight: 400;
   margin-top: 0;
   margin-bottom: 0;
@@ -140,6 +146,7 @@
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
+  margin-top: 1.5vh;
 }
 
 .row {
@@ -148,7 +155,7 @@
   text-align: center;
   position: relative;
   margin-right: 15px;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
 }
@@ -180,9 +187,9 @@
   color: #0599b7;
 }
 
-/* Pills de nodos */
+/* Pills de nodos (pegadas al "conoce": gap corto) */
 .conocer {
-  left: 5%;
+  left: calc(3vw + 36px);
   position: absolute;
   color: #fff;
   font-size: 1rem;
@@ -192,11 +199,11 @@
 .locations {
   display: flex;
   flex-wrap: nowrap;
-  padding-left: 4.5%;
+  padding-left: calc(3vw + 36px);
   list-style: none;
   justify-content: flex-start;
   gap: 1.2vw;
-  margin: 2.2rem 0 0;
+  margin: 0.75rem 0 0;
 }
 
 .locations li {
@@ -221,7 +228,7 @@
 
 .pill {
   width: 100%;
-  min-height: 4.5vh;
+  min-height: 4vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,35 +250,36 @@
   color: #000;
 }
 
-/* Logos de apoyo */
+/* Logos de apoyo: más abajo, más grandes, gap equidistante */
 .logos {
   display: flex;
   justify-content: start;
-  padding-left: 5%;
+  padding-left: calc(3vw + 36px);
   align-items: center;
   gap: 5rem;
-  margin-top: 3.5vh;
-  margin-bottom: 2vh;
+  margin-top: 5vh;
+  margin-bottom: 2.5vh;
 }
 
 .logo1 {
-  height: 5.5vh;
+  height: 6vh;
   width: auto;
   object-fit: contain;
 }
 
 .logo2 {
-  height: 11vh;
+  height: 10vh;
   width: auto;
   object-fit: contain;
 }
 
-/* Footer absoluto */
+/* Footer pegado a la pared inferior (sin franja) */
 .footer {
   position: absolute;
   width: 100%;
   overflow: hidden;
-  top: 92vh;
+  top: auto;
+  bottom: 0;
   left: 0;
 }
 
