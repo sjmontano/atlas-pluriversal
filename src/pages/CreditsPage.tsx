@@ -1,10 +1,12 @@
 /**
  * 👥 CREDITS PAGE — "Equipos de trabajo" (calca de v17 /credits)
  * ==============================================================
- * Réplica fiel de `CreditsContent.jsx` + `Credits.css`: página standalone
- * (sin chrome del shell), fondo degradado + textura, columna izquierda con
- * descripción, 3 filas que abren los modales de equipos, pills de nodos,
- * logos de apoyo y footer absoluto. Sin scroll: todo contenido en 100dvh.
+ * Réplica de `CreditsContent.jsx`: página standalone (sin chrome del shell),
+ * fondo degradado + textura, columna con descripción, 3 filas que abren los
+ * modales de equipos, pills de nodos, logos de apoyo y footer.
+ *
+ * Header: mismo sistema que los capítulos — `SectionHeader` (glyph `back`
+ * + decorador titulo-*.webp + título), back a /entramados.
  *
  * Desvío explícito vs beta live: el fondo es el degradado + `fondo.webp`
  * del código v17 (la foto grupal del beta no existe como asset en v17).
@@ -12,6 +14,7 @@
 
 import { Link } from 'react-router-dom'
 import { SHELL_ASSETS } from '@components/shell/assets'
+import { SectionHeader } from '@components/shell/SectionHeader'
 import { getModalById } from '@content/modals'
 import { useModalStore } from '@stores/modalStore'
 import styles from './CreditsPage.module.css'
@@ -47,6 +50,7 @@ export function CreditsPage() {
 
   return (
     <div className={styles.page}>
+      <SectionHeader title="Equipos de trabajo" backTo="/entramados" />
       <div className={styles.homeBtns}>
         <Link to="/" className={styles.btnHome} aria-label="Casa">
           <img src={SHELL_ASSETS.buttons.home} alt="Casa" />
@@ -78,12 +82,6 @@ export function CreditsPage() {
         }}
       >
         <div className={styles.container}>
-          <Link to="/entramados" className={styles.back} aria-label="Volver">
-            <img src={`${BASE}/back.svg`} alt="" />
-          </Link>
-          <img src={`${BASE}/fondo-mancha.webp`} alt="" className={styles.h1bg} />
-          <h1 className={styles.h1}>Equipos de trabajo</h1>
-
           <div className={styles.description}>
             <p>
               Este atlas es una creación colectiva del Tejido de Transicionantes

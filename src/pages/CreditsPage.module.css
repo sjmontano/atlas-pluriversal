@@ -110,56 +110,15 @@
   padding-left: 3.5rem;
   display: flex;
   flex-direction: column;
-  padding-bottom: 2.5vh;
+  padding-bottom: 2vh;
 }
 
-.back {
-  position: absolute;
-  left: 2.5%;
-  top: 2.6vh;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  background: none;
-  border: none;
-}
-
-.back img {
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-}
-
-.back img:hover {
-  transform: scale(1.1);
-  filter: brightness(0.8);
-}
-
-.h1bg {
-  position: absolute;
-  left: -2%;
-  width: 30%;
-  height: 12vh;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.h1 {
-  font-weight: 700;
-  color: #fff;
-  position: relative;
-  max-width: 37.5rem;
-  display: inline-block;
-  z-index: 2;
-  left: 3%;
-  margin-top: 2vh;
-  margin-left: -1.5%;
-  font-size: 2rem;
-}
+/* Header: mismo sistema que los capítulos (SectionHeader: glyph back +
+   decorador titulo-*.webp + título). Sin estilos propios. */
 
 .description {
   left: -2%;
-  margin-top: 4vh;
+  margin-top: 3vh;
   position: relative;
   z-index: 1;
   max-width: 38rem;
@@ -189,7 +148,7 @@
   text-align: center;
   position: relative;
   margin-right: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
 }
@@ -318,6 +277,9 @@
 
 .footerImg {
   width: 100%;
+  height: 7.5vh;
+  min-height: 40px;
+  object-fit: cover;
   display: block;
 }
 
@@ -369,10 +331,14 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
+  /* El body global tiene overflow:hidden: la página es su propio
+     scroll-container para que el deslizamiento funcione en móvil. */
   .page {
-    height: auto;
+    height: 100dvh;
     min-height: 100dvh;
-    overflow: visible;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Botones arriba: fijos en esquina */
@@ -397,92 +363,58 @@
     min-width: 34px;
   }
 
-  /* Sección superior: fluye, llena el viewport */
+  /* Sección superior: fluye en columna (despeja el header de capítulos) */
   .top {
     height: auto;
-    min-height: 100dvh;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
   }
 
   .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    padding-bottom: 0.5rem;
+    padding: 76px 1.25rem 1rem;
   }
 
-  /* Flecha atrás: flotante */
-  .back {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 100;
-    background: rgba(255, 255, 255, 0.85);
-    border-radius: 50%;
-    padding: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  .back img {
-    width: 22px;
-    height: 22px;
-  }
-
-  /* Mancha: ocultar en mobile (la foto de fondo ya hace de mancha) */
-  .h1bg {
-    display: none;
-  }
-
-  /* Título: centrado, sin offsets */
-  .h1 {
-    left: auto;
-    margin-left: 0;
-    margin-top: 0.3rem;
-    font-size: 1.4rem;
-    text-align: center;
-    width: 100%;
-    padding-right: 80px;
-  }
-
-  /* Descripción */
+  /* Descripción con aire */
   .description {
     left: auto;
-    margin-top: 0.6rem;
+    margin-top: 1.1rem;
     max-width: 100%;
   }
 
   .description p {
     margin-left: 0;
-    font-size: 0.68rem;
-    line-height: 1.4;
-    padding: 0 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding: 0 0.25rem;
   }
 
   .description br {
     display: none;
   }
 
-  /* Filas de equipos */
+  /* Filas de equipos con aire */
   .rows {
-    padding: 0 0.5rem;
+    margin-top: 1.25rem;
+    padding: 0 0.25rem;
   }
 
   .row {
     margin-right: 0;
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
   }
 
   .rowIcon {
-    width: 28px;
-    min-width: 28px;
-    height: 28px;
-    min-height: 28px;
-    margin-right: 10px;
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    min-height: 32px;
+    margin-right: 12px;
   }
 
   .rowText {
     white-space: normal;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     text-align: left;
   }
 
@@ -490,18 +422,17 @@
   .conocer {
     position: relative;
     left: auto;
-    padding: 0 1rem;
-    margin-top: 0.6rem;
-    font-size: 0.8rem;
+    padding: 0 1.25rem;
+    margin: 1.5rem 0 0.25rem;
+    font-size: 0.9rem;
   }
 
   /* Pills: wrap en mobile */
   .locations {
     flex-wrap: wrap;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    gap: 6px;
-    margin-top: 0.5rem;
+    padding: 0 1.25rem;
+    gap: 0.6rem;
+    margin: 0.75rem 0 0;
   }
 
   .locations li {
@@ -511,30 +442,29 @@
   }
 
   .pill {
-    min-height: 32px;
-    padding: 0.25rem 0.7rem;
-    font-size: 0.72rem;
+    min-height: 40px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
     white-space: normal;
     text-align: center;
   }
 
-  /* Logos */
+  /* Logos con aire */
   .logos {
-    padding-left: 1rem;
-    gap: 1rem;
-    margin-top: 0.5vh;
-    margin-bottom: 0;
+    padding: 0 1.25rem;
+    gap: 2rem;
+    margin: 1.5rem 0 1.25rem;
   }
 
   .logo1 {
-    height: 3vh;
+    height: 4vh;
   }
 
   .logo2 {
-    height: 6vh;
+    height: 8vh;
   }
 
-  /* Footer: al final del flujo, llena el espacio restante */
+  /* Footer: decorador alto para que el texto quede dentro de la ola */
   .footer {
     position: relative;
     width: 100%;
@@ -544,7 +474,7 @@
     background-image: url('/assets/modal/entramados/footer-img.webp');
     background-size: cover;
     background-position: center;
-    min-height: 48px;
+    min-height: 72px;
   }
 
   .footerImg {
@@ -554,14 +484,14 @@
   .footerContent {
     position: relative;
     flex-direction: column;
-    gap: 0.2rem;
-    padding: 0.4rem 0.8rem;
+    gap: 0.05rem;
+    padding: 0.5rem 1rem;
     text-align: center;
     width: 100%;
   }
 
   .footerContent p {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     white-space: normal;
     text-align: center;
     margin: 0;
@@ -579,21 +509,16 @@
 
 /* ─── Muy pequeño (< 380px) ─── */
 @media (max-width: 380px) {
-  .h1 {
-    font-size: 1.3rem;
-  }
-
   .description p {
-    font-size: 0.75rem;
-  }
-
-  .rowText {
     font-size: 0.8rem;
   }
 
+  .rowText {
+    font-size: 0.85rem;
+  }
+
   .pill {
-    font-size: 0.7rem;
-    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
   }
 }
 

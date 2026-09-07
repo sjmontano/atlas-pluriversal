@@ -1,15 +1,19 @@
 /**
  * 🧵 ENTRAMADOS PAGE — "Tejidos para el atlas" (calca de v17 /Entramados)
  * =======================================================================
- * Réplica fiel de `entramadosContent.jsx` + `entramados.css`: página standalone
- * (sin chrome del shell), fondo blanco, mancha superior, h2 centrado, h3 con
- * líneas punteadas, marcas a 100px con hover, botones absolutos arriba-derecha
- * y footer absoluto. Sin scroll: todo contenido en 100dvh.
+ * Réplica de `entramadosContent.jsx`: página standalone (sin chrome del
+ * shell), h2 centrado, h3 con líneas punteadas, marcas a 100px con hover,
+ * botones absolutos arriba-derecha y footer absoluto. Sin scroll: todo
+ * contenido en 100dvh.
  * Las marcas son solo visualización, igual que en v17 (sin onClick).
+ *
+ * Header: mismo sistema que los capítulos — `SectionHeader` (glyph `back`
+ * + decorador titulo-*.webp + título), back a /intro.
  */
 
 import { Link } from 'react-router-dom'
 import { SHELL_ASSETS } from '@components/shell/assets'
+import { SectionHeader } from '@components/shell/SectionHeader'
 import { getModalById } from '@content/modals'
 import { useModalStore } from '@stores/modalStore'
 import styles from './EntramadosPage.module.css'
@@ -71,13 +75,8 @@ export function EntramadosPage() {
 
   return (
     <div className={styles.page}>
+      <SectionHeader title="Tejidos para el atlas" backTo="/intro" />
       <main className={styles.main}>
-        <img className={styles.aguas} src={`${BASE}/fondo-mancha.webp`} alt="" />
-        <Link to="/intro" className={styles.back} aria-label="Volver">
-          <img src={`${BASE}/back.svg`} alt="" />
-        </Link>
-        <h1 className={styles.h1}>Tejidos para el atlas</h1>
-
         <div className={styles.content}>
           <h2 className={styles.h2}>Entramados territoriales</h2>
           {SECCIONES.map((seccion) => (
