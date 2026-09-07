@@ -1,4 +1,4 @@
-/* 👥 CREDITS PAGE — calca de v17 Credits.css (sin scroll: 100dvh) */
+/* 👥 CREDITS PAGE — calca de v17 Credits.css */
 
 .page {
   position: relative;
@@ -201,6 +201,7 @@
   min-height: 28px;
   margin-right: 2vh;
   transition: transform 0.3s ease-in-out;
+  flex-shrink: 0;
 }
 
 .rowText {
@@ -363,8 +364,241 @@
   margin-left: 80%;
 }
 
-/* Pantallas bajas o angostas: permitir scroll antes que recortar */
-@media (max-height: 700px), (max-width: 768px) {
+/* ═══════════════════════════════════════════════════════════════════════
+   RESPONSIVE — Mobile: layout fluido con scroll
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .page {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  /* Botones arriba: fijos en esquina */
+  .homeBtns {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    left: auto;
+    width: auto;
+    height: auto;
+    gap: 8px;
+    z-index: 100;
+  }
+
+  .btnHome {
+    width: 34px;
+    min-width: 34px;
+  }
+
+  .btnLogo {
+    width: 34px;
+    min-width: 34px;
+  }
+
+  /* Sección superior: fluye, llena el viewport */
+  .top {
+    height: auto;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Flecha atrás: flotante */
+  .back {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 50%;
+    padding: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .back img {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Mancha: ocultar en mobile (la foto de fondo ya hace de mancha) */
+  .h1bg {
+    display: none;
+  }
+
+  /* Título: centrado, sin offsets */
+  .h1 {
+    left: auto;
+    margin-left: 0;
+    margin-top: 0.3rem;
+    font-size: 1.4rem;
+    text-align: center;
+    width: 100%;
+    padding-right: 80px;
+  }
+
+  /* Descripción */
+  .description {
+    left: auto;
+    margin-top: 0.6rem;
+    max-width: 100%;
+  }
+
+  .description p {
+    margin-left: 0;
+    font-size: 0.68rem;
+    line-height: 1.4;
+    padding: 0 0.5rem;
+  }
+
+  .description br {
+    display: none;
+  }
+
+  /* Filas de equipos */
+  .rows {
+    padding: 0 0.5rem;
+  }
+
+  .row {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .rowIcon {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    min-height: 28px;
+    margin-right: 10px;
+  }
+
+  .rowText {
+    white-space: normal;
+    font-size: 0.8rem;
+    text-align: left;
+  }
+
+  /* "Conoce sobre..." */
+  .conocer {
+    position: relative;
+    left: auto;
+    padding: 0 1rem;
+    margin-top: 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  /* Pills: wrap en mobile */
+  .locations {
+    flex-wrap: wrap;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    gap: 6px;
+    margin-top: 0.5rem;
+  }
+
+  .locations li {
+    flex: 0 1 auto;
+    max-width: none;
+    margin-top: 0;
+  }
+
+  .pill {
+    min-height: 32px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.72rem;
+    white-space: normal;
+    text-align: center;
+  }
+
+  /* Logos */
+  .logos {
+    padding-left: 1rem;
+    gap: 1rem;
+    margin-top: 0.5vh;
+    margin-bottom: 0;
+  }
+
+  .logo1 {
+    height: 3vh;
+  }
+
+  .logo2 {
+    height: 6vh;
+  }
+
+  /* Footer: al final del flujo, llena el espacio restante */
+  .footer {
+    position: relative;
+    width: 100%;
+    top: auto;
+    flex-shrink: 0;
+    margin-top: auto;
+    background-image: url('/assets/modal/entramados/footer-img.webp');
+    background-size: cover;
+    background-position: center;
+    min-height: 48px;
+  }
+
+  .footerImg {
+    display: none;
+  }
+
+  .footerContent {
+    position: relative;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.4rem 0.8rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .footerContent p {
+    font-size: 0.6rem;
+    white-space: normal;
+    text-align: center;
+    margin: 0;
+  }
+
+  .footerLinks {
+    gap: 1rem;
+  }
+
+  .politicasBtn {
+    width: 28px;
+    margin-left: 0;
+  }
+}
+
+/* ─── Muy pequeño (< 380px) ─── */
+@media (max-width: 380px) {
+  .h1 {
+    font-size: 1.3rem;
+  }
+
+  .description p {
+    font-size: 0.75rem;
+  }
+
+  .rowText {
+    font-size: 0.8rem;
+  }
+
+  .pill {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+  }
+}
+
+/* ─── Pantallas bajas: permitir scroll ─── */
+@media (max-height: 700px) and (min-width: 769px) {
   .page {
     overflow-y: auto;
   }
@@ -377,13 +611,5 @@
   .footer {
     position: relative;
     top: auto;
-  }
-
-  .container {
-    padding-left: 1.5rem;
-  }
-
-  .locations {
-    flex-wrap: wrap;
   }
 }

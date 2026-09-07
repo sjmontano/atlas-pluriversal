@@ -129,19 +129,19 @@ export function CreditsPage() {
           <img src={`${BASE}/logo-credits-1.webp`} alt="Logo Unriocauca" className={styles.logo1} />
           <img src={`${BASE}/logo-credits-2.webp`} alt="Logo Accn" className={styles.logo2} />
         </div>
-      </section>
 
-      <section className={styles.footer}>
-        <img src={`${BASE}/footer-img.webp`} alt="Fondo footer" className={styles.footerImg} />
-        <div className={styles.footerContent}>
-          <p>2025 Atlas Sur del Valle del Alto del Rio Cauca.</p>
-          <div className={styles.footerLinks}>
-            <button type="button" onClick={() => openById('terminos-condiciones')} aria-label="Términos y condiciones">
-              <img className={styles.politicasBtn} src={`${BASE}/politicas.webp`} alt="" />
-            </button>
-            <p onClick={() => openById('terminos-condiciones')}>Términos &amp; condiciones</p>
+        <section className={styles.footer}>
+          <img src={`${BASE}/footer-img.webp`} alt="Fondo footer" className={styles.footerImg} />
+          <div className={styles.footerContent}>
+            <p>2025 Atlas Sur del Valle del Alto del Rio Cauca.</p>
+            <div className={styles.footerLinks}>
+              <button type="button" onClick={() => openById('terminos-condiciones')} aria-label="Términos y condiciones">
+                <img className={styles.politicasBtn} src={`${BASE}/politicas.webp`} alt="" />
+              </button>
+              <p onClick={() => openById('terminos-condiciones')}>Términos &amp; condiciones</p>
+            </div>
           </div>
-        </div>
+        </section>
       </section>
     </div>
   )

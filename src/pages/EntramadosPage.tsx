@@ -110,20 +110,20 @@ export function EntramadosPage() {
           <img src={`${BASE}/next.svg`} alt="" />
           <h2 className={styles.tejidoText}>Equipos de trabajo</h2>
         </Link>
-      </main>
 
-      <section className={styles.footer}>
-        <img src={`${BASE}/footer-img.webp`} alt="Fondo footer" className={styles.footerImg} />
-        <div className={styles.footerContent}>
-          <p>2025 Atlas Sur del Valle del Alto del Rio Cauca.</p>
-          <div className={styles.footerLinks}>
-            <button type="button" onClick={openTerminos} aria-label="Términos y condiciones">
-              <img className={styles.politicasBtn} src={`${BASE}/politicas.webp`} alt="" />
-            </button>
-            <p onClick={openTerminos}>Términos &amp; condiciones</p>
+        <section className={styles.footer}>
+          <img src={`${BASE}/footer-img.webp`} alt="Fondo footer" className={styles.footerImg} />
+          <div className={styles.footerContent}>
+            <p>2025 Atlas Sur del Valle del Alto del Rio Cauca.</p>
+            <div className={styles.footerLinks}>
+              <button type="button" onClick={openTerminos} aria-label="Términos y condiciones">
+                <img className={styles.politicasBtn} src={`${BASE}/politicas.webp`} alt="" />
+              </button>
+              <p onClick={openTerminos}>Términos &amp; condiciones</p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
     </div>
   )
 }
