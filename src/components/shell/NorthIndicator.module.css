@@ -12,3 +12,14 @@
   width: 100%;
   height: auto;
 }
+
+/* Móvil: el header ocupa todo el ancho y lo tapa (z 25 > 20).
+   Se reubica debajo del minimapa, centrado con él: minimapa 96px
+   centrado al 15% → borde inferior 15%+48; norte 30px 10px debajo. */
+@media (max-width: 768px) {
+  .north {
+    top: calc(15% + 58px);
+    right: calc(2% + 33px);
+    width: 30px;
+  }
+}

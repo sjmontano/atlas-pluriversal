@@ -148,24 +148,29 @@
 }
 
 @media (max-width: 768px) {
+  /* Ancho completo inferior, los 4 tabs siempre caben: reparto
+     equitativo con flex, sin scroll ni desborde. Sin crecimiento
+     en hover (en táctil el tap ya navega). */
   .tabs {
-    left: 4%;
-    width: 92%;
-    gap: 6px;
+    left: 6px;
+    right: 6px;
+    width: auto;
+    gap: 4px;
+    overflow: visible;
   }
   .tab,
-  .selected:hover {
-    width: 72px;
-    height: 64px;
-  }
+  .selected:hover,
   .tab:hover {
-    width: 160px;
-    height: 180px;
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    height: 62px;
   }
   .number {
-    font-size: 13px;
+    font-size: 12px;
   }
   .text {
-    top: 34px;
+    top: 32px;
+    font-size: 11px;
   }
 }

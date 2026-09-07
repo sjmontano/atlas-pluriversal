@@ -377,6 +377,13 @@
     width: 78vw;
   }
 
+  /* El toggle vive abajo-derecha: en móvil lo pisan los ChapterTabs
+     (64px). Se sube por encima de ellos. */
+  .toggle {
+    bottom: 84px;
+    right: 8px;
+  }
+
   .wrap:hover .toggle,
   .wrap.pinned .toggle {
     right: calc(78vw + 2vw);

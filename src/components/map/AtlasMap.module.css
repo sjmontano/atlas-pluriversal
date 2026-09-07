@@ -15,6 +15,19 @@
   display: block;
 }
 
+/* ── Etiquetas de encuadre (EncuadresManager) en móvil: más compactas
+   para no saturar el viewport pequeño. Los estilos inline del manager
+   mandan: se usa !important. El target táctil sigue >44px de alto. ── */
+@media (max-width: 768px) {
+  .wrapper :global(.atlas-encuadre-label) {
+    max-width: 150px !important;
+  }
+  .wrapper :global(.atlas-encuadre-label-inner) {
+    font-size: 11px !important;
+    padding: 5px 10px !important;
+  }
+}
+
 .overlay {
   position: absolute;
   inset: 0;

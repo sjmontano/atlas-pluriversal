@@ -49,18 +49,28 @@
 }
 
 @media (max-width: 640px) {
+  /* Columna vertical centrada al filo izquierdo (como desktop),
+     con scroll-y si hay muchos ítems. */
   .rail {
-    top: auto;
-    bottom: 18vh;
+    top: 50%;
+    bottom: auto;
     left: 0;
-    right: 0;
-    width: 100%;
+    right: auto;
+    width: auto;
+    transform: translateY(-50%);
   }
   .list {
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 0 12px 8px;
-    gap: 4px;
+    flex-direction: column;
+    overflow-x: visible;
+    overflow-y: auto;
+    max-height: 62vh;
+    padding: 8px 0 8px 8px;
+    gap: 10px;
+    align-items: flex-start;
+    scrollbar-width: none;
+  }
+  .list::-webkit-scrollbar {
+    display: none;
   }
   .itemWrap::before {
     display: none;

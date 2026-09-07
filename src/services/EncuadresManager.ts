@@ -56,9 +56,11 @@ function labelElement(
   const el = document.createElement('button')
   el.type = 'button'
   el.setAttribute('aria-label', `Ir a: ${encuadre.name}`)
-  /* OJO: MapLibre posiciona el marker escribiendo `transform` en este
-     elemento. NO tocar el.style.transform aquí (rompe la posición);
-     lo visual va en el wrapper interno. */
+  /* Clase para el ajuste responsive (AtlasMap.module.css): en móvil las
+     etiquetas se compactan. OJO: MapLibre posiciona el marker escribiendo
+     `transform` en este elemento. NO tocar el.style.transform aquí (rompe
+     la posición); lo visual va en el wrapper interno. */
+  el.className = 'atlas-encuadre-label'
   Object.assign(el.style, {
     all: 'unset',
     cursor: 'pointer',
@@ -68,6 +70,7 @@ function labelElement(
   } satisfies Partial<CSSStyleDeclaration>)
 
   const inner = document.createElement('span')
+  inner.className = 'atlas-encuadre-label-inner'
   Object.assign(inner.style, {
     position: 'relative',
     display: 'flex',

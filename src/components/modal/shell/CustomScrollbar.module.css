@@ -38,3 +38,11 @@
   cursor: grabbing;
   background: var(--dark-green, #046c81);
 }
+
+/* Móvil: riel delgado y pegado al borde para dar aire al contenido */
+@media (max-width: 640px) {
+  .track {
+    width: 5px;
+    right: 0;
+  }
+}

@@ -36,3 +36,12 @@
     height: 96px;
   }
 }
+
+/* Touch: el hover-expand (translate+scale) se dispara con el tap y
+   descoloca el minimapa. En táctil queda fijo. */
+@media (hover: none) {
+  .mini:hover {
+    transform: translateY(-50%);
+    transition-delay: 0s;
+  }
+}

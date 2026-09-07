@@ -129,3 +129,28 @@
     opacity 0.24s ease,
     transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* Móvil: fila horizontal arriba-derecha, debajo del norte
+   (minimapa 96px al 15% + norte 30px → fila a 15%+96px). */
+@media (max-width: 768px) {
+  .wrap {
+    left: auto;
+    right: 8px;
+    top: calc(15% + 96px);
+    bottom: auto;
+  }
+  .homeBtn {
+    width: 44px;
+    min-width: 44px;
+  }
+  .logoBtn {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+  /* En táctil no hay hover: los tooltips solo estorbarían */
+  .tooltip {
+    display: none;
+  }
+}
