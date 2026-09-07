@@ -15,6 +15,7 @@
  * - `../intro/modals.ts` : modales del mapa intro (presentación, en construcción)
  * - `inicio.ts`          : los 16 POIs de la home (fullImage)
  * - `chapter-{1,2,3,4}.ts` : modales por capítulo (ids `capN-…`)
+ * - `legales.ts`           : términos y condiciones (id `terminos-condiciones`)
  * - este archivo         : demo y legales (modales estándar)
  *
  * Helpers compartidos (no duplicar): `./_helpers.ts` (`paragraphs`, `presentacion`).
@@ -27,6 +28,8 @@ import { CHAPTER2_MODALS } from './chapter-2.ts'
 import { CHAPTER3_MODALS } from './chapter-3.ts'
 import { CHAPTER4_MODALS } from './chapter-4.ts'
 import { INTRO_MODALS } from '../intro/modals.ts'
+import { TERMINOS_MODAL } from './legales.ts'
+import { CREDITOS_EQUIPOS_MODALS } from './creditos.ts'
 
 /* ── Galería de imágenes ──────────────────────────────────────────────── */
 const GALERIA_EJEMPLO: Modal = {
@@ -107,6 +110,8 @@ export const ALL_MODALS: Modal[] = [
   ...CHAPTER2_MODALS,
   ...CHAPTER3_MODALS,
   ...CHAPTER4_MODALS,
+  TERMINOS_MODAL,
+  ...CREDITOS_EQUIPOS_MODALS,
   GALERIA_EJEMPLO,
   FICHA_TECNICA,
 ]

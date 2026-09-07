@@ -1,0 +1,289 @@
+/* 🧵 ENTRAMADOS PAGE — calca de v17 entramados.css (sin scroll: 100dvh) */
+
+.page {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: #fff;
+  font-family: 'Noto Sans', Arial, sans-serif;
+}
+
+.main {
+  position: relative;
+  height: 100%;
+  background-color: #fff;
+}
+
+/* Mancha superior izquierda */
+.aguas {
+  position: absolute;
+  z-index: 1;
+  width: 35%;
+  height: 13.3vh;
+  top: 0;
+  left: 0;
+}
+
+/* Flecha atrás */
+.back {
+  position: absolute;
+  z-index: 10;
+  width: 25px;
+  height: 25px;
+  top: 2.5vh;
+  left: 2%;
+  transition: transform 0.3s ease;
+}
+
+.back:hover {
+  transform: scale(1.1);
+}
+
+.back img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Título sobre la mancha */
+.h1 {
+  color: #fff;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.5rem;
+  display: inline-block;
+  position: relative;
+  margin: 0;
+  top: 1.8vh;
+  left: 4.8rem;
+  z-index: 1;
+}
+
+/* Contenido */
+.content {
+  background-color: #fff;
+  padding-top: 2.5vh;
+}
+
+.h2 {
+  font-size: 1.6rem;
+  color: #03091e;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section {
+  margin-top: 1.2rem;
+  margin-bottom: 1.5%;
+}
+
+.h3 {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.8em;
+  color: #65888f;
+  margin: 24px 0;
+}
+
+.h3::before,
+.h3::after {
+  content: '';
+  flex: 0 0 100vh;
+  max-width: 30vh;
+  border-bottom: 2px dashed #93b6bd;
+  margin: 0 16px;
+  opacity: 0.5;
+}
+
+.images {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.images img {
+  width: clamp(64px, 11vh, 100px);
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.images img:hover {
+  transform: scale(1.2);
+}
+
+/* Botón Un Río Cauca (arriba-derecha) */
+.btnLogo {
+  position: absolute;
+  top: 5%;
+  left: 75.8vw;
+  width: 3.2vw;
+  min-width: 40px;
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 11;
+}
+
+.btnLogoBg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.btnLogoImg {
+  position: relative;
+  width: 60%;
+  height: auto;
+  filter: brightness(0) invert(1);
+  z-index: 1;
+}
+
+/* Tooltip del botón logo */
+.tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 4px;
+  display: none;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  color: #fff;
+  white-space: nowrap;
+  z-index: 1005;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.tooltip img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  border: 2px solid rgba(0, 110, 150, 1);
+  border-radius: 6px;
+}
+
+.btnLogo:hover .tooltip {
+  display: flex;
+}
+
+/* Botón Equipos de trabajo (arriba-derecha) */
+.btnCredits {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 5%;
+  left: 80vw;
+  height: 13%;
+  z-index: 10;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btnCredits img {
+  width: 50%;
+  height: 50%;
+  object-fit: contain;
+}
+
+.tejidoText {
+  font-size: 1.2rem;
+  position: relative;
+  color: #14b2d1;
+  font-weight: 1000;
+  text-align: center;
+  margin-top: 0.3rem;
+  margin-bottom: 0.5rem;
+  margin-left: 0.6rem;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* Footer absoluto */
+.footer {
+  position: absolute;
+  width: 100%;
+  overflow: hidden;
+  top: 92vh;
+  left: 0;
+}
+
+.footerImg {
+  width: 100%;
+  display: block;
+}
+
+.footerContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 96%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1%;
+  z-index: 2;
+}
+
+.footerContent p {
+  color: #fff;
+  font-size: 0.9rem;
+  margin-left: 3%;
+  white-space: nowrap;
+  margin-right: 3%;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.footerLinks button {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.politicasBtn {
+  width: 36%;
+  height: 30%;
+  min-width: 34px;
+  cursor: pointer;
+  margin-left: 80%;
+}
+
+/* Pantallas bajas: permitir scroll antes que recortar */
+@media (max-height: 700px) {
+  .page {
+    overflow-y: auto;
+  }
+
+  .footer {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .images img {
+    width: 80px;
+  }
+}

@@ -30,7 +30,7 @@ export default {
     sidebar: [
       { id: 'intro-presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'presentacion' },
       { id: 'intro-recursos', type: 'link', icon: 'gallery', label: 'Recursos', frame: '2', href: 'https://drive.google.com/file/d/1AEAngJNFZ7GfjTYXwGPhhS2bbJGz9XCq/view?usp=sharing' },
-      { id: 'intro-tejidos', type: 'modal', icon: 'credits', label: 'Tejidos para el atlas', frame: '4', target: 'en-construccion' },
+      { id: 'intro-tejidos', type: 'goto', icon: 'credits', label: 'Tejidos para el atlas', frame: '4', to: '/entramados' },
     ],
   },
   geo,

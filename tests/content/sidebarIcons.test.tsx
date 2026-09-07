@@ -34,12 +34,16 @@ describe('Sidebar ↔ catálogo de iconos ↔ modales', () => {
   })
 
   it('todo goto del sidebar es ruta interna válida', () => {
+    // Opción A: allowlist de prefijos — las páginas no-mapa (/entramados,
+    // /credits, /creditos) conviven con /capitulo/. Al agregar una página
+    // nueva, añadir su prefijo aquí.
+    const ALLOWED = ['/capitulo/', '/entramados', '/credits', '/creditos']
     const bad: string[] = []
     for (const mapId of ['intro', ...getAllMaps().map((m) => m.mapId)]) {
       const content = getMapContent(mapId)
       if (!content) continue
       for (const item of resolveMapUI(content).sidebar) {
-        if (item.type === 'goto' && (!item.to || !item.to.startsWith('/capitulo/'))) {
+        if (item.type === 'goto' && (!item.to || !ALLOWED.some((p) => item.to!.startsWith(p)))) {
           bad.push(`${mapId} sidebar:${item.id} to '${item.to}'`)
         }
       }

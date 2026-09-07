@@ -1,0 +1,389 @@
+/* 👥 CREDITS PAGE — calca de v17 Credits.css (sin scroll: 100dvh) */
+
+.page {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+  font-family: 'Noto Sans', Arial, sans-serif;
+  background: #044552;
+}
+
+/* Botones casa + logo (arriba-derecha) */
+.homeBtns {
+  position: absolute;
+  width: 15%;
+  height: 12vh;
+  left: 85%;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+}
+
+.btnHome {
+  position: relative;
+  width: 3.5vw;
+  min-width: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.btnHome img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.btnLogo {
+  position: relative;
+  width: 3.5vw;
+  min-width: 40px;
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btnLogoBg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.btnLogoImg {
+  position: relative;
+  width: 60%;
+  height: auto;
+  filter: brightness(0) invert(1);
+  z-index: 1;
+}
+
+/* Tooltips */
+.tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 4px;
+  display: none;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  color: #fff;
+  white-space: nowrap;
+  z-index: 1005;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+}
+
+.tooltip img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  border: 2px solid rgba(0, 110, 150, 1);
+  border-radius: 6px;
+}
+
+.btnHome:hover .tooltip,
+.btnLogo:hover .tooltip {
+  display: flex;
+}
+
+/* Sección superior */
+.top {
+  background-size: cover;
+  height: 96vh;
+  position: relative;
+}
+
+.container {
+  position: relative;
+  padding-left: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 2.5vh;
+}
+
+.back {
+  position: absolute;
+  left: 2.5%;
+  top: 2.6vh;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+}
+
+.back img {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.back img:hover {
+  transform: scale(1.1);
+  filter: brightness(0.8);
+}
+
+.h1bg {
+  position: absolute;
+  left: -2%;
+  width: 30%;
+  height: 12vh;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.h1 {
+  font-weight: 700;
+  color: #fff;
+  position: relative;
+  max-width: 37.5rem;
+  display: inline-block;
+  z-index: 2;
+  left: 3%;
+  margin-top: 2vh;
+  margin-left: -1.5%;
+  font-size: 2rem;
+}
+
+.description {
+  left: -2%;
+  margin-top: 4vh;
+  position: relative;
+  z-index: 1;
+  max-width: 38rem;
+}
+
+.description p {
+  margin-left: 6.5%;
+  font-size: 12.8px;
+  line-height: 1.6;
+  color: #fff;
+  opacity: 0.9;
+  font-style: italic;
+  font-weight: 400;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.rows {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  margin-right: 15px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.rowIcon {
+  width: 4vh;
+  min-width: 28px;
+  height: 4vh;
+  min-height: 28px;
+  margin-right: 2vh;
+  transition: transform 0.3s ease-in-out;
+}
+
+.rowText {
+  color: #fff;
+  transition: color 0.3s ease-in-out;
+  white-space: nowrap;
+  text-align: center;
+  border-radius: 5px;
+  font-size: 0.95rem;
+}
+
+.row:hover .rowIcon {
+  transform: scale(1.3);
+}
+
+.row:hover .rowText {
+  color: #0599b7;
+}
+
+/* Pills de nodos */
+.conocer {
+  left: 5%;
+  position: absolute;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 200;
+}
+
+.locations {
+  display: flex;
+  flex-wrap: nowrap;
+  padding-left: 4.5%;
+  list-style: none;
+  justify-content: flex-start;
+  gap: 1.2vw;
+  margin: 2.2rem 0 0;
+}
+
+.locations li {
+  margin-top: 2%;
+  cursor: pointer;
+  font-weight: bold;
+  position: relative;
+  border-radius: 5vh;
+  flex: 1 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 32vh;
+}
+
+.locations a {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  width: 100%;
+}
+
+.pill {
+  width: 100%;
+  min-height: 4.5vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  color: #fff;
+  font-weight: bold;
+  white-space: nowrap;
+  text-align: center;
+  border: 2px solid rgba(0, 110, 150, 1);
+  border-radius: 10px;
+  background-image: url('/assets/ui/tooltips/fondo-tooltip-4.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+.pill:hover {
+  background-image: url('/assets/ui/tooltips/fondo-tooltip-3.webp');
+  color: #000;
+}
+
+/* Logos de apoyo */
+.logos {
+  display: flex;
+  justify-content: start;
+  padding-left: 5%;
+  align-items: center;
+  gap: 5rem;
+  margin-top: 3.5vh;
+  margin-bottom: 2vh;
+}
+
+.logo1 {
+  height: 5.5vh;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo2 {
+  height: 11vh;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Footer absoluto */
+.footer {
+  position: absolute;
+  width: 100%;
+  overflow: hidden;
+  top: 92vh;
+  left: 0;
+}
+
+.footerImg {
+  width: 100%;
+  display: block;
+}
+
+.footerContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 96%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1%;
+  z-index: 2;
+}
+
+.footerContent p {
+  color: #fff;
+  font-size: 0.9rem;
+  margin-left: 3%;
+  white-space: nowrap;
+  margin-right: 3%;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.footerLinks button {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.politicasBtn {
+  width: 36%;
+  height: 30%;
+  min-width: 34px;
+  cursor: pointer;
+  margin-left: 80%;
+}
+
+/* Pantallas bajas o angostas: permitir scroll antes que recortar */
+@media (max-height: 700px), (max-width: 768px) {
+  .page {
+    overflow-y: auto;
+  }
+
+  .top {
+    height: auto;
+    min-height: 96vh;
+  }
+
+  .footer {
+    position: relative;
+    top: auto;
+  }
+
+  .container {
+    padding-left: 1.5rem;
+  }
+
+  .locations {
+    flex-wrap: wrap;
+  }
+}

@@ -28,6 +28,12 @@ const ChapterEntry = lazy(() =>
 const ChapterPage = lazy(() =>
   import('@pages/ChapterPage.tsx').then((m) => ({ default: m.ChapterPage })),
 )
+const EntramadosPage = lazy(() =>
+  import('@pages/EntramadosPage.tsx').then((m) => ({ default: m.EntramadosPage })),
+)
+const CreditsPage = lazy(() =>
+  import('@pages/CreditsPage.tsx').then((m) => ({ default: m.CreditsPage })),
+)
 const ShellMockupPage = lazy(() =>
   import('@pages/ShellMockupPage.tsx').then((m) => ({ default: m.ShellMockupPage })),
 )
@@ -64,6 +70,8 @@ export function App() {
           <Route path="/intro" element={<IntroMapPage />} />
           <Route path="/capitulo/:chapterId" element={<ChapterEntry />} />
           <Route path="/capitulo/:chapterId/:mapId" element={<ChapterPage />} />
+          <Route path="/entramados" element={<EntramadosPage />} />
+          <Route path="/credits" element={<CreditsPage />} />
           <Route path="/dev" element={<DevMenu />} />
           <Route path="/modales" element={<ModalDemoPage />} />
           {DEV_TOOLS && <Route path="/dev/ui" element={<UiMockupPage />} />}
