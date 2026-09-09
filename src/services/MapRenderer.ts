@@ -52,6 +52,34 @@ const BLANK_STYLE: maplibregl.StyleSpecification = {
 
 const IMAGE_SOURCE_ID = 'atlas-base-image'
 const IMAGE_LAYER_ID = 'atlas-base-image-layer'
+
+/** Garantiza una imagen base visible con la URL dada (crea o actualiza).
+ *  Rescate para mapas sin base (useImageBase:false) cuando los tiles fallan:
+ *  el degraded no los deja en negro. Sin acoples a content. */
+export function ensurePreviewFallback(
+  map: maplibregl.Map,
+  url: string,
+  coordinates: ImageCoordinates,
+): void {
+  try {
+    const existing = map.getSource(IMAGE_SOURCE_ID) as maplibregl.ImageSource | undefined
+    if (existing) {
+      try { existing.updateImage({ url, coordinates }) } catch { /* noop */ }
+      return
+    }
+    map.addSource(IMAGE_SOURCE_ID, { type: 'image', url, coordinates })
+    if (!map.getLayer(IMAGE_LAYER_ID)) {
+      map.addLayer({
+        id: IMAGE_LAYER_ID,
+        type: 'raster',
+        source: IMAGE_SOURCE_ID,
+        paint: { 'raster-fade-duration': 0, 'raster-resampling': 'nearest' },
+      })
+    }
+  } catch (e) {
+    logger.warn(CATEGORY, 'No se pudo agregar preview de rescate', e)
+  }
+}
 /**
  * Margen por defecto del viewportMaxBounds alrededor de la imagen (fracción
  * por lado). 0 = el viewport no se sale de la imagen (el constrain clampa el

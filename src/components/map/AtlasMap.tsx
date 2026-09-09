@@ -22,6 +22,8 @@ import { getMapContent } from '@content'
 import { getModalById } from '@content/modals'
 import { routeForMap } from '@data/chapters/chapters.ts'
 import type { MapController } from '@services/MapRenderer'
+import { ensurePreviewFallback } from '@services/MapRenderer'
+import { processBounds } from '@services/BoundsCalculator'
 import type { Poi } from '../../types/poi.ts'
 import { LayerMenu } from './LayerMenu'
 import { PoiModal } from './PoiModal'
@@ -126,6 +128,19 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     if (!map) return
     setImageOpacity(map, imageOpacity)
   }, [imageOpacity, mapRef])
+
+  /* Rescate en degraded: si el mapa no tiene imagen base (useImageBase:false),
+     se agrega el preview para no quedar en negro. Cubre demos sin tiles. */
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapBuilt || content === null || tilesStatus !== 'degraded') return
+    if (map.getLayer('atlas-base-image-layer')) return
+    try {
+      const { coordinates } = processBounds(content.geo.pgw, content.geo.width, content.geo.height)
+      const url = content.tiles?.preview ?? content.images.placeholder
+      ensurePreviewFallback(map, url, coordinates)
+    } catch { /* noop */ }
+  }, [tilesStatus, mapBuilt, content, mapRef, mapId])
 
   /* Fallback por contexto: si los tiles no cargan (degraded), se ocultan y
      queda la imagen base (ya cargada debajo). Vuelve solo al recuperarse. */
