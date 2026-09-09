@@ -156,6 +156,9 @@ const zoomSize = (
 let tooltipEl: HTMLDivElement | null = null
 let pulseRaf: number | null = null
 
+/** Limpiezas de los handlers de mapa (click/hover por hit-test). */
+const poiCleanupsByMap = new WeakMap<maplibregl.Map, Array<() => void>>()
+
 function getTooltip(): HTMLDivElement {
   if (!tooltipEl) {
     tooltipEl = document.createElement('div')
@@ -310,39 +313,67 @@ const notArrowFilter: ExpressionSpecification = [
 
 function bindPoiEvents(
   map: maplibregl.Map,
-  layerIds: string[],
   pois: Poi[],
   onPoiClick: (poi: Poi) => void,
 ): void {
-  for (const layerId of layerIds) {
-    map.on('click', layerId, (e) => {
-      const feature = e.features?.[0]
-      if (feature) {
-        const poiId = feature.properties?.id
-        const poi = pois.find((p) => p.id === poiId)
-        if (poi) onPoiClick(poi)
+  /* Hit-test manual por proximidad (radio 24px).
+   * Workaround bug MapLibre v6: `queryRenderedFeatures` lanza
+   * "Out of bounds … numberToString" en capas symbol con `icon-image`
+   * (verificado en chapter2-valle y chapter1-formas-paisaje, preexistente
+   * en main). Eso rompe `map.on('click', layerId, …)` — MapLibre consulta
+   * features internamente antes de invocar el handler. Con eventos de mapa
+   * sin capa + proyección manual no se toca ese path y el clic/hover
+   * funcionan igual. */
+  const HIT_RADIUS_PX = 24
+  const hitAt = (point: { x: number; y: number }): Poi | null => {
+    let best: Poi | null = null
+    let bestDist = HIT_RADIUS_PX
+    for (const poi of pois) {
+      const p = map.project(poi.coords)
+      const dist = Math.hypot(p.x - point.x, p.y - point.y)
+      if (dist <= bestDist) {
+        best = poi
+        bestDist = dist
       }
-    })
+    }
+    return best
+  }
 
-    map.on('mouseenter', layerId, (e) => {
+  const onClick = (e: maplibregl.MapMouseEvent): void => {
+    const poi = hitAt(e.point)
+    if (poi) onPoiClick(poi)
+  }
+  const onMove = (e: maplibregl.MapMouseEvent): void => {
+    const poi = hitAt(e.point)
+    if (poi) {
       map.getCanvas().style.cursor = 'pointer'
-      const feature = e.features?.[0]
-      if (feature) {
-        const poiId = feature.properties?.id
-        const poi = pois.find((p) => p.id === poiId)
-        if (poi) showTooltip(tooltipHtml(poi))
-      }
-    })
-
-    map.on('mousemove', layerId, (e) => {
+      showTooltip(tooltipHtml(poi))
       if (e.lngLat) moveTooltip(map, e.lngLat)
-    })
-
-    map.on('mouseleave', layerId, () => {
+    } else {
       map.getCanvas().style.cursor = ''
       hideTooltip()
-    })
+    }
   }
+  const onLeave = (): void => {
+    map.getCanvas().style.cursor = ''
+    hideTooltip()
+  }
+  map.on('click', onClick)
+  map.on('mousemove', onMove)
+  /* mouseleave del canvas (los mocks de test no tienen canvas real). */
+  let canvas: HTMLCanvasElement | null = null
+  try {
+    const c = map.getCanvas()
+    if (c !== null && typeof c.addEventListener === 'function') {
+      canvas = c
+      canvas.addEventListener('mouseleave', onLeave)
+    }
+  } catch { /* entorno sin canvas */ }
+  poiCleanupsByMap.set(map, [
+    () => { try { map.off('click', onClick) } catch { /* noop */ } },
+    () => { try { map.off('mousemove', onMove) } catch { /* noop */ } },
+    () => { try { canvas?.removeEventListener('mouseleave', onLeave) } catch { /* noop */ } },
+  ])
 }
 
 export function addPois(
@@ -461,17 +492,17 @@ export function addPois(
 
   if (hasDot) startPulse(map, opts)
 
-  bindPoiEvents(
-    map,
-    [POIS_LAYER_ID, POIS_ICON_LAYER_ID, POIS_ARROW_LAYER_ID],
-    pois,
-    onPoiClick,
-  )
+  bindPoiEvents(map, pois, onPoiClick)
 }
 
 export function removePois(map: maplibregl.Map): void {
   hideTooltip()
   stopPulse()
+  const cleanups = poiCleanupsByMap.get(map)
+  if (cleanups) {
+    for (const fn of cleanups) fn()
+    poiCleanupsByMap.delete(map)
+  }
   try {
     map.setMissingStyleImageResolver(null)
   } catch { /* noop */ }

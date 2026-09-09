@@ -21,7 +21,12 @@ interface FeatureCollectionData {
 
 const PREFIX = 'atlas-encuadre'
 const DEFAULT_COLOR = '#5577af'
-const LABEL_BG = '/assets/ui/tooltips/fondo-tooltip-3.webp'
+/* v17 (agregarEncueadres.jsx): fondo oscuro por defecto (FondoTooltip4),
+ * hover → fondo claro (FondoTooltip3) + texto azul #193965. */
+const LABEL_BG = '/assets/ui/tooltips/fondo-tooltip-4.webp'
+const LABEL_BG_HOVER = '/assets/ui/tooltips/fondo-tooltip-3.webp'
+const LABEL_TEXT = '#ffffff'
+const LABEL_TEXT_HOVER = '#193965'
 
 interface Tracked {
   sources: string[]
@@ -71,18 +76,23 @@ function labelElement(
 
   const inner = document.createElement('span')
   inner.className = 'atlas-encuadre-label-inner'
+  /* Estilo verbatim v17: Noto Sans itálica 500, 1.8vh/2vh, blanco sobre
+   * FondoTooltip4. Sin borde propio (v17 solo redondea el fondo a 6px).
+   * Se conserva whiteSpace normal (nuestros names no traen <br> como v17)
+   * y el responsive de AtlasMap.module.css sigue mandando en móvil. */
   Object.assign(inner.style, {
     position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '6px 14px',
-    fontFamily: 'inherit',
-    fontSize: '13px',
-    fontWeight: '600',
-    lineHeight: '1.25',
+    padding: '8px 8px',
+    fontFamily: '"Noto Sans", sans-serif',
+    fontStyle: 'italic',
+    fontSize: '1.8vh',
+    fontWeight: '500',
+    lineHeight: '2vh',
     textAlign: 'center',
-    color: '#ffffff',
+    color: LABEL_TEXT,
     whiteSpace: 'normal',
     textShadow: '0 1px 3px rgba(3, 9, 30, 0.85)',
     transition: 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), filter 0.25s ease',
@@ -98,7 +108,6 @@ function labelElement(
     height: '100%',
     objectFit: 'cover',
     zIndex: '-1',
-    border: '2px solid rgba(0, 110, 150, 1)',
     borderRadius: '6px',
     pointerEvents: 'none',
   } satisfies Partial<CSSStyleDeclaration>)
@@ -112,11 +121,15 @@ function labelElement(
   el.addEventListener('mouseenter', () => {
     inner.style.transform = 'scale(1.06)'
     inner.style.filter = 'brightness(1.15)'
+    bg.src = LABEL_BG_HOVER
+    text.style.color = LABEL_TEXT_HOVER
     highlight.on()
   })
   el.addEventListener('mouseleave', () => {
     inner.style.transform = ''
     inner.style.filter = ''
+    bg.src = LABEL_BG
+    text.style.color = ''
     highlight.off()
   })
   el.addEventListener('click', (e) => {

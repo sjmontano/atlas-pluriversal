@@ -18,6 +18,10 @@ export interface Poi {
   /** Si existe, el clic abre el modal del sistema de modales (por id) en
    *  lugar del popup ligero (`popup`). Se indexa así el POI al mapa. */
   modalId?: string
+  /** Si existe (y no hay `modalId`), el clic navega URL-first al mapa
+   *  indicado (port del `onMapChange(index+1)` de v17 en los intros de
+   *  cap 2 y cap 4). Tiene prioridad sobre el popup ligero. */
+  targetMapId?: string
   variant?: PoiVariant
   /** Color de la flecha (variante arrow). Default: #03103a */
   arrowColor?: string

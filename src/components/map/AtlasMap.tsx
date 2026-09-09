@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, useState } from 'react'
+import { useEffect, useRef, useMemo, useState, useCallback } from 'react'
 import type { RefObject } from 'react'
 import { useMap } from '@hooks/useMap'
 import { useAutoLowPower } from '@hooks/useAutoLowPower'
@@ -66,7 +66,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
   const [activePoi, setActivePoi] = useState<Poi | null>(null)
   const [rebuildKey] = useState(1)
 
-  const handlePoiClick = (poi: Poi) => {
+  const handlePoiClick = useCallback((poi: Poi) => {
     if (poi.modalId) {
       const modal = getModalById(poi.modalId)
       if (modal) {
@@ -74,8 +74,17 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
         return
       }
     }
+    /* POI navegable (intros cap 2 / cap 4 en v17): va al mapa destino
+     * sin abrir el popup ligero. */
+    if (poi.targetMapId) {
+      const route = routeForMap(poi.targetMapId)
+      if (route !== null) {
+        navigate(route)
+        return
+      }
+    }
     setActivePoi(poi)
-  }
+  }, [navigate])
 
   useAutoLowPower()
   usePrefetchAdjacent(mapId)
@@ -141,7 +150,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     const map = mapRef.current
     if (!map || !mapBuilt || !pois) return
     addPois(map, mapId, pois, handlePoiClick, { static: lowPowerMode })
-  }, [mapRef, mapId, pois, mapBuilt, lowPowerMode])
+  }, [mapRef, mapId, pois, mapBuilt, lowPowerMode, handlePoiClick])
 
   /* Click en capa → modal (cuencas Tejidos del Agua, Voz del río…) */
   useEffect(() => {
