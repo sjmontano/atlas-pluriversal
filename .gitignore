@@ -24,7 +24,6 @@ public/assets/maps/cap3/
 public/assets/maps/cap4/
 public/assets/maps/intro/
 # Excepciones: assets de runtime (van al deploy y a git)
-!public/assets/maps/cap1/encuadres.png
 !public/assets/maps/cap1/encuadres-high.webp
 !public/assets/maps/cap1/encuadres-mid.webp
 !public/assets/maps/cap1/encuadres-low.webp
