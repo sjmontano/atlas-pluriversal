@@ -23,6 +23,7 @@ import { logger } from '@services/MapLogger'
 import { useMapStore } from '@stores/mapStore'
 import { useMapUIStore } from '@stores/mapUIStore'
 import { useConnectionStore } from '@stores/connectionStore'
+import { TILES_ENABLED } from '@config'
 
 const CATEGORY = 'useMap'
 
@@ -77,7 +78,7 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
 
     logger.debug(CATEGORY, 'effect:build-start', { mapId, buildGen })
 
-    buildGeoreferencedMap(container, mapId, entry, { lowPowerMode, tileProfile })
+    buildGeoreferencedMap(container, mapId, entry, { lowPowerMode, tileProfile, tilesEnabled: TILES_ENABLED })
       .then((result) => {
         // ¿Sigue siendo esta la build más reciente?
         if (buildGen !== buildGenRef.current) {

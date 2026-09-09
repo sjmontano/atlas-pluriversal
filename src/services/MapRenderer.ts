@@ -125,6 +125,8 @@ export interface BuildOptions {
   lowPowerMode?: boolean
   /** Perfil de entrega elegido por conexión y dispositivo. */
   tileProfile?: TileDeliveryProfile
+  /** false = omite la capa de tiles (demo sin tiles locales). Default: true. */
+  tilesEnabled?: boolean
 }
 
 /** Paralelismo de descarga/decodificación según potencia, aplicable en vivo
@@ -305,14 +307,16 @@ export async function buildGeoreferencedMap(
   // en conexiones lentas (Slow 4G / 2G rural).
   addTilesLayer(map, mapId, entry, bounds, opts)
 
-  // ── 5b. Base intermedia en perfil standard ─────────────────────────────────
+  // ── 5b. Base intermedia según contexto ─────────────────────────────────────
   // Conexión débil: los tiles standard tardan o fallan; el preview de 512px
-  // quedaría borroso como único respaldo. Se mejora la base a w_1280 (misma
-  // URL Cloudinary con transform, sin assets nuevos) una vez cargada.
-  // Perfil hd: sin cambios (los tiles hd aportan la nitidez).
-  // URLs locales (sin /upload/): cloudinaryVariant() no-op.
-  if (opts?.tileProfile === 'standard' && config.useImageBase !== false) {
-    const midUrl = cloudinaryVariant(images.base, 'w_1280,q_auto,f_webp')
+  // quedaría borroso como único respaldo. Sin tiles (demo): la base es TODA
+  // la calidad disponible → w_2048. Mismo public ID Cloudinary con transform,
+  // sin assets nuevos. URLs locales (sin /upload/): cloudinaryVariant no-op.
+  // Perfil hd con tiles: sin cambios (los tiles hd aportan la nitidez).
+  const wantMidBase = opts?.tileProfile === 'standard' || opts?.tilesEnabled === false
+  if (wantMidBase && config.useImageBase !== false) {
+    const transform = opts?.tilesEnabled === false ? 'w_2048,q_auto,f_webp' : 'w_1280,q_auto,f_webp'
+    const midUrl = cloudinaryVariant(images.base, transform)
     const currentUrl = entry.tiles?.preview ?? images.placeholder
     // Locales (sin /upload/): variant() no-op → sube a la base local, igual
     // de válido como respaldo mejorado sin descargar nada nuevo.
@@ -441,7 +445,9 @@ export function addTilesLayer(
   opts?: BuildOptions,
 ): void {
   const tiles = entry.tiles
-  if (!tiles) {
+  // Demo sin tiles (VITE_TILES_ENABLED=false): no se pide nada, no hay
+  // spinner ni timeout degraded; la base + previews sostienen la vista.
+  if (!tiles || opts?.tilesEnabled === false) {
     useMapStore.getState().setTilesStatus('idle')
     return
   }

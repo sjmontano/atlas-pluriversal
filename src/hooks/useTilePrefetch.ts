@@ -4,6 +4,7 @@ import { processBounds } from '@services/BoundsCalculator'
 import { useConnectionStore } from '@stores/connectionStore'
 import { prefetchRegionTiles } from '@services/TilePrefetcher'
 import { logger } from '@services/MapLogger'
+import { TILES_ENABLED } from '@config'
 
 const CATEGORY = 'useTilePrefetch'
 
@@ -22,7 +23,7 @@ export function useTilePrefetch(mapId: string) {
   const cancelRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
-    if (!isOnline || isConstrained) return
+    if (!TILES_ENABLED || !isOnline || isConstrained) return
 
     const entry = getMapContent(mapId)
     if (!entry?.tiles) return

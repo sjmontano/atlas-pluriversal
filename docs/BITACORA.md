@@ -1282,6 +1282,30 @@ Perfil standard/hd por `connectionStore` con swap en vivo; `degraded` a 15s sin 
 
 ### Propuesta pendiente de aprobación (detalle en chat)
 Cadena de fallback por contexto (preview → tiles perfil → base Cloudinary con transform → preview offline), Cloudinary con transforms on-the-fly (sin generar nada), `tiles/` off + base visible en `degraded`, y fusión futura de geojson por categoría. **Aprobado y ejecutado 2026-09-04 (commit `aeaf51f`)**: fallback degraded en `AtlasMap` + `cloudinaryVariant()` + base w_1280 en perfil standard en `MapRenderer` + test. `mapas/` lo borró el usuario (no se tocó en código).
+
+---
+
+## Deploy WP + demo Vercel — dieta, base /atlas/ y modo sin tiles (2026-09-04)
+
+### Dieta del deploy (commit `c940744`)
+29 PNGs fuente → `assets-raw/` (fuera de `public/`, gitignored como las fuentes
+originales); en `public/` quedan 3 de runtime. `LOCAL_TILE_SOURCES` re-apuntado
++ resolver del generador con fallback legacy. `dist/`: **1.42 GB → 655 MB**.
+
+### Destino `/atlas/`
+`base` + `basename` por `VITE_ATLAS_BASE` (dev intacto sin la var). `public/.htaccess`
+(SPA fallback + immutable 1 año). `lang="es"`. Hallazgo: 68 strings `/assets/...`
+absolutos NO se tocan (invasivo); se resuelve con 3 líneas en el `.htaccess` raíz
+de WP (`/assets/* → /atlas/assets/*`, verificado sin colisión: 404 hoy).
+Verificado con build `VITE_ATLAS_BASE=/atlas/`.
+
+### Demo Vercel sin tiles
+GitHub pesa ~85 MB (el "2 GB" era working tree; los tiles nunca viajaron en git).
+Vercel no admite ~10k archivos/deployment ni tiene GDAL → demo con
+`VITE_TILES_ENABLED=false` (nuevo flag en `src/config.ts`, default true):
+`addTilesLayer` omite + `useTilePrefetch` no corre + base w_2048 como calidad
+principal. `vercel.json` con rewrites SPA. Guía completa en `DEPLOY.md` (WP +
+Vercel + pesos + límites). Tests: `tilesEnabled.test.ts` 2/2.
 ---
 
 ## 2026-09-06 — Toolbar por mapa con iconos oficiales + inventario MODALES.md
