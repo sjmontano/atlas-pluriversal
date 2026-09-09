@@ -65,7 +65,18 @@ w_2048 + previews + capas locales; sin spinner de 15s).
 | PNGs runtime (3) + previews + capas + geojson | ~15 MB | ✅ | ✅ | ✅ |
 | `dist/` WP (`/atlas/`) | ~655 MB / ~10.5k files | n/a | ✅ | n/a |
 
-## 4. Límites conocidos (no re-descubrir)
+## 4. Troubleshooting demo Vercel (caso real 2026-09-09)
+
+**Síntoma**: mapa en negro/blanco con etiquetas, consola con
+`Could not load image ... SVGs are not supported` ×N en tiles.
+**Causa**: los tiles pedidos devuelven `index.html` (`content-type: text/html`,
+`content-disposition: filename="index.html"`) — el rewrite SPA captura las
+URLs porque **los tiles no están desplegados** (gitignored) y/o falta
+`VITE_TILES_ENABLED=false` en el dashboard.
+**Fix**: poner las 2 env vars y **redeployar** (cambiar vars sin redeploy no
+aplica). Verificar en red: ningún request a `/assets/maps/tiles/*`.
+
+## 5. Límites conocidos (no re-descubrir)
 - GitHub repo < 5 GB recomendado; push HTTPS frágil pasando ~500 MB.
 - Vercel: ~10k archivos/deployment y sin GDAL (no regenerar tiles ahí).
 - Shared hosting: 250k inodes, 50 GB (hoy 17% y 21% con el Atlas incluido).
