@@ -266,7 +266,10 @@ export async function buildGeoreferencedMap(
   })
 
   // ── 4. Imagen base: placeholder primero (carga instantánea) ─────────────
-  if (config.useImageBase !== false) {
+  // Sin tiles (demo) el preview es TODA la imagen: se agrega aunque el mapa
+  // pida useImageBase:false (encuadres). Con tiles, ese flag se respeta.
+  const needsPreviewFallback = opts?.tilesEnabled === false
+  if (config.useImageBase !== false || needsPreviewFallback) {
     map.on('data', (e) => {
       if (e.dataType === 'source' && e.sourceId === IMAGE_SOURCE_ID) {
         logger.trace(CATEGORY, `base:source-event [${mapId}]`, { type: e.type, sourceDataType: e.sourceDataType, isSourceLoaded: e.isSourceLoaded })
@@ -314,7 +317,7 @@ export async function buildGeoreferencedMap(
   // sin assets nuevos. URLs locales (sin /upload/): cloudinaryVariant no-op.
   // Perfil hd con tiles: sin cambios (los tiles hd aportan la nitidez).
   const wantMidBase = opts?.tileProfile === 'standard' || opts?.tilesEnabled === false
-  if (wantMidBase && config.useImageBase !== false) {
+  if (wantMidBase && (config.useImageBase !== false || needsPreviewFallback)) {
     const transform = opts?.tilesEnabled === false ? 'w_2048,q_auto,f_webp' : 'w_1280,q_auto,f_webp'
     const midUrl = cloudinaryVariant(images.base, transform)
     const currentUrl = entry.tiles?.preview ?? images.placeholder
@@ -397,6 +400,7 @@ export async function buildGeoreferencedMap(
       addTilesLayer(map, mapId, entry, bounds, {
         tileProfile: profile,
         lowPowerMode: opts?.lowPowerMode,
+        tilesEnabled: opts?.tilesEnabled,
       })
     },
   }
