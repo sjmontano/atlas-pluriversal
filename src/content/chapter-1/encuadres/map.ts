@@ -68,9 +68,9 @@ export default {
   },
   geo,
   images: {
-    base: '/assets/maps/cap1/encuadres.png',
-    full: '/assets/maps/cap1/encuadres.png',
-    placeholder: '/assets/maps/cap1/encuadres.png',
+    base: '/assets/maps/cap1/encuadres-mid.webp',
+    full: '/assets/maps/cap1/encuadres-high.webp',
+    placeholder: '/assets/maps/cap1/encuadres-low.webp',
   },
   config,
   tiles: makeTilesConfig('chapter1-encuadres', geo, config.initialBearing, config.zoomMax),
