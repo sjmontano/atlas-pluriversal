@@ -33,7 +33,7 @@ export const INICIO_MODALS: Modal[] = POIS.map((poi) => ({
 export const CREDITOS_MODAL: Modal = {
   id: 'creditos',
   section: 'inicio',
-  variant: 'xs',
+  variant: 'large',
   title: 'Créditos',
   highlight: 'Atlas Pluriversal del Río Cauca',
   icon: 'credits',

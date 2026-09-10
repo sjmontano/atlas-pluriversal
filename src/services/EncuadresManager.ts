@@ -76,6 +76,10 @@ function labelElement(
 
   const inner = document.createElement('span')
   inner.className = 'atlas-encuadre-label-inner'
+  /* Rotación opt-in por encuadre (v17: 19° en intro cap 3). Va en el
+   * wrapper interno porque MapLibre escribe `transform` en el botón. */
+  const rotate = encuadre.labelRotate ?? 0
+  const baseTransform = rotate !== 0 ? `rotate(${rotate}deg)` : ''
   /* Estilo verbatim v17: Noto Sans itálica 500, 1.8vh/2vh, blanco sobre
    * FondoTooltip4. Sin borde propio (v17 solo redondea el fondo a 6px).
    * Se conserva whiteSpace normal (nuestros names no traen <br> como v17)
@@ -96,6 +100,7 @@ function labelElement(
     whiteSpace: 'normal',
     textShadow: '0 1px 3px rgba(3, 9, 30, 0.85)',
     transition: 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), filter 0.25s ease',
+    transform: baseTransform,
   } satisfies Partial<CSSStyleDeclaration>)
 
   const bg = document.createElement('img')
@@ -119,14 +124,14 @@ function labelElement(
   el.appendChild(inner)
 
   el.addEventListener('mouseenter', () => {
-    inner.style.transform = 'scale(1.06)'
+    inner.style.transform = `${baseTransform} scale(1.06)`.trim()
     inner.style.filter = 'brightness(1.15)'
     bg.src = LABEL_BG_HOVER
     text.style.color = LABEL_TEXT_HOVER
     highlight.on()
   })
   el.addEventListener('mouseleave', () => {
-    inner.style.transform = ''
+    inner.style.transform = baseTransform
     inner.style.filter = ''
     bg.src = LABEL_BG
     text.style.color = ''
@@ -160,11 +165,13 @@ export async function addEncuadres(
           const color = encuadre.color ?? DEFAULT_COLOR
 
           map.addSource(sid, { type: 'geojson', data })
+          /* Sin relleno base (solo borde): el relleno aparece al hover
+           * de la etiqueta o del polígono. El fill sigue clickeable. */
           map.addLayer({
             id: fillId,
             type: 'fill',
             source: sid,
-            paint: { 'fill-color': color, 'fill-opacity': 0.08 },
+            paint: { 'fill-color': color, 'fill-opacity': 0 },
           })
           map.addLayer({
             id: lineId,
@@ -210,7 +217,7 @@ export async function addEncuadres(
             },
             off: () => {
               try {
-                map.setPaintProperty(`${PREFIX}-fill-${encuadre.id}`, 'fill-opacity', 0.08)
+                map.setPaintProperty(`${PREFIX}-fill-${encuadre.id}`, 'fill-opacity', 0)
                 map.setPaintProperty(`${PREFIX}-line-${encuadre.id}`, 'line-width', 1.5)
               } catch { /* noop */ }
             },

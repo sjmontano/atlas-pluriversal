@@ -5,8 +5,10 @@ import type { Encuadre } from '../../../types/content'
  * Textos verbatim v17; destinos según el onMapChange original:
  * monocultivo→1, encharcaron→2, cali-deseca→3, humedales→4, arcilla→5.
  * Los geojson son los de atlas_3.0/public/assets/geo-layers (el backend
- * de v17 ya no responde): diagonales MultiLineString color #193965. */
+ * de v17 ya no responde): diagonales MultiLineString color #193965.
+ * Etiquetas rotadas 19° como v17 (van en diagonal, bajo su línea). */
 const CAP3_BLUE = '#193965'
+const LABEL_ROTATE = 19
 
 export const ENCUADRES: Encuadre[] = [
   {
@@ -16,6 +18,7 @@ export const ENCUADRES: Encuadre[] = [
     labelCoords: [-76.638, 2.7],
     url: '/assets/geojson/cap3-nos-encharcaron.json',
     color: CAP3_BLUE,
+    labelRotate: LABEL_ROTATE,
   },
   {
     id: 'encuadre-cap3-cali-deseca',
@@ -24,6 +27,7 @@ export const ENCUADRES: Encuadre[] = [
     labelCoords: [-76.366, 3.248],
     url: '/assets/geojson/cap3-cali-deseca.json',
     color: CAP3_BLUE,
+    labelRotate: LABEL_ROTATE,
   },
   {
     id: 'encuadre-cap3-se-encharca',
@@ -32,6 +36,7 @@ export const ENCUADRES: Encuadre[] = [
     labelCoords: [-76.82, 2.8],
     url: '/assets/geojson/cap3-se-encharca.json',
     color: CAP3_BLUE,
+    labelRotate: LABEL_ROTATE,
   },
   {
     id: 'encuadre-cap3-aguas',
@@ -40,6 +45,7 @@ export const ENCUADRES: Encuadre[] = [
     labelCoords: [-76.467, 2.96],
     url: '/assets/geojson/cap3-aguas-que-llegan.json',
     color: CAP3_BLUE,
+    labelRotate: LABEL_ROTATE,
   },
   {
     id: 'encuadre-cap3-monocultivo',
@@ -48,5 +54,6 @@ export const ENCUADRES: Encuadre[] = [
     labelCoords: [-76.343, 2.8],
     url: '/assets/geojson/cap3-monocultivo.json',
     color: CAP3_BLUE,
+    labelRotate: LABEL_ROTATE,
   },
 ]
