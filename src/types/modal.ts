@@ -41,6 +41,9 @@ export interface ModalTheme {
   bgColor?: string
   /** Tamaño personalizado (sobrescribe el token de la variante) */
   size?: { width: string; height: string }
+  /** Ajuste de la imagen de fondo full-bleed (default: 'cover').
+   *  'contain' para diagramas con texto que no deben recortarse. */
+  bgFit?: 'cover' | 'contain'
 
   /* ── Estilos inyectables por modal ─────────────────────────────────── */
   /** maxWidth del .bodyInner (default: '90%'). El riel queda fijo al diálogo. */
@@ -106,6 +109,11 @@ export interface Modal {
   image?: string
   /** Activa imagen de fondo full-bleed + scrim automático */
   fullImage?: boolean
+  /** Oculta badge/título/decorador (solo imagen + X, estilo v17 ModalImagen).
+   *  El title se conserva para aria-label. */
+  hideHeader?: boolean
+  /** X espejada a la izquierda (v17: left). Default: derecha. */
+  closeLeft?: boolean
   /** Tema (CSS variables) — colores y tamaño personalizado */
   theme?: ModalTheme
   /** Contenido del body (bloques apilables) */

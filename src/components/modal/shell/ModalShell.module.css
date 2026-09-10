@@ -232,6 +232,36 @@
   outline-offset: 2px;
 }
 
+/* ─── X espejada con header visible: invierte el orden ─────────────── */
+.headMirror {
+  flex-direction: row-reverse;
+}
+
+/* ─── Header desnudo (modales solo-imagen, estilo v17 ModalImagen) ───
+   No ocupa flujo (el body llena el diálogo); solo porta la X flotante. */
+.headBare {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.headBare .close {
+  pointer-events: auto;
+}
+
+.closeFloatLeft {
+  position: absolute;
+  top: var(--modal-padding);
+  left: var(--modal-padding);
+}
+
+.closeFloatRight {
+  position: absolute;
+  top: var(--modal-padding);
+  right: var(--modal-padding);
+}
+
 /* ─── Cuerpo del Modal (Alineado con el Título/Decorador) ──────────── */
 .bodyOuter {
   flex: 1;

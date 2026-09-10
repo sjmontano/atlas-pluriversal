@@ -104,8 +104,12 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     const map = mapRef.current
     return () => {
       if (map) {
-        removeAllLayers(map)
-        removePois(map)
+        /* removePois PRIMERO y con guard independiente: oculta el tooltip
+         * del body (hideTooltip) aunque el mapa ya esté destruido por el
+         * cleanup de useMap (removeAllLayers lanza con style null y antes
+         * impedía llegar aquí → etiqueta huérfana al navegar). */
+        try { removePois(map) } catch { /* noop */ }
+        try { removeAllLayers(map) } catch { /* noop */ }
       }
     }
   }, [mapId, mapRef, content])

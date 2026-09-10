@@ -41,6 +41,10 @@ export interface ModalShellProps {
   theme?: ModalTheme
   /** Mostrar indicadores de scroll (flecha bounce + fade bottom). */
   showScrollIndicators?: boolean
+  /** Oculta badge/título/decorador (solo imagen + X flotante). */
+  hideHeader?: boolean
+  /** X espejada a la izquierda. Default: derecha. */
+  closeLeft?: boolean
   /** Estilos opcionales en línea para dimensionar el diálogo. */
   dialogStyle?: CSSProperties
 }
@@ -63,6 +67,8 @@ export function ModalShell({
   fullImage = false,
   theme,
   showScrollIndicators = false,
+  hideHeader = false,
+  closeLeft = false,
   dialogStyle,
 }: ModalShellProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -140,11 +146,24 @@ export function ModalShell({
             src={bgImage}
             alt=""
             aria-hidden="true"
+            style={theme?.bgFit ? { objectFit: theme.bgFit } : undefined}
           />
         )}
 
-        {/* Header SIEMPRE visible */}
-        <div className={styles.head}>
+        {/* Header: unificado, o desnudo (solo imagen + X flotante) */}
+        {hideHeader ? (
+          <div className={styles.headBare}>
+            <button
+              type="button"
+              className={`${styles.close} ${closeLeft ? styles.closeFloatLeft : styles.closeFloatRight}`}
+              onClick={onClose}
+              aria-label="Cerrar modal"
+            >
+              <img src={SALIR_URL} alt="" aria-hidden="true" />
+            </button>
+          </div>
+        ) : (
+        <div className={`${styles.head}${closeLeft ? ` ${styles.headMirror}` : ''}`}>
           <div className={styles.headerGroup}>
             {icon && (
               <span className={styles.iconBadge}>
@@ -190,6 +209,7 @@ export function ModalShell({
             <img src={SALIR_URL} alt="" aria-hidden="true" />
           </button>
         </div>
+        )}
 
         {/* Body scrollable + scrollbar + scrim (si fullImage) */}
         <div className={styles.bodyOuter}>

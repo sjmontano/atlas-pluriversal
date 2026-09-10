@@ -43,6 +43,8 @@ export function ModalRenderer() {
       bgImage={modal.fullImage ? modal.image : undefined}
       fullImage={modal.fullImage}
       theme={modal.theme}
+      hideHeader={modal.hideHeader}
+      closeLeft={modal.closeLeft}
       dialogStyle={dialogStyle}
       icon={modal.icon}
       iconImage={modal.iconImage}
