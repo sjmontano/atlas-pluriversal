@@ -24,10 +24,17 @@
   opacity: 0.95;
 }
 
+.logoVolver {
+  width: clamp(120px, 14vw, 200px);
+  height: auto;
+  opacity: 0.95;
+}
+
 /* ── Bloque central de títulos ───────────────────────────────────────── */
 .titles {
   position: absolute;
-  top: 18%;
+  margin-top: 3%;
+  top: 0%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;

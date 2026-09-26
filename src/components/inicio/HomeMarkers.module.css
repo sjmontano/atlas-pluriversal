@@ -104,7 +104,7 @@
   text-align: center;
   color: #fff;
   border-radius: 6px;
-  white-space: pre-line;
+  white-space: pre;
   z-index: 20;
   background: rgba(0, 0, 0, 0.4);
   display: flex;

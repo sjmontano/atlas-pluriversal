@@ -22,6 +22,7 @@ export const SHELL_ASSETS = {
   buttons: {
     home: '/assets/ui/buttons/logo-home.svg',
     unRioCauca: '/assets/ui/buttons/logo-unrio-cauca.svg',
+    unRioCaucaVolver: '/assets/ui/buttons/logo.webp',
   },
   sidebar: {
     fondoIcon: '/assets/ui/sidebar/fondo-icon.svg',

@@ -43,7 +43,7 @@ export function HomePanel() {
         rel="noopener noreferrer"
         aria-label="Un río Cauca, muchos mundos"
       >
-        <img className={styles.logo} src={SHELL_ASSETS.buttons.unRioCauca} alt="" />
+        <img className={styles.logoVolver} src={SHELL_ASSETS.buttons.unRioCaucaVolver} alt="" />
       </a>
 
       <section className={styles.titles}>

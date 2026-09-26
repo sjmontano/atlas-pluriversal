@@ -16,7 +16,7 @@ import { HomeMarkers } from '@components/inicio/HomeMarkers'
 import { HomePanel } from '@components/inicio/HomePanel'
 import styles from './InicioPage.module.css'
 
-const HOME_BACKGROUND = '/assets/ui/inicio/background.webp'
+const HOME_BACKGROUND = '/assets/ui/inicio/background.png'
 /** Relación de aspecto nativa del fondo (1920×1080). */
 const IMAGE_ASPECT = 1920 / 1080
 /** Umbral en px para distinguir arrastre (pan) de click. */
