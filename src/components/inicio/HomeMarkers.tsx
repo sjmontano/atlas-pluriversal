@@ -7,13 +7,13 @@
  * tamaños y asset de gota. Click → modal layout `inicio`.
  */
 
-import type { CSSProperties } from 'react'
-import { POI_THEME } from '@content/theme'
-import { getModalById } from '@content/modals'
+import { SHELL_ASSETS } from '@components/shell/assets'
 import { HOME_MARKERS } from '@content/inicio/markers.ts'
 import { POIS } from '@content/inicio/pois.ts'
+import { getModalById } from '@content/modals'
+import { POI_THEME } from '@content/theme'
 import { useModalStore } from '@stores/modalStore'
-import { SHELL_ASSETS } from '@components/shell/assets'
+import type { CSSProperties } from 'react'
 import styles from './HomeMarkers.module.css'
 
 export function HomeMarkers() {
@@ -21,7 +21,7 @@ export function HomeMarkers() {
 
   const themeVars = {
     '--poi-bg': POI_THEME.iconBg,
-    '--poi-size': 'clamp(26px, 2.2vw, 34px)',
+    '--poi-size': 'clamp(20px, 1.8vw, 28px)',
     '--poi-pulse-ms': `${POI_THEME.pulse.durationMs}ms`,
   } as CSSProperties
 
