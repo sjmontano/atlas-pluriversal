@@ -80,6 +80,11 @@
   --modal-h: 75vh;
 }
 
+.xxxl {
+  --modal-w: 80vw;
+  --modal-h: 90vh;
+}
+
 .full {
   --modal-w: 100vw;
   --modal-h: 100dvh;
@@ -283,7 +288,8 @@
   bottom: var(--scroll-fade-h);
 }
 
-.bodyInner {
+.bodyInner {    
+  margin: 0px calc(14vw) 0px 0px;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;

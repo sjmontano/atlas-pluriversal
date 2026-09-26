@@ -76,7 +76,7 @@ const ATLAS_PROYECTO: Modal = {
 const PERFIL_CUENCA: Modal = {
   id: 'cap1-perfil-cuenca',
   section: 'capitulo-1',
-  variant: 'large',
+  variant: 'xxxl',
   title: 'Perfil de la cuenca',
   highlight: 'Capítulo I',
   icon: 'perfil',

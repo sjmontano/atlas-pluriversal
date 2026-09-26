@@ -37,6 +37,7 @@
   position: relative;
   z-index: 2;
   transition: filter 0.3s ease-in-out;
+  transform: translateY(-1.5vh);
 }
 .back:hover {
   filter: brightness(1.5);
@@ -56,11 +57,17 @@
 
 .title {
   margin: 0;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+
   font-weight: 700;
-  font-size: clamp(14px, 1.3vw, 22px);
+  font-size: clamp(14px, 2.9vw, 22px);
   color: #fff;
   position: relative;
   z-index: 1;
+      transform: translateY(-1.5vh);
 }
 
 @media (max-width: 768px) {

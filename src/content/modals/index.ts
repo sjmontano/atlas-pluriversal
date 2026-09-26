@@ -62,7 +62,7 @@ const GALERIA_EJEMPLO: Modal = {
 const FICHA_TECNICA: Modal = {
   id: 'ficha-tecnica',
   section: 'legales',
-  variant: 'small',
+  variant: 'xl',
   title: 'Ficha técnica',
   highlight: 'Sobre el Atlas',
   icon: 'fichatecnica',

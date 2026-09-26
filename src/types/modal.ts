@@ -11,7 +11,7 @@
  * - Sin footer (el botón X ya está en el header)
  */
 
-export type ModalVariant = 'xs' | 'small' | 'medium' | 'large' | 'xl' | 'full'
+export type ModalVariant = 'xs' | 'small' | 'medium' | 'large' | 'xl' | 'full' | 'xxxl'
 
 /* ─── Bloques tipados del body ─────────────────────────────────────────── */
 

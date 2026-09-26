@@ -29,7 +29,7 @@ export const PRESENTACION_MODAL: Modal = {
   section: 'intro',
   variant: 'xl',
 
-  title: 'Presentación del Atlas',
+  title: 'El río pensado y sentido desde la cartografía y el dibujo',
   icon: 'presentation',
   iconImage: PRESENTACION_ICON,
 
@@ -80,7 +80,7 @@ export const PRESENTACION_MODAL: Modal = {
         {
           type: 'quote',
           id: 'pres-q1',
-          text: 'Alternativas transformadoras son aquellas formas organizativas que procuran romper con los sistemas dominantes para transitar por otros caminos, hacia formas radicales y directas de democracia política y económica para la vida digna, contribuyendo a construir otros mundos y territorios posibles para el buen vivir y el vivir sabroso.',
+          text: '¹ Alternativas transformadoras son aquellas formas organizativas que procuran romper con los sistemas dominantes para transitar por otros caminos, hacia formas radicales y directas de democracia política y económica para la vida digna, contribuyendo a construir otros mundos y territorios posibles para el buen vivir y el vivir sabroso.',
           source: 'Diagnóstico de Paz Territorial Pluriversal, 2024: 6',
         },
       ],

@@ -12,7 +12,7 @@ import { POIS } from '../inicio/pois.ts'
 export const INICIO_MODALS: Modal[] = POIS.map((poi) => ({
   id: poi.id,
   section: 'inicio',
-  variant: 'xl',
+  variant: 'xxxl',
   fullImage: true,
   title: poi.title,
   icon: 'marker',
@@ -33,7 +33,7 @@ export const INICIO_MODALS: Modal[] = POIS.map((poi) => ({
 export const CREDITOS_MODAL: Modal = {
   id: 'creditos',
   section: 'inicio',
-  variant: 'large',
+  variant: 'xl',
   title: 'Créditos',
   highlight: 'Atlas Pluriversal del Río Cauca',
   icon: 'credits',

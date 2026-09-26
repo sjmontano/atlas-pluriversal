@@ -102,7 +102,7 @@ export function presentacion(
   return {
     id,
     section: `capitulo-${cap}`,
-    variant: 'large',
+    variant: 'xl',
     title: entry.title,
     highlight: entry.highlight,
     icon: 'presentation',

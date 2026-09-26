@@ -17,7 +17,7 @@ export interface SectionHeaderProps {
 
 function backgroundFor(title: string): string | null {
   if (!title) return null
-  if (title.length < 20) return SHELL_ASSETS.header.bgShort
+  if (title.length < 35) return SHELL_ASSETS.header.bgShort
   if (title.length < 40) return SHELL_ASSETS.header.bgMedium
   return SHELL_ASSETS.header.bgLong
 }
