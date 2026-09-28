@@ -11,6 +11,7 @@ import { ModalRenderer } from '@components/modal/shell/ModalRenderer'
 import { useModalStore } from '@stores/modalStore'
 import { getModalById } from '@content/modals'
 import type { Modal } from '@types/modal.ts'
+import type { ModalTheme } from '@types/modal.ts'
 
 describe('ModalShell', () => {
   beforeEach(() => {
@@ -62,6 +63,33 @@ describe('ModalShell', () => {
     )
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('ModalTheme acepta contentMarginRight opcional', () => {
+    const theme: ModalTheme = { contentMarginRight: 'calc(10vw)' }
+    expect(theme.contentMarginRight).toBe('calc(10vw)')
+    const empty: ModalTheme = {}
+    expect(empty.contentMarginRight).toBeUndefined()
+  })
+
+  it('inyecta --body-margin-right solo si theme.contentMarginRight está definido', () => {
+    const { rerender } = render(
+      <ModalShell open title="T" variant="medium" onClose={vi.fn()}>
+        <p>c</p>
+      </ModalShell>,
+    )
+    // ModalShell usa createPortal a document.body: buscar vía screen
+    const dialog = screen.getByRole('dialog', { name: 'T' }) as HTMLElement
+    // default: la var NO va inline (vive en el CSS como calc(14vw))
+    expect(dialog.style.getPropertyValue('--body-margin-right')).toBe('')
+
+    rerender(
+      <ModalShell open title="T" variant="medium" onClose={vi.fn()} theme={{ contentMarginRight: 'calc(5vw)' }}>
+        <p>c</p>
+      </ModalShell>,
+    )
+    const dialog2 = screen.getByRole('dialog', { name: 'T' }) as HTMLElement
+    expect(dialog2.style.getPropertyValue('--body-margin-right')).toBe('calc(5vw)')
   })
 })
 

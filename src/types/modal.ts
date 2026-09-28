@@ -60,6 +60,8 @@ export interface ModalTheme {
   blockSpacing?: string
   /** Espaciado entre columnas (columns block) */
   columnGap?: string
+  /** Margen derecho del .bodyInner (default: 'calc(14vw)'). Solo desktop/tablet; en móvil se ignora. */
+  contentMarginRight?: string
 }
 
 /* ─── Acciones (footer — solo para botón de cerrar legacy) ─────────────── */

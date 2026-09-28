@@ -30,6 +30,7 @@
   --body-text-color: var(--text-primary, #4b5563);
   --block-spacing: 16px;
   --column-gap: 1.5em;
+  --body-margin-right: calc(14vw);
 
   /* Recálculo exacto para alinear el texto con el título y decorador */
   --content-left-indent: calc(var(--modal-padding) + var(--icon-size) + var(--header-gap));
@@ -288,8 +289,8 @@
   bottom: var(--scroll-fade-h);
 }
 
-.bodyInner {    
-  margin: 0px calc(14vw) 0px 0px;
+.bodyInner {
+  margin: 0 var(--body-margin-right) 0 0;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -436,6 +437,7 @@
      al borde (right 4px, 5px de ancho) y el texto lo despeja */
   .bodyInner {
     padding-right: 20px;
+    margin-right: 0;
   }
 
   .bodyScrollbar {

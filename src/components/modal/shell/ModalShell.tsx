@@ -126,6 +126,7 @@ export function ModalShell({
     ...(theme?.bodyTextColor ? { '--body-text-color': theme.bodyTextColor } as CSSProperties : {}),
     ...(theme?.blockSpacing ? { '--block-spacing': theme.blockSpacing } as CSSProperties : {}),
     ...(theme?.columnGap ? { '--column-gap': theme.columnGap } as CSSProperties : {}),
+    ...(theme?.contentMarginRight ? { '--body-margin-right': theme.contentMarginRight } as CSSProperties : {}),
   }
 
   return createPortal(
