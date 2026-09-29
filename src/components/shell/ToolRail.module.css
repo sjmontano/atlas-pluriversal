@@ -28,24 +28,27 @@
 .itemWrap::before {
   content: '';
   position: absolute;
-  left: -0;
+  left: 0;
   top: -6px;
-  bottom: -0;
+  bottom: 0;
   width: 320px;
   max-width: 60vw;
   background: url('/assets/ui/sidebar/item-hover-bg.webp') left center / contain no-repeat;
   opacity: 0;
-  transform: translateX(-10px);
+  transform: translateX(0) scaleX(0.985);
+  transform-origin: left center;
+  will-change: opacity, transform;
+  backface-visibility: hidden;
   transition:
-    opacity 0.3s ease,
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.28s ease,
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
   z-index: 0;
 }
 .itemWrap:hover::before,
 .itemWrap:focus-within::before {
   opacity: 1;
-  transform: translateX(0);
+  transform: translateX(0) scaleX(1);
 }
 
 @media (max-width: 640px) {
