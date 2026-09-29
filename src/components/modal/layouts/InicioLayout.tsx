@@ -14,7 +14,9 @@ export function InicioLayout({ modal }: { modal: Modal }) {
   return (
     <div className={styles.inicio}>
       {modal.body && modal.body.length > 0 && (
-        <BlockRenderer blocks={modal.body} />
+        <div className={styles.inicioTexto}>
+          <BlockRenderer blocks={modal.body} />
+        </div>
       )}
     </div>
   )

@@ -6,21 +6,34 @@
   max-width: 100%;
 }
 
-/* Texto con scrim sutil para asegurar legibilidad sobre la imagen de fondo */
+/* Texto con resaltador por renglón para legibilidad sobre la imagen.
+   El span es inline: con box-decoration-break cada línea lleva su propio
+   fondo, que termina donde termina la última palabra (estilo resaltador).
+   El espacio vacío restante queda limpio, sin bloque rígido. */
 .inicioTexto {
   position: relative;
   z-index: 1;
 
   border-radius: 10px;
+  /* Aire para que el texto no toque el borde del halo (grilla 8px) */
+  padding: 16px;
   font-size: clamp(0.85rem, 2.15vh, 1.12rem);
 
   line-height: 1.4;
-  background: radial-gradient(ellipse 90% 55% at center top,
-      rgba(255, 255, 255, 0.75) 0%,
-      rgba(255, 255, 255, 0.45) 50%,
-      rgba(255, 255, 255, 0) 100%);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: transparent;
+}
+
+.inicioTexto p > span {
+  background: rgba(255, 255, 255, 0.78);
+  /* Aire vertical sin romper el interlineado */
+  padding: 0.12em 0;
+  /* Extiende el fondo a los lados de cada renglón */
+  box-shadow:
+    0.28em 0 0 rgba(255, 255, 255, 0.78),
+    -0.28em 0 0 rgba(255, 255, 255, 0.78);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  border-radius: 6px;
 }
 
 /* ── Responsive ────────────────────────────────────────────────────────── */

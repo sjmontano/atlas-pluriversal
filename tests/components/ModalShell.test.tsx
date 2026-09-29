@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react'
 import { ModalShell } from '@components/modal/shell/ModalShell'
 import { ModalRenderer } from '@components/modal/shell/ModalRenderer'
+import { InicioLayout } from '@components/modal/layouts/InicioLayout'
 import { useModalStore } from '@stores/modalStore'
 import { getModalById } from '@content/modals'
 import type { Modal } from '@types/modal.ts'
@@ -90,6 +91,41 @@ describe('ModalShell', () => {
     )
     const dialog2 = screen.getByRole('dialog', { name: 'T' }) as HTMLElement
     expect(dialog2.style.getPropertyValue('--body-margin-right')).toBe('calc(5vw)')
+  })
+
+  it('inyecta --body-text-color solo si theme.bodyTextColor está definido', () => {
+    const { rerender } = render(
+      <ModalShell open title="T" variant="medium" onClose={vi.fn()}>
+        <p>c</p>
+      </ModalShell>,
+    )
+    const dialog = screen.getByRole('dialog', { name: 'T' }) as HTMLElement
+    expect(dialog.style.getPropertyValue('--body-text-color')).toBe('')
+
+    rerender(
+      <ModalShell open title="T" variant="medium" onClose={vi.fn()} theme={{ bodyTextColor: '#374151' }}>
+        <p>c</p>
+      </ModalShell>,
+    )
+    const dialog2 = screen.getByRole('dialog', { name: 'T' }) as HTMLElement
+    expect(dialog2.style.getPropertyValue('--body-text-color')).toBe('#374151')
+  })
+
+  it('InicioLayout envuelve el texto en superficie de lectura (halo sobre foto)', () => {
+    const modal = getModalById('los-farallones') as Modal
+    const { container } = render(<InicioLayout modal={modal} />)
+    // .inicio > .inicioTexto > bloques: el halo sigue al texto al hacer scroll
+    const outer = container.firstChild as HTMLElement
+    expect(outer?.nodeName).toBe('DIV')
+    expect(outer?.firstChild?.nodeName).toBe('DIV')
+  })
+
+  it('InicioLayout resalta el texto renglón por renglón (span inline)', () => {
+    const modal = getModalById('los-farallones') as Modal
+    const { container } = render(<InicioLayout modal={modal} />)
+    const span = container.querySelector('p > span')
+    expect(span).not.toBeNull()
+    expect(span?.textContent).toMatch(/Somos altos y rocosos/)
   })
 })
 

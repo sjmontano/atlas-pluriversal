@@ -10,6 +10,7 @@
 /* ── Paragraph ────────────────────────────────────────────────────────── */
 .paragraph {
   white-space: pre-line;
+  color: var(--body-text-color, var(--text-primary, #4b5563));
 }
 
 /* ── Headings ─────────────────────────────────────────────────────────── */

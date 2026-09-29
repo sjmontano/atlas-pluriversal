@@ -114,7 +114,7 @@ function renderBlock(block: ModalBlock): React.ReactNode {
     default:
       return (
         <p key={block.id} className={`${styles.block} ${styles.paragraph}`}>
-          {block.text}
+          <span>{block.text}</span>
         </p>
       )
   }
