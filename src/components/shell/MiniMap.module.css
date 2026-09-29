@@ -1,13 +1,13 @@
 .mini {
   position: absolute;
-  top: 15%;
-  right: 2%;
+  top: clamp(16px, 3vh, 24px);
+  right: clamp(8px, 2vw, 24px);
   z-index: 22;
-  width: 160px;
-  height: 160px;
+  width: clamp(72px, 12vw, 160px);
+  aspect-ratio: 1;
+  height: auto;
   border-radius: 50%;
   overflow: hidden;
-  transform: translateY(-50%);
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: auto;
 }
@@ -30,10 +30,16 @@
   box-shadow: 0 8px 28px rgba(3, 9, 30, 0.55);
 }
 
+@media (min-width: 641px) {
+  /* PC: misma banda proporcional que logo/títulos (ver HomePanel). */
+  .mini {
+    top: clamp(16px, 4vh, 48px);
+  }
+}
+
 @media (max-width: 768px) {
   .mini {
-    width: 96px;
-    height: 96px;
+    right: 8px;
   }
 }
 
@@ -41,7 +47,7 @@
    descoloca el minimapa. En táctil queda fijo. */
 @media (hover: none) {
   .mini:hover {
-    transform: translateY(-50%);
+    transform: none;
     transition-delay: 0s;
   }
 }

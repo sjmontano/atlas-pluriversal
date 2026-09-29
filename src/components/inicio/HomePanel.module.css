@@ -9,8 +9,8 @@
 .logoLink {
   pointer-events: auto;
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: clamp(16px, 3vh, 24px);
+  left: clamp(16px, 3vw, 24px);
   display: block;
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -35,8 +35,7 @@
 /* ── Bloque central de títulos ───────────────────────────────────────── */
 .titles {
   position: absolute;
-  margin-top: 3%;
-  top: 0%;
+  top: clamp(16px, 3vh, 24px);
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -196,7 +195,9 @@
 
 @media (max-width: 640px) {
   .titles {
-    top: 14%;
+    /* En móvil logo + minimapa ocupan la banda superior: los títulos
+       bajan debajo de ellos (16 banda + 72 minimapa + 16 aire). */
+    top: 104px;
     padding-inline: 16px;
   }
 
@@ -211,6 +212,18 @@
 @media (max-width: 360px) {
   .titles {
     width: 94vw;
+  }
+}
+
+@media (min-width: 641px) {
+  /* PC: banda superior proporcional al alto (4vh) con mínimo y techo.
+     % puro se deriva del ancestro y se dispara en pantallas muy altas;
+     vh+clamp mantiene la misma ubicación relativa siempre. */
+  .logoLink {
+    top: clamp(16px, 4vh, 48px);
+  }
+  .titles {
+    top: clamp(16px, 4vh, 48px);
   }
 }
 

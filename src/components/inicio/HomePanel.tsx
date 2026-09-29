@@ -53,16 +53,15 @@ export function HomePanel() {
       </section>
 
       <div className={styles.buttons}>
-        <button
-          type="button"
+        <Link
+          to="/entramados"
           className={styles.button}
           aria-label="Créditos"
-          onClick={() => openById('creditos')}
         >
           <img className={styles.fondo} src={SHELL_ASSETS.sidebar.fondoIcon} alt="" />
           <img className={styles.icon} src={INICIO_ICONS.credits} alt="" />
           <Tooltip label="Créditos" />
-        </button>
+        </Link>
 
         <button
           type="button"

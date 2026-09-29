@@ -62,8 +62,8 @@
 }
 
 .small {
-  --modal-w: clamp(320px, 92vw, 560px);
-  --modal-h: min(65vh, 520px);
+  --modal-w: clamp(320px, 95vw, 700px);
+  --modal-h: min(65vh, 620px);
 }
 
 .medium {

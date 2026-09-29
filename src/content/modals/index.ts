@@ -22,14 +22,14 @@
  */
 
 import type { Modal } from '../../types/modal.ts'
-import { INICIO_MODALS, CREDITOS_MODAL } from './inicio.ts'
+import { INTRO_MODALS } from '../intro/modals.ts'
 import { CHAPTER1_MODALS } from './chapter-1.ts'
 import { CHAPTER2_MODALS } from './chapter-2.ts'
 import { CHAPTER3_MODALS } from './chapter-3.ts'
 import { CHAPTER4_MODALS } from './chapter-4.ts'
-import { INTRO_MODALS } from '../intro/modals.ts'
-import { TERMINOS_MODAL } from './legales.ts'
 import { CREDITOS_EQUIPOS_MODALS } from './creditos.ts'
+import { CREDITOS_MODAL, INICIO_MODALS } from './inicio.ts'
+import { TERMINOS_MODAL } from './legales.ts'
 
 /* ── Galería de imágenes ──────────────────────────────────────────────── */
 const GALERIA_EJEMPLO: Modal = {
@@ -62,33 +62,18 @@ const GALERIA_EJEMPLO: Modal = {
 const FICHA_TECNICA: Modal = {
   id: 'ficha-tecnica',
   section: 'legales',
-  variant: 'xl',
+  variant: 'small',
   title: 'Ficha técnica',
   highlight: 'Sobre el Atlas',
   icon: 'fichatecnica',
+  theme: {
+    contentMarginRight: 'calc(8vw)',
+  },
   body: [
     {
       type: 'paragraph',
       id: 'p1',
-      text: 'Metadatos de la edición digital del Atlas Pluriversal del Río Cauca.',
-    },
-    {
-      type: 'meta',
-      id: 'm1',
-      data: {
-        Proyecto: 'Atlas Pluriversal del Río Cauca',
-        Versión: '2.0',
-        Formato: 'Aplicación web (React + MapLibre GL)',
-        Licencia: 'CC BY-NC-ND 4.0',
-        'Mapa base': 'Cuenca alta del río Cauca',
-        Año: '2026',
-      },
-    },
-    {
-      type: 'link',
-      id: 'l1',
-      href: 'https://drive.google.com/...',
-      label: 'Ver documento completo',
+      text: 'Esta mapa se conforma de dos elementos: una imagen 3D construida a partir del Modelo de Elevación Nacional de Colombia adquirido por el IGAC y procesada en un modelo 3D en el sotware Qgis. Posteriormente fue redibujado con texturas y colores que contrastan los relieves y el agua de esta zona de la geografía de Colombia. El segundo elemento, son las ilustraciones y los textos de 15 lugares, que en las alturas de las cordilleras y la planicie, constituyen el territorio del sur del valle alto del río Cauca. Este fue un proceso creativo realizado con base en el conocimiento geográifco comunitario, institucional y académico de esta parte de la cuenca del río Cauca.',
     },
   ],
   trigger: {
