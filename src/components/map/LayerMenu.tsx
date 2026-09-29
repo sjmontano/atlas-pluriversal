@@ -2,8 +2,8 @@
  * 🗂️ LAYER MENU — Menú de capas estilo v17 (botón derecho + ojos)
  * ===============================================================
  * Botón gemelo del Home a la derecha (`icono-capas.webp` + etiqueta en
- * hover). Hover despliega el panel (efímero CSS), click lo fija abierto.
- * On/off por capa con ojo abierto/cerrado (`show`/`hide`) en 3 niveles
+ * hover). El panel abre SOLO con click (pinned); el hover solo previsualiza
+ * decorador + etiqueta. On/off por capa con ojo abierto/cerrado (`show`/`hide`) en 3 niveles
  * (Todas, grupo, capa). Datos intactos: lee `layers/groups/legends` del
  * `map.ts` y muta `layerStore` (el `LayerManager` sincroniza MapLibre).
  */
@@ -91,7 +91,7 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
   const setLayerGroupVisible = store.setLayerGroupVisible
   const toggleGroupExpanded = store.toggleGroupExpanded
 
-  /** Click fija el panel abierto; sin click el hover lo contrae. */
+  /** Click abre/cierra el panel; el hover solo previsualiza. */
   const [pinned, setPinned] = useState(false)
 
   const hasLayers = layers !== null && layers.length > 0

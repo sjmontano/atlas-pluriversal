@@ -84,11 +84,11 @@
   filter: brightness(1.15) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
 }
 
-/* Abierto (hover o fijado): el botón se traslada junto al menú, al borde
- * izquierdo límite del panel. Sin loop: el cursor queda sobre el panel. */
-.wrap:hover .toggle,
+/* Abierto solo con click (pinned): el botón queda montado sobre el borde
+ * izquierdo del panel (solape 1.5vw), anclado a la mancha de fondo en vez
+ * de flotar fuera de ella. El hover solo previsualiza. */
 .wrap.pinned .toggle {
-  right: calc(25vw + 0.7vw);
+  right: calc(21vw);
   transform: none;
 }
 
@@ -166,7 +166,6 @@
   pointer-events: auto;
 }
 
-.wrap:hover .panel,
 .wrap.pinned .panel {
   display: block;
   animation: panelIn 0.2s ease;
@@ -431,9 +430,8 @@
     right: 8px;
   }
 
-  .wrap:hover .toggle,
   .wrap.pinned .toggle {
-    right: calc(78vw + 2vw);
+    right: calc(78vw - 4vw);
   }
 
   .guideLine img {

@@ -19,6 +19,14 @@ function shortTitle(chapter: Chapter): string {
   return chapter.title.replace(/^[IVXL]+\.\s*/, '')
 }
 
+/** Silueta blanca por capítulo (public/assets/ui/layer-chapter). */
+const SILHOUETTES: Record<number, string> = {
+  1: '/assets/ui/layer-chapter/chapter1-map.svg',
+  2: '/assets/ui/layer-chapter/chapter2-maps.svg',
+  3: '/assets/ui/layer-chapter/chapter3-river.svg',
+  4: '/assets/ui/layer-chapter/chapter4-cacao.svg',
+}
+
 export function ChapterTabs() {
   const activeChapter = useChapterStore((s) => s.activeChapter)
 
@@ -44,6 +52,15 @@ export function ChapterTabs() {
               <span className={styles.number}>Cap. {chapter.roman}</span>
               <span className={styles.title}>{shortTitle(chapter)}</span>
             </p>
+            {SILHOUETTES[chapter.id] !== undefined && (
+              <img
+                className={styles.silueta}
+                src={SILHOUETTES[chapter.id] ?? ''}
+                alt=""
+                aria-hidden="true"
+                draggable={false}
+              />
+            )}
           </>
         )
 
