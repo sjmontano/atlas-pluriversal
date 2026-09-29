@@ -41,6 +41,8 @@ export interface ModalShellProps {
   theme?: ModalTheme
   /** Mostrar indicadores de scroll (flecha bounce + fade bottom). */
   showScrollIndicators?: boolean
+  /** Body sin insets (carrusel inmersivo full-bleed). */
+  bodyFullBleed?: boolean
   /** Oculta badge/título/decorador (solo imagen + X flotante). */
   hideHeader?: boolean
   /** X espejada a la izquierda. Default: derecha. */
@@ -67,6 +69,7 @@ export function ModalShell({
   fullImage = false,
   theme,
   showScrollIndicators = false,
+  bodyFullBleed = false,
   hideHeader = false,
   closeLeft = false,
   dialogStyle,
@@ -221,7 +224,7 @@ export function ModalShell({
           />
           <div
             ref={bodyScrollRef}
-            className={styles.bodyInner}
+            className={`${styles.bodyInner}${bodyFullBleed ? ` ${styles.bodyInnerFullBleed}` : ''}`}
           >
             {children}
           </div>

@@ -10,6 +10,7 @@ import { ModalShell } from './ModalShell'
 import { ModalActions } from './ModalActions'
 import { InicioLayout } from '../layouts/InicioLayout'
 import { BlockRenderer } from '../layouts/BlockRenderer'
+import { CarouselFondo } from '../layouts/CarouselFondo'
 
 export function ModalRenderer() {
   const modal = useModalStore((s) => s.activeModal)
@@ -27,6 +28,13 @@ export function ModalRenderer() {
     : undefined
 
   const renderBody = () => {
+    if (modal.fullBleed) {
+      const first = modal.body[0]
+      if (first && first.type === 'carousel') {
+        return <CarouselFondo images={first.images} />
+      }
+      return <BlockRenderer blocks={modal.body} />
+    }
     if (modal.fullImage) {
       return <InicioLayout modal={modal} />
     }
@@ -49,6 +57,7 @@ export function ModalRenderer() {
       icon={modal.icon}
       iconImage={modal.iconImage}
       showScrollIndicators={modal.showScrollIndicators}
+      bodyFullBleed={modal.fullBleed}
       footer={
         modal.actions !== undefined && modal.actions.length > 0
           ? <ModalActions actions={modal.actions} onClose={closeModal} />

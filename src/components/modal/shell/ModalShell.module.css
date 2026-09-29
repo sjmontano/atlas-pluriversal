@@ -72,18 +72,13 @@
 }
 
 .large {
-  --modal-w: clamp(600px, 90vw, 960px);
-  --modal-h: min(75vh, 720px);
+  --modal-w: 80vw;
+  --modal-h: 90vh;
 }
 
 .xl {
   --modal-w: 65vw;
   --modal-h: 75vh;
-}
-
-.xxxl {
-  --modal-w: 80vw;
-  --modal-h: 90vh;
 }
 
 .full {
@@ -296,6 +291,9 @@
   overflow-x: hidden;
   scrollbar-width: none;
   position: relative;
+  /* Por encima del scrim (z-index 1): el velo blanco es fondo de
+     legibilidad, nunca debe pintar sobre el texto. */
+  z-index: 2;
   /* El max-width vive aquí: el contenido conserva su ancho (90% / 85% /
      100% por tema) mientras el riel queda fijo al borde del modal. */
   max-width: var(--body-max-width);
@@ -310,6 +308,16 @@
 
 .bodyInner::-webkit-scrollbar {
   display: none;
+}
+
+/* ─── Body full-bleed (carrusel inmersivo: sin inset de header) ─── */
+.bodyInnerFullBleed {
+  margin-right: 0;
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 /* ─── Pie de Acciones ─────────────────────────────────────────────── */
