@@ -72,13 +72,13 @@
 }
 
 .large {
-  --modal-w: 80vw;
-  --modal-h: 90vh;
+  --modal-w: clamp(600px, 90vw, 960px);
+  --modal-h: min(75vh, 720px);
 }
 
 .xl {
-  --modal-w: 65vw;
-  --modal-h: 75vh;
+  --modal-w: 80vw;
+  --modal-h: 90vh;
 }
 
 .full {

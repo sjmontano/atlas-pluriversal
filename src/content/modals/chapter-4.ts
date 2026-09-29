@@ -305,6 +305,7 @@ function diagrama(
   src: string,
   mapId: string,
   label: string,
+  bgColor = '#ffffff',
 ): Modal {
   return {
     id,
@@ -320,8 +321,7 @@ function diagrama(
     image: src,
     fullImage: true,
     hideHeader: true,
-    closeLeft: true,
-    theme: { bgFit: 'contain', size: { width: '90vw', height: '90vh' } },
+    theme: { bgFit: 'contain', bgColor },
     body: [],
     trigger: { type: 'button', icon, frame, label, mapId },
   }
@@ -369,6 +369,7 @@ const CAP4_ARBOL_EL_BUHIDO: Modal = diagrama(
   '/assets/modal/chapter-4/arbol-el-buhido.png',
   'chapter4-el-buhido',
   'Mapa de árbol',
+  '#f2eee7',
 )
 
 const CAP4_PERFIL_EL_PASO: Modal = diagrama(
@@ -391,6 +392,7 @@ const CAP4_ARBOL_EL_PASO: Modal = diagrama(
   '/assets/modal/chapter-4/arbol-el-paso.png',
   'chapter4-el-paso',
   'Mapa de árbol',
+  '#f2eee7',
 )
 
 const CAP4_PERFIL_LA_VIRGINIA: Modal = diagrama(
@@ -413,6 +415,7 @@ const CAP4_ARBOL_LA_VIRGINIA: Modal = diagrama(
   '/assets/modal/chapter-4/arbol-la-virginia.png',
   'chapter4-la-virginia',
   'Mapa de árbol',
+  '#f2eee7',
 )
 
 const CAP4_PERFIL_LA_CAICEDO: Modal = diagrama(
@@ -435,6 +438,7 @@ const CAP4_ARBOL_LA_CAICEDO: Modal = diagrama(
   '/assets/modal/chapter-4/arbol-la-caicedo.png',
   'chapter4-la-caicedo',
   'Mapa de árbol',
+  '#f2eee7',
 )
 
 const CAP4_PERFIL_CENTRO_AGROPECUARIO: Modal = diagrama(
@@ -446,6 +450,7 @@ const CAP4_PERFIL_CENTRO_AGROPECUARIO: Modal = diagrama(
   '/assets/modal/chapter-4/perfil-centro-agropecuario.png',
   'chapter4-centro-agropecuario',
   'Perfil',
+  '#f2eee7',
 )
 
 const CAP4_ARBOL_CENTRO_AGROPECUARIO: Modal = diagrama(
@@ -457,6 +462,7 @@ const CAP4_ARBOL_CENTRO_AGROPECUARIO: Modal = diagrama(
   '/assets/modal/chapter-4/arbol-centro-agropecuario.png',
   'chapter4-centro-agropecuario',
   'Mapa de árbol',
+  '#f2eee7',
 )
 
 const CAP4_ARBOL_LOS_BAJIOS: Modal = diagrama(
@@ -468,6 +474,7 @@ const CAP4_ARBOL_LOS_BAJIOS: Modal = diagrama(
   '/assets/modal/chapter-4/arbol-los-bajios.png',
   'chapter4-los-bajios',
   'Mapa de árbol',
+  '#f2eee7',
 )
 
 const CAP4_ARBOL_LAS_MERCEDES: Modal = diagrama(
@@ -479,6 +486,7 @@ const CAP4_ARBOL_LAS_MERCEDES: Modal = diagrama(
   '/assets/modal/chapter-4/arbol-las-mercedes.png',
   'chapter4-las-mercedes',
   'Mapa de árbol',
+  '#f2eee7',
 )
 
 /* ── Export ────────────────────────────────────────────────────────────── */

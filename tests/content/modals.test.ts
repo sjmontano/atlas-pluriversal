@@ -84,10 +84,10 @@ describe('Registro de modales (content/modals)', () => {
     }
   })
 
-  it('perfil-cuenca es full-bleed sin header y usa large', () => {
-    const modal = getModalById('cap1-perfil-cuenca')
-    expect(modal).not.toBeNull()
-    expect(modal?.variant).toBe('large')
+  it('perfil-cuenca es full-bleed sin header y usa xl', () => {
+  const modal = getModalById('cap1-perfil-cuenca')
+  expect(modal).not.toBeNull()
+  expect(modal?.variant).toBe('xl')
     expect(modal?.hideHeader).toBe(true)
     expect(modal?.fullBleed).toBe(true)
     expect(modal?.closeLeft).toBeFalsy()

@@ -12,7 +12,7 @@ import { POIS } from '../inicio/pois.ts'
 export const INICIO_MODALS: Modal[] = POIS.map((poi) => ({
   id: poi.id,
   section: 'inicio',
-  variant: 'large',
+  variant: 'xl',
   fullImage: true,
   title: poi.title,
   icon: 'marker',

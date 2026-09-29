@@ -15,8 +15,8 @@
  */
 
 import type { Modal } from '../../types/modal.ts'
-import { CAP1_TEXTOS } from './cap1-textos.generated.ts'
 import { paragraphs, presentacion, type PresentacionEntry } from './_helpers.ts'
+import { CAP1_TEXTOS } from './cap1-textos.generated.ts'
 
 /* ── Presentaciones por mapa (ids 2–7 de v17) ─────────────────────────── */
 
@@ -76,7 +76,7 @@ const ATLAS_PROYECTO: Modal = {
 const PERFIL_CUENCA: Modal = {
   id: 'cap1-perfil-cuenca',
   section: 'capitulo-1',
-  variant: 'large',
+  variant: 'xl',
   title: 'Perfil de la cuenca',
   highlight: 'Capítulo I',
   icon: 'perfil',
