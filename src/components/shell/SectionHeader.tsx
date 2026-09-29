@@ -2,7 +2,10 @@
  * 📰 SECTION HEADER — Encabezado superior izquierdo (replicado de v17)
  * ====================================================================
  * Flecha atrás (glyph oficial `back`) + decorador de fondo elegido por
- * la longitud del título (<20 corto · <40 medio · ≥40 largo) + título.
+ * la longitud del título (<35 corto · <40 medio · ≥40 largo) + título.
+ * En las intros de capítulo se antepone el numeral romano (`numeral`):
+ * "II. Tejidos, nodos y alternativas…". El título se acota al 60vw con
+ * salto de línea balanceado para los títulos largos.
  */
 
 import { Link } from 'react-router-dom'
@@ -13,6 +16,8 @@ import styles from './SectionHeader.module.css'
 export interface SectionHeaderProps {
   title?: string
   backTo?: string
+  /** Numeral romano del capítulo (solo intros): se muestra como "II. Título". */
+  numeral?: string
 }
 
 function backgroundFor(title: string): string | null {
@@ -22,8 +27,9 @@ function backgroundFor(title: string): string | null {
   return SHELL_ASSETS.header.bgLong
 }
 
-export function SectionHeader({ title = '', backTo }: SectionHeaderProps) {
-  const bg = backgroundFor(title)
+export function SectionHeader({ title = '', backTo, numeral }: SectionHeaderProps) {
+  const display = numeral !== undefined && title !== '' ? `${numeral}. ${title}` : title
+  const bg = backgroundFor(display)
   return (
     <header className={styles.header}>
       <div className={styles.group}>
@@ -33,9 +39,9 @@ export function SectionHeader({ title = '', backTo }: SectionHeaderProps) {
             <Glyph name="back" size={24} />
           </Link>
         )}
-        {title !== '' && (
+        {display !== '' && (
           <div className={styles.titleWrapper}>
-            <h3 className={styles.title}>{title}</h3>
+            <h3 className={styles.title}>{display}</h3>
           </div>
         )}
       </div>

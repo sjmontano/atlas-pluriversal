@@ -75,6 +75,7 @@ export function ChapterPage() {
     <ShellLayout
       title={ui?.title ?? mapRef.title}
       backTo={backTo}
+      numeral={isFirstMap ? chapter.roman : undefined}
       railItems={railItems}
       minimap={ui?.minimap ?? mapRef.minimap ?? 'cuenca'}
       showNorth={ui?.northIndicator ?? true}

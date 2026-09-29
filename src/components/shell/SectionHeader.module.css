@@ -7,12 +7,18 @@
   align-items: flex-start;
   color: #fff;
   pointer-events: none;
+  max-width: 60vw;
 }
 
 .group {
   display: inline-flex;
   align-items: center;
   position: relative;
+  max-width: 100%;
+  /* El decorado (bgImage absolute inset-0) abraza este box: el padding es el
+     aire entre contenido y borde del decorado en los 4 lados. */
+  padding: 2.2vh 3.3vw 3.6vh 0;
+  gap: 1vw;
 }
 
 .bgImage {
@@ -30,18 +36,23 @@
   pointer-events: auto;
   display: grid;
   place-items: center;
-  margin-left: 2vw;
-  margin-top: 1vh;
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 1.6vw;
   padding: 6px;
   color: var(--atlas-cream, #f2eee7);
   position: relative;
   z-index: 2;
-  transition: filter 0.3s ease-in-out;
-  transform: translateY(-1.5vh);
+  transition:
+    filter 0.3s ease-in-out,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .back:hover {
   filter: brightness(1.5);
+  transform: translateX(-2px);
 }
+
 .back:focus-visible {
   outline: 2px solid var(--primary-blue, #0599b7);
   outline-offset: 2px;
@@ -52,22 +63,25 @@
   position: relative;
   display: flex;
   align-items: center;
-  padding: 1.5vh 4vw 1.5vh 1vw;
+  min-width: 0;
+  max-width: 100%;
+  /* fit-content: el box se ciñe a la línea más larga para que el decorado
+     no deje espacio muerto a la derecha en títulos envueltos. */
+  width: fit-content;
+  padding: 0;
 }
 
 .title {
   margin: 0;
-  margin-block-start: 1em;
-  margin-block-end: 1em;
-  margin-inline-start: 0px;
-  margin-inline-end: 0px;
 
   font-weight: 700;
   font-size: clamp(14px, 2.9vw, 22px);
+  line-height: 1.25;
   color: #fff;
   position: relative;
   z-index: 1;
-      transform: translateY(-1.5vh);
+  overflow-wrap: break-word;
+  text-wrap: balance;
 }
 
 @media (max-width: 768px) {

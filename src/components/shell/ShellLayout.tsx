@@ -25,6 +25,8 @@ export interface ShellLayoutProps {
   title?: string
   /** Ruta del botón atrás. Si se omite, no se muestra la flecha. */
   backTo?: string
+  /** Numeral romano del capítulo (solo intros de capítulo). */
+  numeral?: string
   /** Ítems del rail de herramientas izquierdo. Vacío/omiso = oculto. */
   railItems?: ToolRailItem[]
   /** Variante del minimapa. Omiso = oculto (páginas sin mapa). */
@@ -41,6 +43,7 @@ export interface ShellLayoutProps {
 export function ShellLayout({
   title,
   backTo,
+  numeral,
   railItems,
   minimap,
   showChapters = true,
@@ -52,7 +55,7 @@ export function ShellLayout({
     <div className={styles.shell}>
       <div className={styles.content}>{children}</div>
 
-      {title !== undefined && <SectionHeader title={title} backTo={backTo} />}
+      {title !== undefined && <SectionHeader title={title} backTo={backTo} numeral={numeral} />}
       {railItems !== undefined && railItems.length > 0 && <ToolRail items={railItems} />}
       {showChapters && <ChapterTabs />}
       {minimap !== undefined && <MiniMap variant={minimap} />}
