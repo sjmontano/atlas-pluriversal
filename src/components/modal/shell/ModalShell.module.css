@@ -72,8 +72,8 @@
 }
 
 .large {
-  --modal-w: clamp(600px, 90vw, 960px);
-  --modal-h: min(75vh, 720px);
+  --modal-w: 65vw;
+  --modal-h: 75vh;
 }
 
 .xl {

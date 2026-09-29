@@ -53,13 +53,14 @@ export function ChapterTabs() {
               <span className={styles.title}>{shortTitle(chapter)}</span>
             </p>
             {SILHOUETTES[chapter.id] !== undefined && (
-              <img
-                className={styles.silueta}
-                src={SILHOUETTES[chapter.id] ?? ''}
-                alt=""
-                aria-hidden="true"
-                draggable={false}
-              />
+              <div className={styles.siluetaWrap} aria-hidden="true">
+                <img
+                  className={styles.silueta}
+                  src={SILHOUETTES[chapter.id] ?? ''}
+                  alt=""
+                  draggable={false}
+                />
+              </div>
             )}
           </>
         )

@@ -152,9 +152,10 @@
 
 /* ── Panel libre: la imagen ES el contenedor (v17) ───────────────────────
  * Sin caja, sin velo oscuro: fondo directo a filo de viewport.
- */
+ * Apertura y cierre sincronizados con el botón (0.35s, misma curva): en vez
+ * de display:none (corte brusco al cerrar) se anima opacity/transform y
+ * visibility conmuta con retardo, igual que los tooltips. */
 .panel {
-  display: none;
   position: absolute;
   right: 0;
   top: 0;
@@ -164,22 +165,30 @@
   background: url('/assets/ui/layers/menu-capas-fondo.webp') center / cover no-repeat;
   z-index: 31;
   pointer-events: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(48px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0.35s;
 }
 
 .wrap.pinned .panel {
-  display: block;
-  animation: panelIn 0.2s ease;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
 }
 
-@keyframes panelIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .wrap.pinned .panel {
+    transition: none;
+    transform: none;
   }
 }
 
