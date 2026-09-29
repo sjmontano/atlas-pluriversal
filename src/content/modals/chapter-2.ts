@@ -4,7 +4,7 @@
  */
 
 import type { Modal } from '../../types/modal.ts'
-import { paragraphs, fichaPerfil } from './_helpers.ts'
+import { fichaPerfil, paragraphs } from './_helpers.ts'
 
 /* ── ID 27: Introduction ──────────────────────────────────────────────── */
 
@@ -322,7 +322,7 @@ function galeria(
   return {
     id,
     section: 'capitulo-2',
-    variant: 'large',
+    variant: 'xl',
     title: 'Galería de imágenes',
     highlight,
     icon: 'gallery',

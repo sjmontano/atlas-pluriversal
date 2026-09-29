@@ -27,7 +27,7 @@ const TALLER_3 = '/assets/img/talleres/taller-3.webp'
 export const PRESENTACION_MODAL: Modal = {
   id: 'presentacion',
   section: 'intro',
-  variant: 'xl',
+  variant: 'large',
 
   title: 'El río pensado y sentido desde la cartografía y el dibujo',
   icon: 'presentation',
