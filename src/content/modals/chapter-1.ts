@@ -76,10 +76,18 @@ const ATLAS_PROYECTO: Modal = {
 const PERFIL_CUENCA: Modal = {
   id: 'cap1-perfil-cuenca',
   section: 'capitulo-1',
-  variant: 'xxxl',
+  variant: 'large',
   title: 'Perfil de la cuenca',
   highlight: 'Capítulo I',
   icon: 'perfil',
+  hideHeader: true,
+  fullBleed: true,
+  theme: {
+    bgColor: '#f2eee7',
+    bodyMaxWidth: '100%',
+    contentMarginRight: '0',
+    blockSpacing: '0',
+  },
   body: [
     {
       type: 'carousel',

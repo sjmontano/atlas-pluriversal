@@ -11,7 +11,7 @@
  * - Sin footer (el botón X ya está en el header)
  */
 
-export type ModalVariant = 'xs' | 'small' | 'medium' | 'large' | 'xl' | 'full' | 'xxxl'
+export type ModalVariant = 'xs' | 'small' | 'medium' | 'large' | 'xl' | 'full'
 
 /* ─── Bloques tipados del body ─────────────────────────────────────────── */
 
@@ -114,6 +114,9 @@ export interface Modal {
   /** Oculta badge/título/decorador (solo imagen + X, estilo v17 ModalImagen).
    *  El title se conserva para aria-label. */
   hideHeader?: boolean
+  /** Carrusel inmersivo full-bleed (se renderiza con CarouselFondo).
+   *  Requiere hideHeader:true y body con un único bloque 'carousel'. */
+  fullBleed?: boolean
   /** X espejada a la izquierda (v17: left). Default: derecha. */
   closeLeft?: boolean
   /** Tema (CSS variables) — colores y tamaño personalizado */
