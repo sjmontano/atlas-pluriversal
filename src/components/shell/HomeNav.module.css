@@ -20,7 +20,7 @@
     transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     filter 0.3s ease;
 }
-.homeBtn img {
+.homeBtn > img {
   width: 100%;
   height: auto;
   display: block;
@@ -69,66 +69,8 @@
   z-index: 1;
 }
 
-/* ── Tooltip (réplica de .homeTooltip-marker de v17, con fade fluido) ── */
-.tooltip {
-  position: absolute;
-  bottom: 110%;
-  left: 50%;
-  padding: 4px 8px;
-  font-size: 0.9rem;
-  color: #fff;
-  border-radius: 4px;
-  white-space: nowrap;
-  z-index: 35;
-  background: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 80px;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateX(-50%) translateY(6px);
-  transition:
-    opacity 0.24s ease,
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 0.28s;
-  pointer-events: none;
-}
-
-.tooltipBg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-  border: 2px solid rgba(0, 110, 150, 1);
-  border-radius: 6px;
-}
-
-.tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 8px;
-  border-style: solid;
-  border-color: rgba(0, 110, 150, 1) transparent transparent transparent;
-  opacity: inherit;
-}
-
-.homeBtn:hover .tooltip,
-.logoBtn:hover .tooltip,
-.homeBtn:focus-visible .tooltip,
-.logoBtn:focus-visible .tooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-  transition:
-    opacity 0.24s ease,
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-}
+/* Nota: el tooltip lo provee el componente general
+ * `@components/ui/Tooltip` (clamp al viewport + flip en runtime). */
 
 /* Móvil: fila horizontal arriba-derecha, debajo del norte
    (minimapa 96px al 15% + norte 30px → fila a 15%+96px). */
@@ -149,8 +91,12 @@
     height: 44px;
     min-height: 44px;
   }
-  /* En táctil no hay hover: los tooltips solo estorbarían */
-  .tooltip {
-    display: none;
+  /* En táctil el tooltip general ya se oculta solo (hover:none) */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homeBtn,
+  .logoBtn {
+    transition: none;
   }
 }

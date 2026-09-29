@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom'
 import { getModalById } from '@content/modals'
 import { useModalStore } from '@stores/modalStore'
 import { SHELL_ASSETS } from '@components/shell/assets'
+import { Tooltip } from '@components/ui/Tooltip'
 import styles from './HomePanel.module.css'
 
 const INICIO_ICONS = {
@@ -16,15 +17,6 @@ const INICIO_ICONS = {
   metadata: '/assets/ui/icons/inicio/metadata.svg',
   credits: '/assets/ui/icons/inicio/credits.svg',
 } as const
-
-function Tooltip({ label }: { label: string }) {
-  return (
-    <span className={styles.tooltip}>
-      <img className={styles.tooltipBg} src={SHELL_ASSETS.tooltips.fondo} alt="" />
-      <span>{label}</span>
-    </span>
-  )
-}
 
 export function HomePanel() {
   const openModal = useModalStore((s) => s.openModal)

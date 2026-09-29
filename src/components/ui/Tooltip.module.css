@@ -1,0 +1,133 @@
+/* ── TOOLTIP GENERAL DEL ATLAS ──────────────────────────────────────────
+ * Un solo sistema para todos los botones: fondo oficial
+ * (fondo-tooltip-4.webp), flecha hacia abajo por fuera (#0b7fa9) y
+ * validación en runtime (Tooltip.tsx): clamp horizontal al viewport y
+ * flip hacia abajo si no cabe arriba. Sin parches por botón. */
+
+.tip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  z-index: 60;
+  padding: 8px 14px;
+  max-width: min(230px, 55vw);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(calc(-50% + var(--tip-dx, 0px))) translateY(6px) scale(0.96);
+  transform-origin: bottom center;
+  transition:
+    opacity 0.18s ease,
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0.24s;
+  pointer-events: none;
+}
+
+.tip[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(calc(-50% + var(--tip-dx, 0px))) translateY(0) scale(1);
+  transition:
+    opacity 0.18s ease 0.12s,
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1) 0.12s,
+    visibility 0s;
+}
+
+/* Flip: si no cabe arriba, se abre debajo del botón */
+.tip[data-flip='true'] {
+  top: calc(100% + 12px);
+  bottom: auto;
+  transform-origin: top center;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.text {
+  position: relative;
+  z-index: 1;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Variante multilínea (títulos de markers con \n) */
+.tip[data-wrap='true'] {
+  width: max-content;
+  white-space: normal;
+}
+.tip[data-wrap='true'] .text {
+  white-space: pre-line;
+  overflow: visible;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* Flecha hacia ABAJO por fuera: borde + relleno #0b7fa9 */
+.tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: var(--arrow-x, 50%);
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: rgba(0, 110, 150, 1);
+  border-bottom: 0;
+}
+.tip::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: var(--arrow-x, 50%);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #0b7fa9;
+  border-bottom: 0;
+  z-index: 1;
+}
+
+/* Flecha hacia ARRIBA cuando hay flip */
+.tip[data-flip='true']::after {
+  top: auto;
+  bottom: 100%;
+  left: var(--arrow-x, 50%);
+  border: 8px solid transparent;
+  border-bottom-color: rgba(0, 110, 150, 1);
+  border-top: 0;
+}
+.tip[data-flip='true']::before {
+  top: auto;
+  bottom: 100%;
+  left: var(--arrow-x, 50%);
+  border: 6px solid transparent;
+  border-bottom-color: #0b7fa9;
+  border-top: 0;
+}
+
+/* Táctil: sin hover no hay tooltip (el aria-label conserva la info) */
+@media (hover: none) {
+  .tip {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tip,
+  .tip[data-open='true'] {
+    transition: none;
+  }
+}

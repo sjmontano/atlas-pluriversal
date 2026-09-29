@@ -7,11 +7,11 @@
  * tamaños y asset de gota. Click → modal layout `inicio`.
  */
 
-import { SHELL_ASSETS } from '@components/shell/assets'
 import { HOME_MARKERS } from '@content/inicio/markers.ts'
 import { POIS } from '@content/inicio/pois.ts'
 import { getModalById } from '@content/modals'
 import { POI_THEME } from '@content/theme'
+import { Tooltip } from '@components/ui/Tooltip'
 import { useModalStore } from '@stores/modalStore'
 import type { CSSProperties } from 'react'
 import styles from './HomeMarkers.module.css'
@@ -59,10 +59,7 @@ export function HomeMarkers() {
                   draggable={false}
                 />
               </span>
-              <span className={styles.tooltip}>
-                <img className={styles.tooltipBg} src={SHELL_ASSETS.tooltips.fondo} alt="" />
-                <span>{poi.title}</span>
-              </span>
+              <Tooltip label={poi.title} wrap />
             </button>
           </div>
         )

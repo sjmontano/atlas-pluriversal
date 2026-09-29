@@ -103,72 +103,8 @@
   }
 }
 
-/* ── Tooltip (FondoTooltip, igual al de los POIs de mapa) ─────────────── */
-.tooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  padding: 8px 14px;
-  max-width: 240px;
-  font-size: clamp(0.8rem, 0.7rem + 0.5vw, 0.9rem);
-  line-height: 1.45;
-  text-align: center;
-  text-wrap: balance;
-  color: #fff;
-  border-radius: 6px;
-  white-space: pre;
-  z-index: 20;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateX(-50%) translateY(4px);
-  transition:
-    opacity 0.24s ease,
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s linear 0.28s;
-  pointer-events: none;
-}
-
-.tooltipBg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-  border: 2px solid rgba(0, 110, 150, 1);
-  border-radius: 6px;
-}
-
-.tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 8px;
-  border-style: solid;
-  border-color: rgba(0, 110, 150, 1) transparent transparent transparent;
-}
-
-.button:hover .tooltip,
-.button:focus-visible .tooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-  transition:
-    opacity 0.24s ease,
-    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@media (max-width: 640px) {
-  .tooltip {
-    font-size: 0.75rem;
-  }
-}
+/* Nota: el tooltip lo provee el componente general
+ * `@components/ui/Tooltip` con `wrap` (clamp al viewport + flip en runtime). */
 
 @keyframes markerIn {
   from {

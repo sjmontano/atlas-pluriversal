@@ -8,16 +8,8 @@
 
 import { Link } from 'react-router-dom'
 import { SHELL_ASSETS } from './assets'
+import { Tooltip } from '@components/ui/Tooltip'
 import styles from './HomeNav.module.css'
-
-function Tooltip({ label }: { label: string }) {
-  return (
-    <span className={styles.tooltip}>
-      <img className={styles.tooltipBg} src={SHELL_ASSETS.tooltips.fondo} alt="" />
-      <span>{label}</span>
-    </span>
-  )
-}
 
 export interface HomeNavProps {
   /** Oculta el link externo cuando ya se está en contexto un-rio-cauca. */
