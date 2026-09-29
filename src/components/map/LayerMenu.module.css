@@ -12,20 +12,28 @@
 
 /* ── Línea guía derecha (v17 lineaCapas): hermana del wrap, bajo todo ──
  * Fuera del stacking context del wrap para quedar bajo el minimapa (22).
- */
+ * El arte (121×1080, trazo oliva al borde) se ancla por ALTO: height:100%
+ * con width:auto conserva la proporción (nunca se comprime ni se encoge
+ * perdiendo pantalla) y right:0 lo deja pegado al filo. En pantallas
+ * angostas desborda a la izquierda sobre el mapa. El global
+ * `img{max-width:100%}` se neutraliza con max-width:none. */
 .guideLine {
   position: absolute;
   right: 0;
   top: 0;
-  width: 8vw;
+  width: min(8vw, 121px);
   height: 100vh;
   z-index: 5;
   pointer-events: none;
 }
 
 .guideLine img {
-  width: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
   height: 100%;
+  width: auto;
+  max-width: none;
   object-fit: fill;
   display: block;
 }
@@ -169,6 +177,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -425,5 +434,12 @@
   .wrap:hover .toggle,
   .wrap.pinned .toggle {
     right: calc(78vw + 2vw);
+  }
+
+  .guideLine img {
+    position: absolute;
+    width: 100%;
+    object-fit: fill;
+    display: block;
   }
 }
