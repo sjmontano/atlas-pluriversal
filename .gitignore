@@ -51,3 +51,6 @@ assets-raw/
 .claude/
 .opencode/
 skills-lock.json
+
+# Scratch de subagentes (ledgers, briefs, review packages)
+.superpowers/
