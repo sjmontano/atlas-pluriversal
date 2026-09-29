@@ -3,8 +3,9 @@
   top: 0;
   left: 0;
   z-index: 25;
-  display: flex;
-  align-items: flex-start;
+  /* block (no flex): el hijo .group conserva su inline-flex y se ciñe al
+     contenido. Como flex-item se bloquificaba a flex y se estiraba al 60vw. */
+  display: block;
   color: #fff;
   pointer-events: none;
   max-width: 60vw;

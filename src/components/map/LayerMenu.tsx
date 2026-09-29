@@ -125,7 +125,6 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
         onClick={() => setPinned((p) => !p)}
         aria-expanded={pinned}
         aria-label="Menú de capas"
-        title="Menú de capas"
       >
         <img
           src="/assets/ui/layers/icono-capas.webp"
