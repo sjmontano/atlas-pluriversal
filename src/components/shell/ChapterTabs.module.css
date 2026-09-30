@@ -1,17 +1,36 @@
+/* ═══════════════════════════════════════════════════════════════════
+ * CHAPTER TABS — Pestañas de capítulos (ex SidebarBottom de v17)
+ * Barra inferior centrada (Cap. I–IV). Colapsado: numeral + flecha.
+ * Hover (no seleccionado): crece a 300×300 y revela descriptor + silueta.
+ * Seleccionado: cambia de color y no navega.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Contenedor ───────────────────────────────────────────────────
+ * Se ciñe a los tabs (max-content) y se centra solo: siempre caben los 4,
+ * en cualquier ancho de pantalla. Medidas del tab en variables fluidas
+ * (vw/vh con piso en px por accesibilidad táctil). */
 .tabs {
   position: absolute;
   bottom: 0;
-  left: 30%;
-  width: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 96vw;
   z-index: 20;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: 10px;
+  gap: clamp(6px, 0.8vw, 12px);
   user-select: none;
   pointer-events: auto;
+
+  --tab-w: clamp(120px, 10.5vw, 175px);
+  --tab-h: clamp(96px, 16.5vh, 140px);
+  --tab-open-w: clamp(200px, 18vw, 270px);
+  --tab-open-h: clamp(255px, 38vh, 350px);
 }
 
+/* ── 2. Tab base ───────────────────────────────────────────────────── */
 .tab {
   position: relative;
   display: flex;
@@ -19,8 +38,8 @@
   align-items: center;
   text-align: center;
   cursor: pointer;
-  width: 150px;
-  height: 120px;
+  width: var(--tab-w);
+  height: var(--tab-h);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
@@ -36,6 +55,7 @@
   outline-offset: -2px;
 }
 
+/* ── 3. Fondo (mancha del tab) ─────────────────────────────────────── */
 .fondo {
   position: absolute;
   top: 50%;
@@ -43,11 +63,11 @@
   transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
-
   opacity: 1;
   transition: opacity 0.5s ease-in-out;
 }
 
+/* ── 4. Overlay colapsado (numeral + flecha) ───────────────────────── */
 .overlay {
   position: relative;
   display: flex;
@@ -61,7 +81,7 @@
 }
 
 .number {
-  font-size: 18px;
+  font-size: clamp(14px, 2.4vh, 19px);
   font-weight: bold;
   color: #fff;
   text-shadow: 0 1px 4px rgba(3, 9, 30, 0.8);
@@ -74,18 +94,23 @@
   filter: drop-shadow(0 1px 3px rgba(3, 9, 30, 0.8));
 }
 
+/* ── 5. Descriptor expandido ─────────────────────────────────────────
+ * Estrecho (84% centrado): la mancha es irregular y al 100% el texto
+ * quedaba fuera de la pintura. */
 .text {
   position: absolute;
-  top: 60px;
-  left: 0;
-  width: 100%;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
   margin: 0;
-  padding: 0 6px;
+  padding: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.6vh;
   text-align: center;
+  text-shadow: 0 1px 4px rgba(3, 9, 30, 0.8);
   font-size: clamp(11px, 1.04vw, 15px);
   line-height: 1.25;
   color: #fff;
@@ -97,17 +122,18 @@
 
 .title {
   display: block;
+  text-wrap: balance;
 }
 
-/* ── Silueta del capítulo: aparece al hover en el tab crecido ────────────
- * Zona fija bajo el texto (igual para los 4 capítulos) con la imagen
- * centrada dentro: las apaisadas (I, III) ya no se descuelgan abajo y las
- * altas (II, IV) no se pegan al texto. Contenida: nunca se sale
- * (overflow hidden del tab + máximos). */
+/* ── 6. Silueta del capítulo ─────────────────────────────────────────
+ * Zona fija bajo el texto (igual para los 4) con la imagen centrada.
+ * Doble tope (ancho + alto): cada aspecto se auto-limita; los topes por
+ * capítulo ([data-chapter]) ajustan los casos extremos — cap. IV (redondo,
+ * se veía gigante) y las apaisadas (I, III, se veían anchas). */
 .siluetaWrap {
   position: absolute;
-  top: 160px;
-  bottom: 12px;
+  top: 54%;
+  bottom: 4%;
   left: 0;
   right: 0;
   z-index: 2;
@@ -122,17 +148,29 @@
 }
 
 .silueta {
-  max-width: 80%;
+  max-width: 60%;
   max-height: 100%;
   object-fit: contain;
   flex-shrink: 0;
   filter: drop-shadow(0 2px 8px rgba(3, 9, 30, 0.45));
 }
 
-/* ── Hover (solo no seleccionado): crece, oculta overlay, revela texto ── */
+/* Cap. IV (cacao redondo): tope extra para que no domine el tab */
+.tab[data-chapter='4'] .silueta {
+  max-width: 48%;
+  max-height: 80%;
+}
+
+/* Apaisadas (I mapa, III río): algo más bajas para no pegarse al texto */
+.tab[data-chapter='1'] .silueta,
+.tab[data-chapter='3'] .silueta {
+  max-height: 84%;
+}
+
+/* ── 7. Estado hover (solo no seleccionado) ────────────────────────── */
 .tab:hover {
-  width: 300px;
-  height: 300px;
+  width: var(--tab-open-w);
+  height: var(--tab-open-h);
 }
 
 .tab:hover .overlay {
@@ -142,16 +180,41 @@
 .tab:hover .text {
   opacity: 1;
   transition-delay: 0.1s;
+  animation: float-text 3s ease-in-out infinite;
 }
 
 .tab:hover .siluetaWrap {
   opacity: 1;
   transform: translateY(0) scale(1);
   transition-delay: 0.12s;
+  animation: float-zone 3s ease-in-out infinite;
 }
 
 .tab:hover .fondo {
   animation: float 3s ease-in-out infinite;
+}
+
+/* Misma fase y amplitud que el fondo: el contenido flota con la mancha */
+@keyframes float-text {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(10px);
+  }
+}
+
+@keyframes float-zone {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(10px) scale(1);
+  }
 }
 
 @keyframes float {
@@ -168,15 +231,15 @@
   }
 }
 
-/* ── Seleccionado: cambia de color, no crece, mantiene overlay ───────── */
+/* ── 8. Estado seleccionado ────────────────────────────────────────── */
 .selected {
   filter: saturate(1) hue-rotate(325deg) brightness(1.2);
   cursor: default;
 }
 
 .selected:hover {
-  width: 150px;
-  height: 120px;
+  width: var(--tab-w);
+  height: var(--tab-h);
 }
 
 .selected:hover .overlay {
@@ -196,6 +259,7 @@
   animation: none;
 }
 
+/* ── 9. Responsive móvil ───────────────────────────────────────────── */
 @media (max-width: 768px) {
 
   /* Ancho completo inferior, los 4 tabs siempre caben: reparto
@@ -215,16 +279,16 @@
     flex: 1 1 0;
     min-width: 0;
     width: auto;
-    height: 62px;
+    height: clamp(54px, 9vh, 68px);
   }
 
   .number {
-    font-size: 12px;
+    font-size: clamp(10px, 1.8vh, 13px);
   }
 
   .text {
-    top: 32px;
-    font-size: 11px;
+    top: 52%;
+    font-size: clamp(10px, 1.7vh, 12px);
   }
 
   /* En móvil no hay crecimiento: la silueta no tiene dónde mostrarse */
@@ -233,10 +297,17 @@
   }
 }
 
+/* ── 10. Movimiento reducido ───────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
 
   .tab:hover .siluetaWrap,
   .siluetaWrap {
     transition: none;
+  }
+
+  .tab:hover .fondo,
+  .tab:hover .text,
+  .tab:hover .siluetaWrap {
+    animation: none;
   }
 }

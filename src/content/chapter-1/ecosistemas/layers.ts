@@ -7,9 +7,13 @@ import type { Layer } from '../../../types/layer'
 // `*-low.webp` migrados de v17 a `public/assets/img/capas/...`.
 // Primera visita: todo apagado (el layerStore persiste la elección).
 
-const ECOSYSTEMS_PGW: PGWData = [0, 0.000441431774, 0.000441457732, 0, -77.621312825, 1.602929017]
-const ECOSYSTEMS_W = 1462
-const ECOSYSTEMS_H = 2599
+// Georreferencia: MISMO marco que los composites de referencia (no el
+// ECOSYSTEMS_PGW de v17, que las encogía a un rincón). Todas las imágenes
+// —locales y CDN— son exports del mismo marco de 1462×2599 (verificado
+// píxel a píxel), así que comparten este PGW estándar.
+const ECO_PGW: PGWData = [0.0018443379684604639, 0, 0, -0.0018447264954608695, -77.62486008564038, 6.099219641645617]
+const ECO_W = 1462
+const ECO_H = 2599
 
 const CDN = 'https://res.cloudinary.com/dvluvxfvn/image/upload'
 const LOW = '/assets/img/capas/ecosistemas/webp/low'
@@ -77,9 +81,9 @@ export const LAYERS: Layer[] = ROWS.map((row) => ({
   category: 'ecosystems',
   type: 'raster-pgw',
   image: row.url,
-  pgw: ECOSYSTEMS_PGW,
-  width: ECOSYSTEMS_W,
-  height: ECOSYSTEMS_H,
+  pgw: ECO_PGW,
+  width: ECO_W,
+  height: ECO_H,
   opacity: 0.8,
   visibleByDefault: false,
   order: row.order,

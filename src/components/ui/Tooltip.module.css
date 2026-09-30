@@ -63,6 +63,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(3, 9, 30, 0.8);
 }
 
 /* Variante multilínea (títulos de markers con \n) */
@@ -70,6 +71,7 @@
   width: max-content;
   white-space: normal;
 }
+
 .tip[data-wrap='true'] .text {
   white-space: pre-line;
   overflow: visible;
@@ -88,6 +90,7 @@
   border-top-color: rgba(0, 110, 150, 1);
   border-bottom: 0;
 }
+
 .tip::before {
   content: '';
   position: absolute;
@@ -109,6 +112,7 @@
   border-bottom-color: rgba(0, 110, 150, 1);
   border-top: 0;
 }
+
 .tip[data-flip='true']::before {
   top: auto;
   bottom: 100%;
@@ -126,6 +130,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .tip,
   .tip[data-open='true'] {
     transition: none;

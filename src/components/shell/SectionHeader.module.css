@@ -74,7 +74,7 @@
 
 .title {
   margin: 0;
-
+  text-shadow: 0 1px 4px rgba(3, 9, 30, 0.8);
   font-weight: 700;
   font-size: clamp(14px, 2.9vw, 22px);
   line-height: 1.25;

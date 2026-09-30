@@ -15,15 +15,14 @@
   z-index: 1;
 
   border-radius: 10px;
-  /* Aire para que el texto no toque el borde del halo (grilla 8px) */
-  padding: 16px;
+
   font-size: clamp(0.85rem, 2.15vh, 1.12rem);
 
   line-height: 1.4;
   background: transparent;
 }
 
-.inicioTexto p > span {
+.inicioTexto p>span {
   background: rgba(255, 255, 255, 0.78);
   /* Aire vertical sin romper el interlineado */
   padding: 0.12em 0;

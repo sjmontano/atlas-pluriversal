@@ -66,11 +66,11 @@ export function ChapterTabs() {
         )
 
         return selected ? (
-          <div key={chapter.id} className={className} aria-current="page">
+          <div key={chapter.id} className={className} aria-current="page" data-chapter={chapter.id}>
             {body}
           </div>
         ) : (
-          <Link key={chapter.id} to={`/capitulo/${chapter.id}`} className={className}>
+          <Link key={chapter.id} to={`/capitulo/${chapter.id}`} className={className} data-chapter={chapter.id}>
             {body}
           </Link>
         )
