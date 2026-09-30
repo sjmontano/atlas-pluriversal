@@ -5,7 +5,7 @@ import { LAYERS, GROUPS } from './layers'
 export default makeMap({
   mapId: 'chapter1-bredunco',
   ui: {
-    title: 'Bredunco',
+    title: 'Bredunco, Caucayaco o Cauca en la vertiente del Caribe',
     minimap: 'valle',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap1-presentacion-bredunco' },
