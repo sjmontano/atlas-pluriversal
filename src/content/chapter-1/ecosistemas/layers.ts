@@ -7,13 +7,12 @@ import type { Layer } from '../../../types/layer'
 // `*-low.webp` migrados de v17 a `public/assets/img/capas/...`.
 // Primera visita: todo apagado (el layerStore persiste la elección).
 
-// Georreferencia: MISMO marco que los composites de referencia (no el
-// ECOSYSTEMS_PGW de v17, que las encogía a un rincón). Todas las imágenes
-// —locales y CDN— son exports del mismo marco de 1462×2599 (verificado
-// píxel a píxel), así que comparten este PGW estándar.
-const ECO_PGW: PGWData = [0.0018443379684604639, 0, 0, -0.0018447264954608695, -77.62486008564038, 6.099219641645617]
-const ECO_W = 1462
-const ECO_H = 2599
+// Georreferencia CALIBRADA (misma para las 30 capas): marco de referencia
+// de los composites, con origen ajustado por calibración. No usar el
+// ECOSYSTEMS_PGW de v17 (las encogía a un rincón).
+const ECO_PGW: PGWData = [0.0018443379684604639, 0, 0, -0.0018447264954608695, -77.62265008890559, 6.105405484389904] // ← calibrado
+const ECO_W = 1374
+const ECO_H = 2443
 
 const CDN = 'https://res.cloudinary.com/dvluvxfvn/image/upload'
 const LOW = '/assets/img/capas/ecosistemas/webp/low'
