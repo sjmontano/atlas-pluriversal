@@ -7,7 +7,7 @@ import type { MapContent } from '../../../types/content'
 const encuadres = [
   {
     id: 'encuadre-mosaicos',
-    name: 'Mosaico de cuencas y aguas',
+    name: 'Mosaico de\ncuencas y aguas',
     targetMapId: 'chapter1-mosaicos-del-agua',
     labelCoords: [-75.955, 2.475] as [number, number],
     url: '/assets/geojson/encuadre-sur-valle.json',
@@ -16,7 +16,7 @@ const encuadres = [
     id: 'encuadre-ecosistemas',
     name: 'Existencias y transformaciones ecosistémicas',
     targetMapId: 'chapter1-ecosistemas',
-    labelCoords: [-75.045, 2.68] as [number, number],
+    labelCoords: [-75.72, 4.6] as [number, number],
     url: '/assets/geojson/encuadre-cuenca-alta.json',
   },
   {
