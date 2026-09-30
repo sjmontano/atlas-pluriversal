@@ -169,7 +169,7 @@ const VOZ_RIO: Modal[] = [
   voz('23', 'valle-alto'),
   voz('24', 'cuenca-alta'),
   voz('25', 'cuenca-media'),
-  voz('26', 'cuenca-baja'),
+  cap1Entry('26', 'cuenca-baja'),
 ]
 
 /* ── Agregado + índice mapa → modales del rail ────────────────────────── */
