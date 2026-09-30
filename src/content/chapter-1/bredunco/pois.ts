@@ -7,6 +7,8 @@ export const POIS: Poi[] = [
     name: 'Cuenca Alta',
     coords: [-76.501, 2.3],
     capa: '',
+    variant: 'number',
+    modalId: 'cap1-voz-cuenca-alta',
     popup: { title: 'Cuenca Alta' },
   },
   {
@@ -15,6 +17,8 @@ export const POIS: Poi[] = [
     name: 'Cuenca media',
     coords: [-75.39, 5.766],
     capa: '',
+    variant: 'number',
+    modalId: 'cap1-voz-cuenca-media',
     popup: { title: 'Cuenca media' },
   },
   {
@@ -23,6 +27,8 @@ export const POIS: Poi[] = [
     name: 'Cuenca Baja',
     coords: [-74.582, 7.843],
     capa: '',
+    variant: 'number',
+    modalId: 'cap1-voz-cuenca-baja',
     popup: { title: 'Cuenca Baja' },
   },
   {
@@ -31,6 +37,8 @@ export const POIS: Poi[] = [
     name: 'Valle alto del rio cauca',
     coords: [-76.307, 3.505],
     capa: '',
+    variant: 'number',
+    modalId: 'cap1-voz-valle-alto',
     popup: { title: 'Valle alto del rio cauca' },
   },
 ]

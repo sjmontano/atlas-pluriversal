@@ -158,10 +158,10 @@ function voz(textoId: string, slug: string): Modal {
     section: 'capitulo-1',
     variant: 'medium',
     title: entry.highLight ?? 'Voz del río',
-    highlight: 'Voz del río',
-    icon: 'fichatecnica',
+    highlight: 'Tejidos del agua',
+    icon: 'marker',
     body: paragraphs(entry.texto, textoId),
-    trigger: { type: 'poi', icon: 'fichatecnica', mapId: 'chapter1-bredunco' },
+    trigger: { type: 'poi', icon: 'marker', mapId: 'chapter1-bredunco' },
   }
 }
 
