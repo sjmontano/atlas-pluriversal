@@ -150,6 +150,12 @@
   transform: translateY(-50%) translateX(0);
 }
 
+/* Con el panel abierto el botón viaja sobre la zona de tabs: la etiqueta
+   estorbaría/montaría, así que solo vive en hover con el panel cerrado. */
+.wrap.pinned .toggleLabel {
+  display: none;
+}
+
 /* ── Panel libre: la imagen ES el contenedor (v17) ───────────────────────
  * Sin caja, sin velo oscuro: fondo directo a filo de viewport.
  * Apertura y cierre sincronizados con el botón (0.35s, misma curva): en vez
@@ -196,14 +202,79 @@
   padding: 7vh 24px 7vh 40px;
 }
 
-.masterRow {
+/* ── Título del menú (v17 .subtitle, opcional por mapa) ───────────────── */
+.menuTitle {
+  margin: 0 0 12px;
+  color: #fffeee;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+/* ── Jerarquía v17: macro (chevron+ojo+nombre) → sub → capas ───────────── */
+.groupChildren {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0 8px;
+  flex-direction: column;
+  padding-left: 16px;
+}
+
+/* Macro-grupo top-level: texto grande, sin sangría propia */
+.macro > .groupHeader > .groupName {
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+/* Subgrupo: un paso abajo en la escala */
+.sub > .groupHeader > .groupName {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.groupName {
   color: #fffeee;
   font-size: 14px;
   font-weight: 700;
+  flex: 1;
+  cursor: pointer;
+}
+
+/* Chevron v17 (^ expandido / v colapsado) */
+.chevBtn {
+  all: unset;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 6px;
+  color: #fffeee;
+}
+.chevBtn:focus-visible {
+  outline: 2px solid var(--primary-blue, #0599b7);
+  outline-offset: 1px;
+}
+
+.chev {
+  display: inline-flex;
+  transform: rotate(180deg);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chevOpen {
+  transform: rotate(0deg);
+}
+
+.chevLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 /* ── Ojo on/off (v17 EyeIcon con glyphs show/hide) ─────────────────────── */
@@ -257,16 +328,7 @@
   font-size: 14px;
   font-weight: 700;
   flex: 1;
-}
-
-.groupArrow {
-  color: #fffeee;
-  font-size: 10px;
-  transition: transform 0.2s;
-}
-
-.groupArrow.expanded {
-  transform: rotate(90deg);
+  cursor: pointer;
 }
 
 .layerRow {
@@ -286,18 +348,18 @@
 }
 
 .swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
+  width: 31px;
+  height: 15px;
+  border-radius: 2px;
   flex-shrink: 0;
 }
 
 .layerName {
   color: #fffeee;
   flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 14px;
+  line-height: 1.35;
+  text-wrap: pretty;
 }
 
 .legendSection {

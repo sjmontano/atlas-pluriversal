@@ -2,32 +2,27 @@
  * 🗂️ LAYER MENU — Menú de capas estilo v17 (botón derecho + ojos)
  * ===============================================================
  * Botón gemelo del Home a la derecha (`icono-capas.webp` + etiqueta en
- * hover). El panel abre SOLO con click (pinned); el hover solo previsualiza
- * decorador + etiqueta. On/off por capa con ojo abierto/cerrado (`show`/`hide`) en 3 niveles
- * (Todas, grupo, capa). Datos intactos: lee `layers/groups/legends` del
- * `map.ts` y muta `layerStore` (el `LayerManager` sincroniza MapLibre).
+ * hover). El panel abre SOLO con click (pinned). El contenido es un árbol
+ * genérico (`layerTree.ts`): título opcional, grupos/subgrupos numerados y
+ * capas sueltas top-level — port de v17 `layerMenu.jsx`.
+ *
+ * Toggle en cascada: macro apaga todo lo de adentro, subgrupo lo suyo.
+ * Datos intactos: lee `menuTitle/layers/groups` del `map.ts` y muta
+ * `layerStore` (el `LayerManager` sincroniza MapLibre).
  */
 
-import { useMemo, useState, useCallback } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { useLayerStore } from '@stores/layerStore'
 import { getMapContent } from '@content'
 import { Glyph } from '../modal/primitives/Glyph'
 import type { Layer, LegendItem } from '../../types/layer.ts'
+import { buildLayerTree, triState, type GroupNode, type TreeNode, type TriState } from './layerTree'
 import styles from './LayerMenu.module.css'
 
 interface Props {
   mapId: string
   /** Desplaza el conjunto debajo de una topbar (solo /test). Default: false. */
   offsetTop?: boolean
-}
-
-function groupTriState(groupId: string, layers: Layer[], visibleLayers: Set<string>): boolean | 'indeterminate' {
-  const groupLayers = layers.filter((l) => l.group === groupId)
-  if (groupLayers.length === 0) return false
-  const visibleCount = groupLayers.filter((l) => visibleLayers.has(l.id)).length
-  if (visibleCount === 0) return false
-  if (visibleCount === groupLayers.length) return true
-  return 'indeterminate'
 }
 
 function groupLegends(legends: LegendItem[]): Array<[string | null, LegendItem[]]> {
@@ -80,16 +75,32 @@ function EyeButton({
   )
 }
 
+/** Chevron v17 (^ expandido / v colapsado). */
+function Chevron({ expanded, label }: { expanded: boolean; label: string }) {
+  return (
+    <span className={`${styles.chev} ${expanded ? styles.chevOpen : ''}`} aria-hidden="true">
+      <Glyph name="arrow-up" size={20} />
+      <span className={styles.chevLabel}>{label}</span>
+    </span>
+  )
+}
+
 export function LayerMenu({ mapId, offsetTop = false }: Props) {
   const content = useMemo(() => getMapContent(mapId), [mapId])
   const layers = content?.layers ?? null
   const groups = content?.groups ?? null
   const legends = content?.legends ?? null
+  const menuTitle = content?.menuTitle
   const store = useLayerStore()
   const { visibleLayers, expandedGroups } = store
   const toggleLayer = store.toggleLayer
   const setLayerGroupVisible = store.setLayerGroupVisible
   const toggleGroupExpanded = store.toggleGroupExpanded
+
+  const tree = useMemo(
+    () => buildLayerTree(groups ?? [], layers ?? []),
+    [groups, layers],
+  )
 
   /** Click abre/cierra el panel; el hover solo previsualiza. */
   const [pinned, setPinned] = useState(false)
@@ -97,21 +108,68 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
   const hasLayers = layers !== null && layers.length > 0
   const hasLegends = legends !== null && legends.length > 0
 
-  const handleGroupToggle = useCallback(
-    (groupId: string, groupLayers: Layer[]) => {
-      const state = groupTriState(groupId, groupLayers, visibleLayers)
-      setLayerGroupVisible(groupId, state !== true, groupLayers.map((l) => l.id))
-    },
-    [visibleLayers, setLayerGroupVisible],
-  )
-
   if (!hasLayers && !hasLegends) return null
 
   const legendGroups = hasLegends ? groupLegends(legends!) : []
 
-  const allVisible = hasLayers ? layers!.every((l) => visibleLayers.has(l.id)) : true
-  const noneVisible = hasLayers ? layers!.every((l) => !visibleLayers.has(l.id)) : true
-  const masterTriState = allVisible ? true : noneVisible ? false : 'indeterminate'
+  const isExpanded = (node: GroupNode): boolean =>
+    expandedGroups[node.group.id] ?? node.group.expandedByDefault ?? true
+
+  const toggleGroup = (node: GroupNode): void => {
+    const state = triState(visibleLayers, node.layerIds)
+    setLayerGroupVisible(node.group.id, state !== true, node.layerIds)
+  }
+
+  const renderNode = (node: TreeNode): ReactNode => {
+    if (node.kind === 'layer') {
+      return (
+        <LayerRow
+          key={node.layer.id}
+          layer={node.layer}
+          number={node.number}
+          visible={visibleLayers.has(node.layer.id)}
+          onToggle={() => toggleLayer(node.layer.id)}
+        />
+      )
+    }
+    const expanded = isExpanded(node)
+    const state: TriState = triState(visibleLayers, node.layerIds)
+    return (
+      <div key={node.group.id} className={`${styles.group} ${node.depth === 0 ? styles.macro : styles.sub}`}>
+        <div className={styles.groupHeader}>
+          <button
+            type="button"
+            className={styles.chevBtn}
+            onClick={() => toggleGroupExpanded(node.group.id)}
+            aria-expanded={expanded}
+            aria-label={expanded ? `Colapsar ${node.group.name}` : `Expandir ${node.group.name}`}
+            title={expanded ? 'Colapsar' : 'Expandir'}
+          >
+            <Chevron expanded={expanded} label={expanded ? 'Colapsar' : 'Expandir'} />
+          </button>
+          <EyeButton
+            on={state === true}
+            mixed={state === 'mixed'}
+            label={state === true ? `Ocultar ${node.group.name}` : `Mostrar ${node.group.name}`}
+            onToggle={() => toggleGroup(node)}
+          />
+          <span
+            className={styles.groupName}
+            title={node.group.name}
+            onClick={() => toggleGroupExpanded(node.group.id)}
+          >
+            {node.number}. {node.group.name}
+          </span>
+        </div>
+
+        {expanded && (
+          <div className={styles.groupChildren}>
+            {node.children.map((child) => renderNode(child))}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <>
@@ -125,6 +183,7 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
         onClick={() => setPinned((p) => !p)}
         aria-expanded={pinned}
         aria-label="Menú de capas"
+        title="Menú de capas"
       >
         <img
           src="/assets/ui/layers/icono-capas.webp"
@@ -143,75 +202,9 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
         onClick={() => setPinned(true)}
       >
         <div className={styles.body}>
-          {hasLayers && (
-            <>
-              <div className={styles.masterRow}>
-                <EyeButton
-                  on={masterTriState === true}
-                  mixed={masterTriState === 'indeterminate'}
-                  label={allVisible ? 'Ocultar todas las capas' : 'Mostrar todas las capas'}
-                  onToggle={() => {
-                    setLayerGroupVisible('__all__', !allVisible, layers!.map((l) => l.id))
-                  }}
-                />
-                <span>Todas</span>
-              </div>
+          {menuTitle !== undefined && <h2 className={styles.menuTitle}>{menuTitle}</h2>}
 
-              {groups?.map((group) => {
-                const groupLayers = layers!.filter((l) => l.group === group.id)
-                if (groupLayers.length === 0) return null
-                const isExpanded = expandedGroups[group.id] !== false
-                const tri = groupTriState(group.id, layers!, visibleLayers)
-
-                return (
-                  <div key={group.id} className={styles.group}>
-                    <div className={styles.groupHeader}>
-                      <EyeButton
-                        on={tri === true}
-                        mixed={tri === 'indeterminate'}
-                        label={tri === true ? `Ocultar ${group.name}` : `Mostrar ${group.name}`}
-                        onToggle={() => handleGroupToggle(group.id, groupLayers)}
-                      />
-                      <span
-                        className={styles.groupName}
-                        title={group.name}
-                        onClick={() => toggleGroupExpanded(group.id)}
-                      >
-                        {group.name} ({groupLayers.length})
-                      </span>
-                      <span
-                        className={`${styles.groupArrow} ${isExpanded ? styles.expanded : ''}`}
-                        onClick={() => toggleGroupExpanded(group.id)}
-                      >
-                        ▶
-                      </span>
-                    </div>
-
-                    {isExpanded &&
-                      groupLayers.map((layer) => (
-                        <LayerRow
-                          key={layer.id}
-                          layer={layer}
-                          visible={visibleLayers.has(layer.id)}
-                          onToggle={() => toggleLayer(layer.id)}
-                        />
-                      ))}
-                  </div>
-                )
-              })}
-
-              {layers!
-                .filter((l) => !l.group)
-                .map((layer) => (
-                  <LayerRow
-                    key={layer.id}
-                    layer={layer}
-                    visible={visibleLayers.has(layer.id)}
-                    onToggle={() => toggleLayer(layer.id)}
-                  />
-                ))}
-            </>
-          )}
+          {hasLayers && tree.map((node) => renderNode(node))}
 
           {hasLegends && (
             <div className={styles.legendSection}>
@@ -258,10 +251,12 @@ function LegendRow({ item }: { item: LegendItem }) {
 
 function LayerRow({
   layer,
+  number,
   visible,
   onToggle,
 }: {
   layer: Layer
+  number: string | null
   visible: boolean
   onToggle: () => void
 }) {
@@ -276,7 +271,7 @@ function LayerRow({
         <span className={styles.swatch} style={{ backgroundColor: layer.legend.swatch }} />
       )}
       <span className={styles.layerName} title={layer.legend?.description}>
-        {layer.name}
+        {number !== null ? `${number}. ${layer.name}` : layer.name}
       </span>
     </div>
   )

@@ -43,6 +43,7 @@ export default {
   },
   config,
   tiles: makeTilesConfig('chapter1-ecosistemas', geo, config.initialBearing, config.zoomMax),
+  menuTitle: 'Ecosistemas y transformaciones',
   layers: LAYERS,
   groups: GROUPS,
 } satisfies MapContent

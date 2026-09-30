@@ -111,6 +111,9 @@ export interface MapContent {
   groups?: LayerGroup[]
   legends?: LegendItem[]
   pois?: Poi[]
+  /** Título del menú de capas (ej. 'Ecosistemas y transformaciones').
+   *  Si se omite, el menú no muestra título. */
+  menuTitle?: string
   /** Encuadres navegables (rectángulos clickeables que llevan a otro mapa). */
   encuadres?: Encuadre[]
 }

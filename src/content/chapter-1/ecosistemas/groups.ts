@@ -1,14 +1,17 @@
 import type { LayerGroup } from '../../../types/layer'
 
-const g = (id: string, name: string, order: number): LayerGroup => ({ id, name, order })
+// Jerarquía del menú v17 (layerMenu.jsx → `ecosistemas`):
+// 2 macro-grupos con subgrupos anidados (`parent`) + capas sueltas top-level
+// (ítem 3). La numeración (1., 1.1.) la genera el menú, no los nombres.
 
 export const GROUPS: LayerGroup[] = [
-  g('eco-1.1', '1.1 Litoral y aguas poco profundas', 1),
-  g('eco-1.2', '1.2 Vegetación de baja altura', 2),
-  g('eco-1.3', '1.3 Bosques', 3),
-  g('eco-1.4', '1.4 Altas cumbres', 4),
-  g('eco-2.1', '2.1 Intervenciones moderadas', 5),
-  g('eco-2.2', '2.2 Agricultura y ganadería', 6),
-  g('eco-2.3', '2.3 Intervenciones severas', 7),
-  g('eco-3', '3 Sin información', 8),
+  { id: 'eco-1', name: 'Amenazados y en estado vulnerable', order: 1 },
+  { id: 'eco-1.1', name: 'De litoral y aguas poco profundas', parent: 'eco-1', order: 1 },
+  { id: 'eco-1.2', name: 'Con vegetación de baja altura', parent: 'eco-1', order: 2 },
+  { id: 'eco-1.3', name: 'Bosques', parent: 'eco-1', order: 3 },
+  { id: 'eco-1.4', name: 'Altas cumbres', parent: 'eco-1', order: 4 },
+  { id: 'eco-2', name: 'Entornos del ser humano que transforman ecosistemas', order: 2 },
+  { id: 'eco-2.1', name: 'Intervenciones moderadas', parent: 'eco-2', order: 5 },
+  { id: 'eco-2.2', name: 'Zonas con agricultura y ganadería', parent: 'eco-2', order: 6 },
+  { id: 'eco-2.3', name: 'Intervenciones severas', parent: 'eco-2', order: 7 },
 ]

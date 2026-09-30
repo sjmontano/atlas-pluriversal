@@ -61,8 +61,11 @@ export type Layer = RasterPgwLayer | RasterTilesLayer | GeojsonLayer
 export interface LayerGroup {
   id: string
   name: string
+  /** Id del grupo padre. Ausente = macro-grupo top-level. */
   parent?: string
   order: number
+  /** Desplegado al abrir el menú. Default: true. */
+  expandedByDefault?: boolean
 }
 
 export interface LegendItem {
