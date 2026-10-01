@@ -6,7 +6,7 @@
  *
  * Lo que queda en cada `map.ts` es solo lo único de ese mapa:
  * `mapId`, `ui` (título, sidebar — SE PASA TAL CUAL, sin abstraer),
- * `geo`, imágenes, `zoomMax` y `extras` (layers/groups/legends/pois/encuadres).
+ * `geo`, imágenes, `zoomMax` y `extras` (layers/groups/legends/pois/encuadres/subcuencas).
  *
  * No migrar mapas atípicos (intro, calibration, márgenes custom):
  * esos quedan literales.
@@ -26,7 +26,7 @@ export interface MakeMapOptions {
   zoomMax?: number
   /** Default: -90. Mapas atípicos (ej. problematicas -30, bosque-comestible 0). */
   bearing?: number
-  extras?: Pick<MapContent, 'layers' | 'groups' | 'legends' | 'pois' | 'encuadres'>
+  extras?: Pick<MapContent, 'layers' | 'groups' | 'legends' | 'pois' | 'encuadres' | 'subcuencas'>
 }
 
 export function makeMap(opts: MakeMapOptions): MapContent {

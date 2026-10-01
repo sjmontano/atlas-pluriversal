@@ -20,7 +20,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: clamp(6px, 0.8vw, 12px);
+  gap: clamp(2px, 0.25vw, 2px);
   user-select: none;
   pointer-events: auto;
 
@@ -196,6 +196,7 @@
 
 /* Misma fase y amplitud que el fondo: el contenido flota con la mancha */
 @keyframes float-text {
+
   0%,
   100% {
     transform: translateX(-50%) translateY(0);
@@ -207,6 +208,7 @@
 }
 
 @keyframes float-zone {
+
   0%,
   100% {
     transform: translateY(0) scale(1);

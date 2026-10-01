@@ -2,6 +2,7 @@ import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 import { GROUPS } from './groups'
 import { POIS } from './pois'
+import { SUBCUENCAS } from './rivers'
 
 export default makeMap({
   mapId: 'chapter1-mosaicos-del-agua',
@@ -22,5 +23,5 @@ export default makeMap({
   base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752360161/geoImages/fpno8nmueqi0duweghhf.webp',
   full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752360193/geoImages/ycxghm0xralzkptnbqqj.webp',
   zoomMax: 11,
-  extras: { layers: LAYERS, groups: GROUPS, pois: POIS },
+  extras: { layers: LAYERS, groups: GROUPS, pois: POIS, subcuencas: SUBCUENCAS },
 })

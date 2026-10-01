@@ -20,6 +20,7 @@ import {
   encuadrePolygonSourceId,
   encuadreLabelSourceId,
 } from '@services/EncuadresManager'
+import { subcuencaSourceId, subcuencaGeo } from '@services/SubcuencaManager'
 import { POIS_SOURCE_ID, poiToFeature } from '@services/PoiManager'
 import { processBounds } from '@services/BoundsCalculator'
 import { useLayerStore } from '@stores/layerStore'
@@ -47,6 +48,7 @@ type CalibrationTarget =
   | { kind: 'layers'; layerIds: string[] }
   | { kind: 'encuadres' }
   | { kind: 'pois' }
+  | { kind: 'subcuencas' }
 
 /** Paso de flechas en px de pantalla (fino 1px). Válido con cualquier bearing. */
 const ENC_PX_STEP = 5
@@ -58,6 +60,21 @@ interface EncuadreOriginal {
   file: string | null
 }
 
+/** Image-source viva (updateImage) sin acoplar tipos de maplibre. */
+function liveImageSource(
+  map: unknown,
+  id: string,
+): { updateImage: (opts: { url: string; coordinates: unknown }) => void } | undefined {
+  try {
+    const src = (map as { getSource?: (sid: string) => unknown }).getSource?.(id) as
+      | { updateImage?: unknown }
+      | undefined
+    if (src !== null && src !== undefined && typeof src.updateImage === 'function') {
+      return src as { updateImage: (opts: { url: string; coordinates: unknown }) => void }
+    }
+  } catch { /* noop */ }
+  return undefined
+}
 /** Source GeoJSON viva (setData) sin acoplar tipos de maplibre. */
 function liveGeoJSONSource(map: unknown, id: string): { setData: (data: unknown) => void } | undefined {
   try {
@@ -146,6 +163,16 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
   const [poiFine, setPoiFine] = useState(false)
   const [poiBulk, setPoiBulk] = useState(false)
   const poiOffsetsRef = useRef(new Map<string, { dlng: number; dlat: number }>())
+
+  /* ── Target subcuencas: traslación por offsets GEO (igual que encuadres).
+   * Se aplica sobre el PGW efectivo de cada slug (propio o heredado) con
+   * shiftOrigin (respeta PGW rotados) y updateImage; copiar emite el pgw
+   * final para pegarlo en rivers.ts. */
+  const [subIdx, setSubIdx] = useState(0)
+  const [subFine, setSubFine] = useState(false)
+  const [subBulk, setSubBulk] = useState(false)
+  /* Estado vivo por slug (offset + tamaño). Sin tocar = valores del content. */
+  const subStateRef = useRef(new Map<string, { dlng: number; dlat: number; width: number; height: number }>())
 
   /** Convierte un desplazamiento en px de pantalla a delta geo al zoom
    *  actual (válido con cualquier bearing). Null si el mapa no responde. */
@@ -370,6 +397,15 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       const dLng = geo.lng - dragRef.current.startGeo.lng
       const dLat = geo.lat - dragRef.current.startGeo.lat
 
+      if (target.kind === 'subcuencas') {
+        const list = getMapContent(mapId)?.subcuencas ?? []
+        const one = list[subIdx]
+        const targets = subBulk ? list : one === undefined ? [] : [one]
+        for (const def of targets) addSubOffset(def.slug, dLng, dLat)
+        dragRef.current.startGeo = { lng: geo.lng, lat: geo.lat }
+        return
+      }
+
       if (target.kind === 'pois') {
         const list = getMapContent(mapId)?.pois ?? []
         const one = list[poiIdx]
@@ -449,7 +485,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       try { map.dragPan.enable() } catch { /* noop */ }
       dragRef.current = null
     }
-  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, encBulk, poiIdx, poiBulk, mapId, addEncOffset, addPoiOffset])
+  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, encBulk, poiIdx, poiBulk, subIdx, subBulk, mapId, addEncOffset, addPoiOffset, addSubOffset])
 
   const nudge = useCallback((key: FieldKey, sign: 1 | -1, fine: boolean) => {
     setState((prev) => {
@@ -786,6 +822,119 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
   }, [mapId])
 
   const poiList: Poi[] = getMapContent(mapId)?.pois ?? []
+  const subList = getMapContent(mapId)?.subcuencas ?? []
+
+  /** Estado vivo (offset + tamaño); sin tocar = valores del content. */
+  function getSubState(slug: string): { dlng: number; dlat: number; width: number; height: number } {
+    const stored = subStateRef.current.get(slug)
+    if (stored) return stored
+    const def = subList.find((d) => d.slug === slug)
+    const base = def ? subcuencaGeo(def) : null
+    return { dlng: 0, dlat: 0, width: base?.width ?? 0, height: base?.height ?? 0 }
+  }
+
+  function applySubShift(slug: string): void {
+    const map = controllerRef.current?.map
+    if (!map) return
+    const list = getMapContent(mapId)?.subcuencas ?? []
+    const def = list.find((d) => d.slug === slug)
+    if (!def) return
+    const st = getSubState(slug)
+    try {
+      const base = subcuencaGeo(def)
+      const pgw = shiftOrigin(base.pgw, -st.dlng, -st.dlat)
+      const { coordinates } = processBounds(pgw, st.width, st.height)
+      liveImageSource(map, subcuencaSourceId(slug))?.updateImage({ url: def.image, coordinates })
+    } catch { /* source aún no lista */ }
+  }
+
+  function addSubOffset(slug: string, dLng: number, dLat: number): void {
+    const cur = getSubState(slug)
+    subStateRef.current.set(slug, { ...cur, dlng: cur.dlng + dLng, dlat: cur.dlat + dLat })
+    applySubShift(slug)
+    setEncTick((t) => t + 1)
+  }
+
+  function setSubSize(slug: string, key: 'width' | 'height', value: number): void {
+    const cur = getSubState(slug)
+    subStateRef.current.set(slug, { ...cur, [key]: Math.max(1, Math.round(value)) })
+    applySubShift(slug)
+    setEncTick((t) => t + 1)
+  }
+
+  function nudgeSubSize(slug: string, key: 'width' | 'height', sign: 1 | -1, fine: boolean): void {
+    const cur = getSubState(slug)
+    const step = fine ? 1 : 10
+    setSubSize(slug, key, cur[key] + sign * step)
+  }
+
+  function scaleSubSize(slug: string, pct: number): void {
+    const list = getMapContent(mapId)?.subcuencas ?? []
+    const def = list.find((d) => d.slug === slug)
+    if (!def) return
+    const base = subcuencaGeo(def)
+    const cur = getSubState(slug)
+    subStateRef.current.set(slug, {
+      ...cur,
+      width: Math.max(1, Math.round((base.width * pct) / 100)),
+      height: Math.max(1, Math.round((base.height * pct) / 100)),
+    })
+    applySubShift(slug)
+    setEncTick((t) => t + 1)
+  }
+
+  const nudgeSub = useCallback((dirX: -1 | 0 | 1, dirY: -1 | 0 | 1) => {
+    const list = getMapContent(mapId)?.subcuencas ?? []
+    const one = list[subIdx]
+    const targets = subBulk ? list : one === undefined ? [] : [one]
+    if (targets.length === 0) return
+    const step = subFine ? ENC_PX_STEP_FINE : ENC_PX_STEP
+    const delta = pxDeltaToGeo(dirX * step, dirY * step)
+    if (!delta) return
+    for (const def of targets) addSubOffset(def.slug, delta.dlng, delta.dlat)
+  }, [mapId, subIdx, subFine, subBulk, addSubOffset, pxDeltaToGeo])
+
+  function selectSub(idx: number) {
+    if (subList.length === 0) return
+    setSubIdx(idx < 0 ? subList.length - 1 : idx >= subList.length ? 0 : idx)
+  }
+
+  /** Destinos de tamaño: la seleccionada o todas (modo bulk). */
+  function forSubTargets(fn: (slug: string) => void): void {
+    if (!subDef) return
+    const targets = subBulk ? subList : [subDef]
+    for (const def of targets) fn(def.slug)
+  }
+
+  const subReset = useCallback(() => {
+    const list = getMapContent(mapId)?.subcuencas ?? []
+    subStateRef.current.clear()
+    for (const def of list) applySubShift(def.slug)
+    setEncTick((t) => t + 1)
+  }, [mapId])
+
+  const copySub = useCallback(() => {
+    const list = getMapContent(mapId)?.subcuencas ?? []
+    const lines: string[] = []
+    for (const def of list) {
+      const base = subcuencaGeo(def)
+      const st = subStateRef.current.get(def.slug)
+      const cur = st ?? { dlng: 0, dlat: 0, width: base.width, height: base.height }
+      const dirty =
+        cur.dlng !== 0 || cur.dlat !== 0 || cur.width !== base.width || cur.height !== base.height
+      if (!dirty) continue
+      const pgw = shiftOrigin(base.pgw, -cur.dlng, -cur.dlat)
+      const r6 = (n: number): number => Math.round(n * 1e6) / 1e6
+      lines.push(
+        `{ slug: '${def.slug}', image: '${def.image}',  // rivers.ts`,
+        `  pgw: [${pgw.map(r6).join(', ')}], width: ${cur.width}, height: ${cur.height} },`,
+      )
+    }
+    if (lines.length === 0) return
+    try {
+      void navigator.clipboard.writeText(lines.join('\n')).catch(() => { /* noop */ })
+    } catch { /* portapapeles no disponible */ }
+  }, [mapId])
 
   const nudgePoi = useCallback((dirX: -1 | 0 | 1, dirY: -1 | 0 | 1) => {
     const list = getMapContent(mapId)?.pois ?? []
@@ -843,6 +992,14 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
   const activeLayerName = target.kind === 'layers' && target.layerIds.length > 0
     ? getMapContent(mapId)?.layers?.find((l) => l.id === (target.layerIds[activeLayerIdx] ?? ''))?.name ?? target.layerIds[activeLayerIdx] ?? ''
     : null
+
+  /* Snapshot de la subcuenca seleccionada para sus controles de tamaño. */
+  const subDef = subList[subIdx]
+  const subBase = subDef ? subcuencaGeo(subDef) : null
+  const subStored = subDef ? subStateRef.current.get(subDef.slug) : undefined
+  const subCur = subStored ?? (subBase ? { dlng: 0, dlat: 0, width: subBase.width, height: subBase.height } : null)
+  const subPct =
+    subBase && subBase.width > 0 && subCur ? Math.round((subCur.width / subBase.width) * 100) : 100
 
   if (!state) return null
 
@@ -905,6 +1062,19 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
               </button>
             </div>
           )}
+          {ENABLE_DEV_TOOLS && subList.length > 0 && (
+            <div className={styles.overridesSection}>
+              <button
+                className={`${styles.headerBtn} ${target.kind === 'subcuencas' ? styles.targetActive : ''}`}
+                onClick={() => {
+                  setTarget({ kind: 'subcuencas' })
+                  setSubIdx(0)
+                }}
+              >
+                🌊 Subcuencas: {subList.length}
+              </button>
+            </div>
+          )}
         {target.kind === 'layers' && target.layerIds.length > 0 && (
           <div className={styles.overridesSection}>
             <button className={styles.headerBtn} onClick={() => selectLayer(activeLayerIdx - 1)} title="Capa anterior">◀</button>
@@ -928,6 +1098,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
             onClick={() => {
               if (target.kind === 'encuadres') encReset()
               else if (target.kind === 'pois') poiReset()
+              else if (target.kind === 'subcuencas') subReset()
               else reset()
             }}
           >
@@ -943,6 +1114,8 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
                 setSaveError('Encuadres: usa 📋 Copiar y corre el comando en terminal + pega labelCoords (no vive en geo.js).')
               } else if (target.kind === 'pois') {
                 setSaveError('POIs: usa 📋 Copiar y pega coords en su pois.ts (no vive en geo.js).')
+              } else if (target.kind === 'subcuencas') {
+                setSaveError('Subcuencas: usa 📋 Copiar y pega el pgw en su entrada de rivers.ts.')
               } else {
                 void apply()
               }
@@ -956,6 +1129,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
             onClick={() => {
               if (target.kind === 'encuadres') copyEnc()
               else if (target.kind === 'pois') copyPoi()
+              else if (target.kind === 'subcuencas') copySub()
               else copyPGW()
             }}
           >
@@ -1089,6 +1263,105 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
                   <span>el tooltip responde en la posición original hasta recargar</span>
                 </div>
               </div>
+              <div className={styles.separator} />
+            </>
+          ) : target.kind === 'subcuencas' ? (
+            <>
+              <div className={styles.overridesSection}>
+                <button className={styles.headerBtn} onClick={() => selectSub(subIdx - 1)} title="Subcuenca anterior">◀</button>
+                <span className={styles.layerNavLabel}>
+                  {subBulk
+                    ? `Todas (${subList.length})`
+                    : subList.length === 0 ? '—' : `${subIdx + 1}/${subList.length} ${subList[subIdx]?.slug ?? ''}`}
+                </span>
+                <button className={styles.headerBtn} onClick={() => selectSub(subIdx + 1)} title="Subcuenca siguiente">▶</button>
+                <button
+                  className={`${styles.headerBtn} ${subBulk ? styles.targetActive : ''}`}
+                  title="Mover todas a la vez"
+                  onClick={() => setSubBulk((b) => !b)}
+                >
+                  {subBulk ? 'Todas ✓' : 'Una'}
+                </button>
+              </div>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Mover (px pantalla)</label>
+                <div className={styles.stepper}>
+                  <button className={styles.stepBtn} title="izquierda" onClick={() => nudgeSub(-1, 0)}>←</button>
+                  <button className={styles.stepBtn} title="arriba" onClick={() => nudgeSub(0, -1)}>↑</button>
+                  <button className={styles.stepBtn} title="abajo" onClick={() => nudgeSub(0, 1)}>↓</button>
+                  <button className={styles.stepBtn} title="derecha" onClick={() => nudgeSub(1, 0)}>→</button>
+                  <button
+                    className={styles.headerBtn}
+                    title="paso fino 1px / normal 5px"
+                    onClick={() => setSubFine((f) => !f)}
+                  >
+                    {subFine ? '1px ✓' : '5px'}
+                  </button>
+                </div>
+              </div>
+              <div className={styles.readout}>
+                <div className={styles.readoutTitle}>Offset subcuenca (vivo)</div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lng:</span>
+                  <span>{fmtNum(subCur?.dlng ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lat:</span>
+                  <span>{fmtNum(subCur?.dlat ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Nota:</span>
+                  <span>copiar pega el pgw en rivers.ts</span>
+                </div>
+              </div>
+              {subDef && subCur && subBase ? (
+                <>
+                  <div className={styles.separator} />
+                  <StepperRow
+                    label="width"
+                    value={subCur.width}
+                    dirty={subCur.width !== subBase.width}
+                    display={String(subCur.width)}
+                    onNudge={(s, fine) => forSubTargets((slug) => nudgeSubSize(slug, 'width', s, fine))}
+                    onExact={(v) => forSubTargets((slug) => setSubSize(slug, 'width', v))}
+                  />
+                  <StepperRow
+                    label="height"
+                    value={subCur.height}
+                    dirty={subCur.height !== subBase.height}
+                    display={String(subCur.height)}
+                    onNudge={(s, fine) => forSubTargets((slug) => nudgeSubSize(slug, 'height', s, fine))}
+                    onExact={(v) => forSubTargets((slug) => setSubSize(slug, 'height', v))}
+                  />
+                  <div className={styles.paramRow}>
+                    <label className={styles.paramLabel}>Tamaño %</label>
+                    <input
+                      className={styles.sizeSlider}
+                      type="range"
+                      min={5}
+                      max={500}
+                      step={1}
+                      value={subPct}
+                      onChange={(e) => forSubTargets((slug) => scaleSubSize(slug, Number(e.target.value)))}
+                      title="Escalar width y height en porcentaje"
+                    />
+                    <input
+                      className={styles.sizePctInput}
+                      type="number"
+                      min={5}
+                      max={500}
+                      step={1}
+                      value={subPct}
+                      onChange={(e) => {
+                        const v = parseInt(e.target.value, 10)
+                        if (Number.isFinite(v)) forSubTargets((slug) => scaleSubSize(slug, v))
+                      }}
+                      title="Escribir porcentaje manualmente"
+                    />
+                    <span className={styles.displayValue}>%</span>
+                  </div>
+                </>
+              ) : null}
               <div className={styles.separator} />
             </>
           ) : (

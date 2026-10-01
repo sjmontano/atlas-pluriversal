@@ -24,15 +24,15 @@ const cuenca = (
 })
 
 export const POIS: Poi[] = [
-  cuenca(1, 'piendamo', 'Cuenca río Piendamó', [-76.341, 2.607]),
-  cuenca(2, 'salado', 'Cuenca río Salado', [-76.816, 2.828], 'y otros directos al río Cauca'),
+  cuenca(1, 'piendamo', 'Cuenca río Piendamó', [-76.358227, 2.658617]),
+  cuenca(2, 'salado', 'Cuenca río Salado', [-76.755442, 2.85712], 'y otros directos al río Cauca'),
   cuenca(3, 'ovejas', 'Cuenca río Ovejas', [-76.478, 2.77]),
-  cuenca(4, 'timba', 'Cuenca río Timba', [-76.744, 3.065]),
-  cuenca(5, 'quinamayo', 'Cuenca río Quinamayó', [-76.494, 3.023], 'y otros directos al río Cauca'),
-  cuenca(6, 'claro-jamundi', 'Cuencas ríos Claro y Jamundí', [-76.592, 3.249]),
+  cuenca(4, 'timba', 'Cuenca río Timba', [-76.696899, 3.049322]),
+  cuenca(5, 'quinamayo', 'Cuenca río Quinamayó', [-76.498159, 2.993928], 'y otros directos al río Cauca'),
+  cuenca(6, 'claro-jamundi', 'Cuencas ríos Claro y Jamundí', [-76.605457, 3.188538]),
   cuenca(7, 'palo', 'Cuenca río Palo', [-76.252, 3.045]),
-  cuenca(8, 'lili-melendez-canaveralejo', 'Cuencas ríos Lili, Meléndez y Cañaveralejo', [-76.534, 3.385]),
-  cuenca(9, 'desbaratado', 'Cuenca río Desbaratado', [-76.332, 3.299]),
-  cuenca(10, 'cali', 'Cuenca río Cali', [-76.589, 3.472]),
-  cuenca(11, 'guachal', 'Cuenca río Guachal', [-76.276, 3.45], '(Bolo - Fraile y Párraga)'),
+  cuenca(8, 'lili-melendez-canaveralejo', 'Cuencas ríos Lili, Meléndez y Cañaveralejo', [-76.534, 3.31111]),
+  cuenca(9, 'desbaratado', 'Cuenca río Desbaratado', [-76.38151, 3.242923]),
+  cuenca(10, 'cali', 'Cuenca río Cali', [-76.574864, 3.397155]),
+  cuenca(11, 'guachal', 'Cuenca río Guachal', [-76.298468, 3.330369], '(Bolo - Fraile y Párraga)'),
 ]

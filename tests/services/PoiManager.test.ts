@@ -14,8 +14,10 @@ function makeMap() {
     removeLayer: vi.fn((id) => { layers.delete(id) }),
     removeSource: vi.fn((id) => { sources.delete(id) }),
     setPaintProperty: vi.fn(),
-    getCanvas: vi.fn(() => ({ getBoundingClientRect: () => ({ left: 0, top: 0 }) })),
+    getCanvas: vi.fn(() => ({ style: {}, getBoundingClientRect: () => ({ left: 0, top: 0, width: 0, height: 0 }) })),
     setMissingStyleImageResolver: vi.fn(),
+    setFeatureState: vi.fn(),
+    project: vi.fn((c: [number, number]) => ({ x: c[0] * 10, y: c[1] * 10 })),
     on: vi.fn(),
     off: vi.fn(),
     getStyle: vi.fn(() => ({ sources: Object.fromEntries(sources), layers: [...layers.values()] })),
@@ -87,5 +89,51 @@ describe('PoiManager', () => {
     addPois(map, 'test', POIS, vi.fn())
     expect(map.removeLayer).toHaveBeenCalledWith('atlas-pois-layer')
     expect(map.addSource).toHaveBeenCalled()
+  })
+
+  it('crea capa de anillo hover solo con variantes de punto', () => {
+    const map = makeMap()
+    addPois(map, 'test', POIS, vi.fn())
+    expect(map.addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'atlas-pois-hover-layer', type: 'circle' }),
+    )
+  })
+
+  it('hover por hit-test enciende/apaga el anillo vía feature-state', () => {
+    const map = makeMap()
+    addPois(map, 'test', POIS, vi.fn())
+    const onCalls = (map.on as ReturnType<typeof vi.fn>).mock.calls
+    const onMove = onCalls.find(([t]) => t === 'mousemove')?.[1] as (e: unknown) => void
+    /* p-1 en [-77,2] → proyecta (-770, 20) */
+    onMove({ point: { x: -770, y: 20 }, lngLat: { lng: -77, lat: 2 } })
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'atlas-pois-source', id: 'p-1' },
+      { hover: true },
+    )
+    /* lejos: apaga */
+    onMove({ point: { x: 0, y: 0 }, lngLat: { lng: 0, lat: 0 } })
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'atlas-pois-source', id: 'p-1' },
+      { hover: false },
+    )
+  })
+
+  it('removePois elimina también la capa de anillo', () => {
+    const map = makeMap()
+    map._layers.set('atlas-pois-hover-layer', { id: 'atlas-pois-hover-layer' })
+    removePois(map)
+    expect(map.removeLayer).toHaveBeenCalledWith('atlas-pois-hover-layer')
+  })
+
+  it('onHover opt-in recibe el POI y null al salir', () => {
+    const map = makeMap()
+    const onHover = vi.fn()
+    addPois(map, 'test', POIS, vi.fn(), { onHover })
+    const onCalls = (map.on as ReturnType<typeof vi.fn>).mock.calls
+    const onMove = onCalls.find(([t]) => t === 'mousemove')?.[1] as (e: unknown) => void
+    onMove({ point: { x: -770, y: 20 }, lngLat: { lng: -77, lat: 2 } })
+    expect(onHover).toHaveBeenCalledWith(expect.objectContaining({ id: 'p-1' }))
+    onMove({ point: { x: 0, y: 0 }, lngLat: { lng: 0, lat: 0 } })
+    expect(onHover).toHaveBeenCalledWith(null)
   })
 })

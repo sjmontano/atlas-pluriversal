@@ -2,9 +2,10 @@ import type { PGWData } from '@services/BoundsCalculator'
 import type { Layer } from '../../../types/layer'
 
 const WATER_BASE = '/assets/maps/capas/mosaicos-del-agua'
-const WATER_PGW: PGWData = [0, 0.000166382730, 0.000166392514, 0, -76.968456199726, 2.161908918459]
-const WATER_W = 5846
-const WATER_H = 10394
+/** Footprint compartido (lo reutiliza SubcuencaManager para las subcuencas). */
+export const WATER_PGW: PGWData = [0, 0.000166382730, 0.000166392514, 0, -76.968456199726, 2.161908918459]
+export const WATER_W = 5846
+export const WATER_H = 10394
 
 const waterLayer = (id: string, name: string, group: string, order: number, swatch: string, opacity: number = 0.8): Layer => ({
   id: `mda-${id}`,
