@@ -135,4 +135,6 @@ export interface Encuadre {
    *  v17 rota 19° solo las del intro cap 3 (`TRANSFORM: rotate(19deg)`);
    *  van en diagonal, debajo de su línea. Default: 0. */
   labelRotate?: number
+  /** Texto del tooltip al hover. Si se omite, usa `name`. */
+  tooltip?: string
 }

@@ -119,7 +119,11 @@ function labelElement(
   inner.appendChild(bg)
 
   const text = document.createElement('span')
-  text.textContent = encuadre.name
+  const raw = encuadre.tooltip ?? encuadre.name
+  raw.split('\n').forEach((line, i) => {
+    if (i > 0) text.appendChild(document.createElement('br'))
+    text.appendChild(document.createTextNode(line))
+  })
   inner.appendChild(text)
   el.appendChild(inner)
 
