@@ -20,7 +20,7 @@ export type ModalBlock =
   | { type: 'heading'; id: string; level?: 2 | 3; text: string }
   | { type: 'list'; id: string; ordered?: boolean; items: string[] }
   | { type: 'quote'; id: string; text: string; source?: string }
-  | { type: 'image'; id: string; src: string; alt: string; caption?: string }
+  | { type: 'image'; id: string; src: string; alt: string; caption?: string; width?: 'small' | 'medium' | 'full' }
   | {
     type: 'carousel'
     id: string

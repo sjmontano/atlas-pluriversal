@@ -136,7 +136,7 @@ function cuenca(def: CuencaDef): Modal {
   return {
     id: `cap1-cuenca-${def.slug}`,
     section: 'capitulo-1',
-    variant: 'medium',
+    variant: 'large',
     title: entry.highLight ?? 'Cuenca',
     highlight: 'Tejidos del agua',
     icon: 'marker',
@@ -156,7 +156,7 @@ function voz(textoId: string, slug: string): Modal {
   return {
     id: `cap1-voz-${slug}`,
     section: 'capitulo-1',
-    variant: 'medium',
+    variant: 'large',
     title: entry.highLight ?? 'Voz del río',
     highlight: 'Tejidos del agua',
     icon: 'marker',

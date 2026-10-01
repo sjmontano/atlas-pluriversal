@@ -50,7 +50,7 @@ function renderBlock(block: ModalBlock): React.ReactNode {
 
     case 'image':
       return (
-        <figure key={block.id} className={`${styles.block} ${styles.imageBlock}`}>
+        <figure key={block.id} className={`${styles.block} ${styles.imageBlock} ${block.width ? styles[`imageWidth${block.width.charAt(0).toUpperCase() + block.width.slice(1)}`] : ''}`}>
           <img
             className={styles.image}
             src={block.src}

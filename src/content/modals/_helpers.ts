@@ -51,6 +51,7 @@ export function fichaPerfil(
   mapId: string,
 ): Modal {
   const blocks: ModalBlock[] = [
+    { type: 'image', id: `${id}-img`, src: image, alt: title, width: 'small' },
     { type: 'paragraph', id: `${id}-loc`, text: `Localizacion: ${localizacion}` },
     { type: 'paragraph', id: `${id}-inc`, text: `Incidencia: ${incidencia}` },
     { type: 'paragraph', id: `${id}-inf`, text: `Influencia: ${influencia}` },
@@ -71,7 +72,6 @@ export function fichaPerfil(
     title,
     highlight,
     icon: 'marker',
-    image,
     body: blocks,
     trigger: {
       type: 'marker',
