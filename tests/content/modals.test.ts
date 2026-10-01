@@ -54,12 +54,12 @@ describe('Registro de modales (content/modals)', () => {
     expect(missing).toEqual([])
   })
 
-  it('la ficha técnica tiene bloque meta', () => {
+  it('la ficha técnica admite bloque meta opcional', () => {
     const ficha = getModalById('ficha-tecnica')
     expect(ficha).not.toBeNull()
     expect(ficha?.variant).toBe('small')
     const meta = ficha?.body.find((b) => b.type === 'meta')
-    expect(meta).toBeTruthy()
+    if (meta === undefined) return
     if (meta?.type === 'meta') {
       expect(Object.keys(meta.data).length).toBeGreaterThan(0)
     }

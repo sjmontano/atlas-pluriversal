@@ -75,16 +75,6 @@ const FICHA_TECNICA: Modal = {
       id: 'p1',
       text: 'Esta mapa se conforma de dos elementos: una imagen 3D construida a partir del Modelo de Elevación Nacional de Colombia adquirido por el IGAC y procesada en un modelo 3D en el sotware Qgis. Posteriormente fue redibujado con texturas y colores que contrastan los relieves y el agua de esta zona de la geografía de Colombia. El segundo elemento, son las ilustraciones y los textos de 15 lugares, que en las alturas de las cordilleras y la planicie, constituyen el territorio del sur del valle alto del río Cauca. Este fue un proceso creativo realizado con base en el conocimiento geográifco comunitario, institucional y académico de esta parte de la cuenca del río Cauca.',
     },
-    {
-      type: 'meta',
-      id: 'meta',
-      data: {
-        Proyecto: 'Atlas Pluriversal del Río Cauca',
-        Versión: '2.0',
-        Formato: 'Aplicación web (React + MapLibre GL)',
-        Licencia: 'CC BY-NC-ND 4.0',
-      },
-    },
   ],
   trigger: {
     type: 'button',
