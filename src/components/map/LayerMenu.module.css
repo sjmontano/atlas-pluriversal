@@ -84,11 +84,11 @@
   filter: brightness(1.15) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
 }
 
-/* Abierto solo con click (pinned): el botón queda montado sobre el borde
- * izquierdo del panel (solape 1.5vw), anclado a la mancha de fondo en vez
- * de flotar fuera de ella. El hover solo previsualiza. */
+/* Abierto solo con click (pinned): el botón queda montado 4vw dentro del
+ * borde izquierdo del panel, anclado a la mancha (tu ajuste de 21vw con
+ * panel de 25vw, expresado relativo para que siga al ancho). */
 .wrap.pinned .toggle {
-  right: calc(21vw);
+  right: calc(30vw - 4vw);
   transform: none;
 }
 
@@ -118,7 +118,10 @@
   pointer-events: none;
 }
 
-.wrap:hover .toggle::before,
+/* El decorador sigue al hover DEL BOTÓN (no del wrap): con el panel abierto
+ * el mouse vive dentro del wrap y el fondo quedaba "pegado" encendido sin
+ * la etiqueta (oculta en pinned). Así fondo+etiqueta van siempre juntos. */
+.toggle:hover::before,
 .toggle:focus-visible::before {
   opacity: 1;
   transform: scaleX(-1) scale(1);
@@ -165,10 +168,14 @@
   position: absolute;
   right: 0;
   top: 0;
-  width: 25vw;
+  width: 30vw;
   height: 100vh;
   overflow-y: auto;
-  background: url('/assets/ui/layers/menu-capas-fondo.webp') center / cover no-repeat;
+  /* Anclado a la IZQUIERDA (no center): el borde rasgado pálido queda
+   * siempre en el filo izquierdo del panel y el recorte por aspecto solo
+   * muerde el lado oscuro derecho. Así el texto (que arranca tras el
+   * padding) cae siempre sobre la zona legible de la mancha, sin moverse. */
+  background: url('/assets/ui/layers/menu-capas-fondo.webp') left center / cover no-repeat;
   z-index: 31;
   pointer-events: auto;
   opacity: 0;
@@ -191,6 +198,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .panel,
   .wrap.pinned .panel {
     transition: none;
@@ -199,7 +207,7 @@
 }
 
 .body {
-  padding: 7vh 24px 7vh 40px;
+  padding: 7vh 24px 7vh 90px;
 }
 
 /* Ventanas angostas (pero no móvil): el panel de 25vw deja ~30px al texto.
@@ -207,14 +215,17 @@
  * nombres quepan en 2 líneas legibles en vez de picarse por letra. */
 @media (max-width: 1100px) {
   .panel {
-    width: 32vw;
+    width: 36vw;
   }
+
   .body {
     padding: 7vh 16px 7vh 20px;
   }
+
   .groupChildren {
     padding-left: 10px;
   }
+
   .layerRow {
     padding-left: 8px;
   }
@@ -238,14 +249,14 @@
 }
 
 /* Macro-grupo top-level: texto grande, sin sangría propia */
-.macro > .groupHeader > .groupName {
+.macro>.groupHeader>.groupName {
   font-size: 17px;
   font-weight: 800;
   line-height: 1.3;
 }
 
 /* Subgrupo: un paso abajo en la escala */
-.sub > .groupHeader > .groupName {
+.sub>.groupHeader>.groupName {
   font-size: 15px;
   font-weight: 700;
   line-height: 1.35;
@@ -267,6 +278,7 @@
   border-radius: 6px;
   color: #fffeee;
 }
+
 .chevBtn:focus-visible {
   outline: 2px solid var(--primary-blue, #0599b7);
   outline-offset: 1px;
@@ -277,6 +289,7 @@
   transform: rotate(180deg);
   transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .chevOpen {
   transform: rotate(0deg);
 }

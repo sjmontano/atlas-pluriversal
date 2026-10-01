@@ -11,7 +11,7 @@
  * `layerStore` (el `LayerManager` sincroniza MapLibre).
  */
 
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLayerStore } from '@stores/layerStore'
 import { getMapContent } from '@content'
 import { Glyph } from '../modal/primitives/Glyph'
@@ -104,6 +104,26 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
 
   /** Click abre/cierra el panel; el hover solo previsualiza. */
   const [pinned, setPinned] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+
+  /* Click fuera o Escape cierran el panel. */
+  useEffect(() => {
+    if (!pinned) return
+    const onPointerDown = (e: PointerEvent): void => {
+      if (wrapRef.current !== null && !wrapRef.current.contains(e.target as Node)) {
+        setPinned(false)
+      }
+    }
+    const onKeyDown = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') setPinned(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [pinned])
 
   const hasLayers = layers !== null && layers.length > 0
   const hasLegends = legends !== null && legends.length > 0
@@ -176,7 +196,7 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
       <div className={styles.guideLine} aria-hidden="true">
         <img src="/assets/ui/layers/indice-capas-menu.svg" alt="" draggable={false} />
       </div>
-      <div className={`${styles.wrap}${offsetTop ? ` ${styles.offsetTop}` : ''}${pinned ? ` ${styles.pinned}` : ''}`}>
+      <div ref={wrapRef} className={`${styles.wrap}${offsetTop ? ` ${styles.offsetTop}` : ''}${pinned ? ` ${styles.pinned}` : ''}`}>
       <button
         type="button"
         className={styles.toggle}
