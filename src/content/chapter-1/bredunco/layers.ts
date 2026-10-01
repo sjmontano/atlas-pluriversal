@@ -53,7 +53,7 @@ const line = (
 export const LAYERS: Layer[] = [
   fill('cuenca-alta', 'Cuenca alta', 'boundaries', '#4bcfff', 1),
   fill('cuenca-media', 'Cuenca media', 'boundaries', '#ffff03', 2),
-  fill('cuenca-baja', 'Cuenca baja', 'boundaries', '#ffff03', 3),
+  fill('cuenca-baja', 'Cuenca baja', 'boundaries', '#ff6b35', 3),
   fill('cuenca-rio-cauca', 'Cuenca del río Cauca', 'boundaries', '#a9f7a4', 4),
   fill('valle-alto-rio-cauca', 'Valle alto del río Cauca', 'boundaries', '#a9f7a4', 5),
   fill('nodo-oriente-cali', 'Nodo Oriente Cali', 'nodes', '#81c640', 6),

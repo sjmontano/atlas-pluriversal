@@ -20,6 +20,9 @@ function sourceId(layerId: string): string {
   return `${SOURCE_PREFIX}${layerId}`
 }
 
+/** Id de source de una capa de contenido (lo usa el panel dev). */
+export const layerSourceId = (layerId: string): string => sourceId(layerId)
+
 /* ── Área de hover para líneas (ríos) ───────────────────────────────────
    Las líneas finas (2px) son difíciles de hoverear en vista lejana. Cada
    línea lleva una gemela INVISIBLE (`line-opacity: 0`, misma source) más

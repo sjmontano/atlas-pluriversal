@@ -124,10 +124,20 @@ export interface MapContent {
   menuTitle?: string
   /** Encuadres navegables (rectángulos clickeables que llevan a otro mapa). */
   encuadres?: Encuadre[]
+  /** Etiquetas geográficas estáticas no interactivas (port v17: océanos en
+   *  encuadres). Las opera OceanLabelsManager. Solo en mapas donde el
+   *  punto es visible (ej. chapter1-encuadres, vista Colombia completa). */
+  oceanLabels?: OceanLabel[]
   /** Subcuencas resaltables en hover (port v17, fuera del menú de capas). */
   subcuencas?: SubcuencaDef[]
 }
 
+/** Etiqueta de océano/mar (WIP: lo opera el futuro OceanLabelsManager). */
+export interface OceanLabel {
+  id: string
+  name: string
+  coords: [number, number]
+}
 /** Subcuenca resaltable en hover (port v17): imagen + PGW propio opcional.
  *  Vive fuera del menú de capas (la opera SubcuencaManager); el panel dev
  *  las calibra con target propio. Sin pgw hereda el footprint de agua. */
@@ -161,4 +171,13 @@ export interface Encuadre {
   labelRotate?: number
   /** Texto del tooltip al hover. Si se omite, usa `name`. */
   tooltip?: string
+}
+
+/** Etiqueta geográfica estática no interactiva (port v17: los océanos del
+ *  mapa encuadres). Texto blanco horneado en canvas, sin píldora. */
+export interface OceanLabel {
+  id: string
+  name: string
+  /** Posición de la etiqueta [lng, lat]. */
+  coords: [number, number]
 }

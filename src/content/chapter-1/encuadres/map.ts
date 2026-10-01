@@ -75,4 +75,10 @@ export default {
   config,
   tiles: makeTilesConfig('chapter1-encuadres', geo, config.initialBearing, config.zoomMax),
   encuadres,
+  /* Port v17 (MapComponent.jsx): etiquetas de océanos, solo en esta vista
+   * Colombia completa. Coordenadas originales de v17. */
+  oceanLabels: [
+    { id: 'oceano-pacifico', name: 'OCÉANO PACÍFICO', coords: [-78.54, 5.5] as [number, number] },
+    { id: 'mar-caribe', name: 'MAR CARIBE', coords: [-76.5319, 12.03] as [number, number] },
+  ],
 } satisfies MapContent

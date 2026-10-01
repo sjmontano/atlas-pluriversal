@@ -19,6 +19,7 @@ import {
 } from '@services/LayerManager'
 import { addPois, removePois } from '@services/PoiManager'
 import { addEncuadres, removeEncuadres } from '@services/EncuadresManager'
+import { addOceanLabels, removeOceanLabels } from '@services/OceanLabelsManager'
 import {
   addSubcuencas,
   removeSubcuencas,
@@ -70,6 +71,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
   const legends = content?.legends ?? null
   const pois = content?.pois ?? null
   const encuadres = content?.encuadres ?? null
+  const oceanLabels = content?.oceanLabels ?? null
   const hasLayers = layers !== null && layers.length > 0
   const hasLegends = legends !== null && legends.length > 0
   const [activePoi, setActivePoi] = useState<Poi | null>(null)
@@ -205,8 +207,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     })
     if (content?.ui?.layerTooltips === true) bindLayerTooltips(map, layers)
   }, [mapRef, mapBuilt, layers, content])
-  /* Encuadres navegables (polígono + etiqueta → otro mapa, URL-first) */
-  useEffect(() => {
+  /* Encuadres navegables (polígono + etiqueta → otro mapa, URL-first) */  useEffect(() => {
     const map = mapRef.current
     if (!map || !mapBuilt || !encuadres) return
     let cancelled = false
@@ -220,6 +221,15 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
       removeEncuadres(map)
     }
   }, [mapRef, mapBuilt, encuadres, navigate])
+  /* Etiquetas de océanos (estáticas, no interactivas; ej. encuadres) */
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapBuilt || !oceanLabels) return
+    void addOceanLabels(map, oceanLabels)
+    return () => {
+      removeOceanLabels(map)
+    }
+  }, [mapRef, mapBuilt, oceanLabels])
 
   return (
     <div className={styles.wrapper} key={`${mapId}-${rebuildKey}`}>

@@ -11,7 +11,7 @@ import {
   type CalibrationState,
 } from '@services/MapCalibration'
 import { saveCalibration } from '@services/SaveCalibration'
-import { updateLayerPGW } from '@services/LayerManager'
+import { updateLayerPGW, layerSourceId } from '@services/LayerManager'
 import {
   shiftFeatureCollection,
   shiftLngLat,
@@ -27,6 +27,7 @@ import { useLayerStore } from '@stores/layerStore'
 import type { Layer } from '../../../types/layer.ts'
 import type { Encuadre } from '../../../types/content.ts'
 import type { Poi } from '../../../types/poi.ts'
+import type { GeojsonLayer } from '../../../types/layer.ts'
 import type { BoundsResult } from '@services/BoundsCalculator'
 import styles from './CalibrationPanel.module.css'
 
@@ -49,6 +50,7 @@ type CalibrationTarget =
   | { kind: 'encuadres' }
   | { kind: 'pois' }
   | { kind: 'subcuencas' }
+  | { kind: 'geolayers' }
 
 /** Paso de flechas en px de pantalla (fino 1px). Válido con cualquier bearing. */
 const ENC_PX_STEP = 5
@@ -171,6 +173,16 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
   const [subIdx, setSubIdx] = useState(0)
   const [subFine, setSubFine] = useState(false)
   const [subBulk, setSubBulk] = useState(false)
+  /* ── Target geolayers: capas GeoJSON del content (ej. bredunco).
+   * Sin PGW: se mueven por offset + setData como los polígonos de
+   * encuadre, y se persisten con el mismo CLI (el archivo puede usarse
+   * en otros mapas: revisar antes de correr). Requieren estar visibles
+   * en el menú para ver el efecto en vivo. */
+  const [geoIdx, setGeoIdx] = useState(0)
+  const [geoFine, setGeoFine] = useState(false)
+  const [geoBulk, setGeoBulk] = useState(false)
+  const geoOffsetsRef = useRef(new Map<string, { dlng: number; dlat: number }>())
+  const geoOriginalsRef = useRef(new Map<string, { data: { type: 'FeatureCollection'; features: Array<{ geometry: unknown }> }; file: string }>())
   /* Estado vivo por slug (offset + tamaño). Sin tocar = valores del content. */
   const subStateRef = useRef(new Map<string, { dlng: number; dlat: number; width: number; height: number }>())
 
@@ -397,6 +409,17 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       const dLng = geo.lng - dragRef.current.startGeo.lng
       const dLat = geo.lat - dragRef.current.startGeo.lat
 
+      if (target.kind === 'geolayers') {
+        const list: GeojsonLayer[] = (getMapContent(mapId)?.layers ?? []).filter(
+          (l): l is GeojsonLayer => l.type === 'geojson',
+        )
+        const one = list[geoIdx]
+        const targets = geoBulk ? list : one === undefined ? [] : [one]
+        for (const layer of targets) addGeoOffset(layer.id, dLng, dLat)
+        dragRef.current.startGeo = { lng: geo.lng, lat: geo.lat }
+        return
+      }
+
       if (target.kind === 'subcuencas') {
         const list = getMapContent(mapId)?.subcuencas ?? []
         const one = list[subIdx]
@@ -485,7 +508,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       try { map.dragPan.enable() } catch { /* noop */ }
       dragRef.current = null
     }
-  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, encBulk, poiIdx, poiBulk, subIdx, subBulk, mapId, addEncOffset, addPoiOffset, addSubOffset])
+  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, encBulk, poiIdx, poiBulk, subIdx, subBulk, geoIdx, geoBulk, mapId, addEncOffset, addPoiOffset, addSubOffset])
 
   const nudge = useCallback((key: FieldKey, sign: 1 | -1, fine: boolean) => {
     setState((prev) => {
@@ -769,6 +792,41 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
     }
   }, [mapId, target.kind])
 
+  /* Originales GeoJSON al entrar al target (fetch una vez por capa). */
+  useEffect(() => {
+    if (target.kind !== 'geolayers') return
+    let cancelled = false
+    void (async () => {
+      const list: GeojsonLayer[] = (getMapContent(mapId)?.layers ?? []).filter(
+        (l): l is GeojsonLayer => l.type === 'geojson',
+      )
+      for (const layer of list) {
+        if (geoOriginalsRef.current.has(layer.id)) continue
+        const url = (layer as GeojsonLayer).url
+        if (typeof url !== 'string' || url === '') continue
+        try {
+          const res = await fetch(url)
+          if (!res.ok) continue
+          const data = (await res.json()) as { type?: unknown; features?: unknown }
+          if (cancelled) return
+          if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+            geoOriginalsRef.current.set(layer.id, {
+              data: data as { type: 'FeatureCollection'; features: Array<{ geometry: unknown }> },
+              file: url.replace(/^\//, ''),
+            })
+          }
+        } catch { /* sin original: esa capa no se mueve */ }
+      }
+      if (!cancelled) {
+        setGeoIdx(0)
+        setEncTick((t) => t + 1)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [mapId, target.kind])
+
   /* applyEncShift/addEncOffset viven arriba (antes del efecto de drag). */
 
   const nudgeEnc = useCallback((dirX: -1 | 0 | 1, dirY: -1 | 0 | 1) => {
@@ -823,6 +881,9 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
 
   const poiList: Poi[] = getMapContent(mapId)?.pois ?? []
   const subList = getMapContent(mapId)?.subcuencas ?? []
+  const geoList: GeojsonLayer[] = (getMapContent(mapId)?.layers ?? []).filter(
+    (l): l is GeojsonLayer => l.type === 'geojson',
+  )
 
   /** Estado vivo (offset + tamaño); sin tocar = valores del content. */
   function getSubState(slug: string): { dlng: number; dlat: number; width: number; height: number } {
@@ -976,6 +1037,75 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
     } catch { /* portapapeles no disponible */ }
   }, [mapId])
 
+  /* ── Target geolayers: capas GeoJSON del content (ej. bredunco). Mismo
+   * patrón que encuadres (offsets + setData + CLI); el archivo puede usarse
+   * en otros mapas. Requieren estar visibles en el menú para verse en vivo. */
+  function applyGeoShift(id: string): void {
+    const map = controllerRef.current?.map
+    if (!map) return
+    const orig = geoOriginalsRef.current.get(id)
+    if (!orig) return
+    const off = geoOffsetsRef.current.get(id) ?? { dlng: 0, dlat: 0 }
+    try {
+      liveGeoJSONSource(map, layerSourceId(id))?.setData(
+        shiftFeatureCollection(orig.data, off.dlng, off.dlat),
+      )
+    } catch { /* source aún no lista */ }
+  }
+
+  function addGeoOffset(id: string, dLng: number, dLat: number): void {
+    const cur = geoOffsetsRef.current.get(id) ?? { dlng: 0, dlat: 0 }
+    geoOffsetsRef.current.set(id, { dlng: cur.dlng + dLng, dlat: cur.dlat + dLat })
+    applyGeoShift(id)
+    setEncTick((t) => t + 1)
+  }
+
+  const nudgeGeo = useCallback((dirX: -1 | 0 | 1, dirY: -1 | 0 | 1) => {
+    const list: GeojsonLayer[] = (getMapContent(mapId)?.layers ?? []).filter(
+      (l): l is GeojsonLayer => l.type === 'geojson',
+    )
+    const one = list[geoIdx]
+    const targets = geoBulk ? list : one === undefined ? [] : [one]
+    if (targets.length === 0) return
+    const step = geoFine ? ENC_PX_STEP_FINE : ENC_PX_STEP
+    const delta = pxDeltaToGeo(dirX * step, dirY * step)
+    if (!delta) return
+    for (const layer of targets) addGeoOffset(layer.id, delta.dlng, delta.dlat)
+  }, [mapId, geoIdx, geoFine, geoBulk, pxDeltaToGeo])
+
+  function selectGeo(idx: number) {
+    if (geoList.length === 0) return
+    setGeoIdx(idx < 0 ? geoList.length - 1 : idx >= geoList.length ? 0 : idx)
+  }
+
+  const geoReset = useCallback(() => {
+    const list: GeojsonLayer[] = (getMapContent(mapId)?.layers ?? []).filter(
+      (l): l is GeojsonLayer => l.type === 'geojson',
+    )
+    geoOffsetsRef.current.clear()
+    for (const layer of list) applyGeoShift(layer.id)
+    setEncTick((t) => t + 1)
+  }, [mapId])
+
+  const copyGeo = useCallback(() => {
+    const list: GeojsonLayer[] = (getMapContent(mapId)?.layers ?? []).filter(
+      (l): l is GeojsonLayer => l.type === 'geojson',
+    )
+    const r6 = (n: number): number => Math.round(n * 1e6) / 1e6
+    const lines: string[] = []
+    for (const layer of list) {
+      const off = geoOffsetsRef.current.get(layer.id)
+      if (!off || (off.dlng === 0 && off.dlat === 0)) continue
+      const orig = geoOriginalsRef.current.get(layer.id)
+      if (!orig) continue
+      lines.push(`node scripts/shift-geojson.mjs --lng ${r6(off.dlng)} --lat ${r6(off.dlat)} ${orig.file}`)
+    }
+    if (lines.length === 0) return
+    try {
+      void navigator.clipboard.writeText(lines.join('\n')).catch(() => { /* noop */ })
+    } catch { /* portapapeles no disponible */ }
+  }, [mapId])
+
   const convertF = state ? state.f + state.b * state.height : 0
   const sizePct = (() => {
     if (target.kind === 'layers' && target.layerIds.length > 0) {
@@ -1062,6 +1192,19 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
               </button>
             </div>
           )}
+          {ENABLE_DEV_TOOLS && geoList.length > 0 && (
+            <div className={styles.overridesSection}>
+              <button
+                className={`${styles.headerBtn} ${target.kind === 'geolayers' ? styles.targetActive : ''}`}
+                onClick={() => {
+                  setTarget({ kind: 'geolayers' })
+                  setGeoIdx(0)
+                }}
+              >
+                🧭 Vector: {geoList.length}
+              </button>
+            </div>
+          )}
           {ENABLE_DEV_TOOLS && subList.length > 0 && (
             <div className={styles.overridesSection}>
               <button
@@ -1099,6 +1242,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
               if (target.kind === 'encuadres') encReset()
               else if (target.kind === 'pois') poiReset()
               else if (target.kind === 'subcuencas') subReset()
+              else if (target.kind === 'geolayers') geoReset()
               else reset()
             }}
           >
@@ -1116,6 +1260,8 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
                 setSaveError('POIs: usa 📋 Copiar y pega coords en su pois.ts (no vive en geo.js).')
               } else if (target.kind === 'subcuencas') {
                 setSaveError('Subcuencas: usa 📋 Copiar y pega el pgw en su entrada de rivers.ts.')
+              } else if (target.kind === 'geolayers') {
+                setSaveError('Vector: usa 📋 Copiar y corre el comando (el archivo puede usarse en otros mapas).')
               } else {
                 void apply()
               }
@@ -1130,6 +1276,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
               if (target.kind === 'encuadres') copyEnc()
               else if (target.kind === 'pois') copyPoi()
               else if (target.kind === 'subcuencas') copySub()
+              else if (target.kind === 'geolayers') copyGeo()
               else copyPGW()
             }}
           >
@@ -1362,6 +1509,61 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
                   </div>
                 </>
               ) : null}
+              <div className={styles.separator} />
+            </>
+          ) : target.kind === 'geolayers' ? (
+            <>
+              <div className={styles.overridesSection}>
+                <button className={styles.headerBtn} onClick={() => selectGeo(geoIdx - 1)} title="Capa anterior">◀</button>
+                <span className={styles.layerNavLabel}>
+                  {geoBulk
+                    ? `Todas (${geoList.length})`
+                    : geoList.length === 0 ? '—' : `${geoIdx + 1}/${geoList.length} ${geoList[geoIdx]?.name ?? ''}`}
+                </span>
+                <button className={styles.headerBtn} onClick={() => selectGeo(geoIdx + 1)} title="Capa siguiente">▶</button>
+                <button
+                  className={`${styles.headerBtn} ${geoBulk ? styles.targetActive : ''}`}
+                  title="Mover todas a la vez"
+                  onClick={() => setGeoBulk((b) => !b)}
+                >
+                  {geoBulk ? 'Todas ✓' : 'Una'}
+                </button>
+              </div>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Mover (px pantalla)</label>
+                <div className={styles.stepper}>
+                  <button className={styles.stepBtn} title="izquierda" onClick={() => nudgeGeo(-1, 0)}>←</button>
+                  <button className={styles.stepBtn} title="arriba" onClick={() => nudgeGeo(0, -1)}>↑</button>
+                  <button className={styles.stepBtn} title="abajo" onClick={() => nudgeGeo(0, 1)}>↓</button>
+                  <button className={styles.stepBtn} title="derecha" onClick={() => nudgeGeo(1, 0)}>→</button>
+                  <button
+                    className={styles.headerBtn}
+                    title="paso fino 1px / normal 5px"
+                    onClick={() => setGeoFine((f) => !f)}
+                  >
+                    {geoFine ? '1px ✓' : '5px'}
+                  </button>
+                </div>
+              </div>
+              <div className={styles.readout}>
+                <div className={styles.readoutTitle}>Offset capa (vivo)</div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lng:</span>
+                  <span>{fmtNum(geoOffsetsRef.current.get(geoList[geoIdx]?.id ?? '')?.dlng ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lat:</span>
+                  <span>{fmtNum(geoOffsetsRef.current.get(geoList[geoIdx]?.id ?? '')?.dlat ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Archivo:</span>
+                  <span>{geoOriginalsRef.current.get(geoList[geoIdx]?.id ?? '')?.file ?? '—'}</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Nota:</span>
+                  <span>enciende la capa en el menú para verla · el archivo puede usarse en otros mapas</span>
+                </div>
+              </div>
               <div className={styles.separator} />
             </>
           ) : (

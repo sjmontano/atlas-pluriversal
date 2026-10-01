@@ -136,7 +136,7 @@ export function composeEncuadreLabel(
   if (!probe) throw new Error('No 2d context available')
 
   const S = LABEL_ART_SCALE
-  const font = `italic 500 ${metrics.fontPx * S}px "Noto Sans", sans-serif`
+  const font = `italic 700 ${metrics.fontPx * S}px "Noto Sans", sans-serif`
   probe.font = font
   const lines = wrapLabelLines(name, (s) => probe.measureText(s).width, metrics.maxWidthPx * S)
   const contentW = lines.reduce((m, l) => Math.max(m, probe.measureText(l).width), 0)
