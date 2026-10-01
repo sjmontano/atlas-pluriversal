@@ -16,27 +16,29 @@ const encuadres = [
     id: 'encuadre-ecosistemas',
     name: 'Existencias y transformaciones ecosistémicas',
     targetMapId: 'chapter1-ecosistemas',
-    labelCoords: [-75.045, 2.68] as [number, number],
+    labelCoords: [-75.72, 4] as [number, number],
+    /* Una sola línea: override del maxWidth global (230) */
+    labelMaxWidth: 340,
     url: '/assets/geojson/encuadre-cuenca-alta.json',
   },
   {
     id: 'encuadre-bredunco',
     name: 'Bredunco, Caucayaco o \nCauca en la vertiente del Caribe',
     targetMapId: 'chapter1-bredunco',
-    labelCoords: [-78.095, 9.25] as [number, number],
+    labelCoords: [-78.095, 10] as [number, number],
     url: '/assets/geojson/encuadre-cuenca-completa.json',
   },
   {
     id: 'encuadre-formas-paisaje',
     name: 'Pliegues, llanuras y otras formas del paisaje',
     targetMapId: 'chapter1-formas-paisaje',
-    labelCoords: [-72.405, 9.64] as [number, number],
+    labelCoords: [-72.2, 10.3] as [number, number],
   },
   {
     id: 'encuadre-un-rio-cauca',
     name: 'Un río Cauca, muchos mundos... \nen transición',
     targetMapId: 'chapter1-un-rio-cauca',
-    labelCoords: [-75.3, 3.5] as [number, number],
+    labelCoords: [-72.2, 2] as [number, number],
     url: '/assets/geojson/encuadre-limites-cuenca.json',
   },
 ]

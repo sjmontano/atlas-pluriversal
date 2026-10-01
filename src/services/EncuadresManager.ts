@@ -177,16 +177,21 @@ export async function addEncuadres(
 
       /* Etiqueta como imagen canvas en capa symbol: mismo transform que el
        * polígono en todo zoom/pantalla. `icon-rotate` preserva los 19° del
-       * intro cap 3 sin tocar transforms del DOM. */
+       * intro cap 3 sin tocar transforms del DOM. `labelMaxWidth` permite
+       * una sola línea en etiquetas largas sin mover el global. */
       try {
+        const effectiveMetrics =
+          encuadre.labelMaxWidth === undefined
+            ? metrics
+            : { ...metrics, maxWidthPx: encuadre.labelMaxWidth }
         const normal = composeEncuadreLabel(encuadre.name, {
-          metrics,
+          metrics: effectiveMetrics,
           textColor: LABEL_TEXT,
           bg: bgNormal,
           fallbackBg: LABEL_BG_FALLBACK,
         })
         const hover = composeEncuadreLabel(encuadre.name, {
-          metrics,
+          metrics: effectiveMetrics,
           textColor: LABEL_TEXT_HOVER,
           bg: bgHover,
           fallbackBg: LABEL_BG_HOVER_FALLBACK,

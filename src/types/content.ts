@@ -131,6 +131,9 @@ export interface Encuadre {
   url?: string
   /** Color del polígono/borde. Default: #5577af (como v17). */
   color?: string
+  /** Ancho máximo de texto propio (px CSS). Si se omite, el global (220/175).
+   *  Útil para etiquetas que deben quedar en una sola línea. */
+  labelMaxWidth?: number
   /** Rotación de la etiqueta en grados (horario, como CSS rotate).
    *  v17 rota 19° solo las del intro cap 3 (`TRANSFORM: rotate(19deg)`);
    *  van en diagonal, debajo de su línea. Default: 0. */

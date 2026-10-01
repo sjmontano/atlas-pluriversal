@@ -190,6 +190,25 @@ describe('EncuadresManager (etiquetas canvas)', () => {
     )
   })
 
+  it('labelMaxWidth permite una sola línea sin mover el global', async () => {
+    stubEnv()
+    const map = makeMap()
+    /* 9 palabras (~530px fake): con el global (440 art) partiría en dos */
+    const name = 'Palabra uno dos tres cuatro cinco seis siete ocho nueve'
+    await addEncuadres(
+      map,
+      [{ id: 'wide', name, targetMapId: 'mw', labelCoords: [-70, 0], labelMaxWidth: 500 }],
+      vi.fn(),
+    )
+    const img = map._images.get('atlas-encuadre-img-wide') as { width: number; height: number }
+    /* 55 caracteres en una sola línea (550) + padding 28 = 578;
+     * con el global partiría en dos (448 de ancho, doble alto) */
+    expect(img.width).toBe(578)
+    expect(img.height).toBe(60)
+    const layer = map._layers.get('atlas-encuadre-label-wide') as { layout: Record<string, unknown> }
+    expect(layer.layout['icon-image']).toBe('atlas-encuadre-img-wide')
+  })
+
   it('removeEncuadres limpia capas, sources e imágenes', async () => {
     stubEnv()
     const map = makeMap()

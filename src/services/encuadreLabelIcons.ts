@@ -45,7 +45,7 @@ export const LABEL_METRICS: EncuadreLabelMetrics = {
   linePx: 16,
   padX: 7,
   padY: 7,
-  maxWidthPx: 190,
+  maxWidthPx: 230,
   radiusPx: 6,
 }
 
@@ -57,7 +57,7 @@ export const LABEL_METRICS_COMPACT: EncuadreLabelMetrics = {
   linePx: 14,
   padX: 8,
   padY: 6,
-  maxWidthPx: 150,
+  maxWidthPx: 175,
   radiusPx: 6,
 }
 
