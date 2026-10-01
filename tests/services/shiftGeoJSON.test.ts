@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { shiftFeatureCollection, shiftLngLat } from '@services/shiftGeoJSON'
+import {
+  shiftFeatureCollection,
+  scaleFeatureCollection,
+  collectionCentroid,
+  shiftLngLat,
+} from '@services/shiftGeoJSON'
 
 const RECT = {
   type: 'FeatureCollection',
@@ -46,5 +51,34 @@ describe('shiftGeoJSON', () => {
 
   it('shiftLngLat mueve el punto (labelCoords)', () => {
     expect(shiftLngLat([-76.4733, 3.0707], 0.02, -0.05)).toEqual([-76.4533, 3.0207])
+  })
+
+  it('collectionCentroid es el centro del bbox', () => {
+    // bbox lng [-76.9,-76.0] lat [2.5,3.6] → centro [-76.45, 3.05]
+    expect(collectionCentroid(RECT)).toEqual([-76.45, 3.05])
+  })
+
+  it('escala uniforme 2x alrededor del centroide sin mutar', () => {
+    const before = JSON.stringify(RECT)
+    const out = scaleFeatureCollection(RECT, 2, 2)
+    expect(JSON.stringify(RECT)).toBe(before)
+    const ring = (
+      out.features[0].geometry as { coordinates: number[][][][] }
+    ).coordinates[0]?.[0]
+    // esquina SW [-76.9,2.5] → centro + (p-centro)*2
+    expect(ring?.[0]).toEqual([-77.35, 1.95])
+    expect(ring?.[2]).toEqual([-75.55, 4.15])
+    expect(out.features[1]?.geometry).toBeNull()
+  })
+
+  it('escala 1x deja todo igual y escala por eje solo ese eje', () => {
+    const same = scaleFeatureCollection(RECT, 1, 1)
+    expect(JSON.stringify(same)).toBe(JSON.stringify(RECT))
+    const out = scaleFeatureCollection(RECT, 2, 1)
+    const ring = (
+      out.features[0].geometry as { coordinates: number[][][][] }
+    ).coordinates[0]?.[0]
+    expect(ring?.[0]).toEqual([-77.35, 2.5])
+    expect(ring?.[2]).toEqual([-75.55, 3.6])
   })
 })

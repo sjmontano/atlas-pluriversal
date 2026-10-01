@@ -229,8 +229,9 @@ export function bindLayerClicks(
 /* ── Hover en capa → etiqueta con el nombre ────────────────────────────
    Opt-in por mapa (`ui.layerTooltips`, ej. chapter1-bredunco): la misma
    etiqueta flotante que los POIs (PoiManager). Sale con el mouse encima
-   de la geometría y se oculta al salir. Solo capas visibles: las ocultas
-   no tienen geometría que hoverear. Registro deduplicado por mapa. */
+   de la geometría y se oculta al salir. Las líneas conservan el hover aun
+   apagadas (gemela invisible); el resto requiere visibilidad.
+   Registro deduplicado por mapa. */
 const boundLayerTooltips = new WeakMap<maplibregl.Map, Set<string>>()
 
 export function bindLayerTooltips(
@@ -242,8 +243,15 @@ export function bindLayerTooltips(
     bound = new Set()
     boundLayerTooltips.set(map, bound)
   }
-
-  for (const layer of layers) {
+  /* Se enlaza en orden ascendente: la capa de más arriba (mayor order,
+   *  ej. nodos pequeños sobre ríos) registra su handler al final y su
+   *  etiqueta gana cuando varias geometrías se solapan bajo el mouse.
+   *  `tooltip: false` excluye la capa (ej. cuenca-rio-cauca en Bredunco). */
+  const ordered = layers
+    .filter((layer) => layer.tooltip !== false)
+    .slice()
+    .sort((a, b) => a.order - b.order)
+  for (const layer of ordered) {
     if (bound.has(layer.id)) continue
     const sid = sourceId(layer.id)
     const html = layerTooltipHtml(layer.name)

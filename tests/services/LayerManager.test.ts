@@ -317,6 +317,24 @@ describe('LayerManager', () => {
       expect(targets).toContain('atlas-layer-rio-cauca-hit')
       expect(targets).toContain('atlas-layer-rio-cauca')
     })
+
+    it('omite capas con tooltip:false y enlaza por order (la de arriba gana)', () => {
+      const map = makeMap()
+      const river: GeojsonLayer = { ...LINE_LAYER, id: 'rio-x', name: 'Río X', order: 6 }
+      const basin: GeojsonLayer = { ...GEOJSON_LAYER, id: 'cuenca-x', name: 'Cuenca X', order: 4, tooltip: false }
+      const node: GeojsonLayer = { ...GEOJSON_LAYER, id: 'nodo-x', name: 'Nodo X', order: 20 }
+      bindLayerTooltips(map, [river, basin, node])
+      const moves = ((map.on as ReturnType<typeof vi.fn>).mock.calls as Array<[string, string]>)
+        .filter((c) => c[0] === 'mousemove')
+        .map((c) => c[1])
+      // Cuenca excluida; el nodo (order mayor) se enlaza al final y gana el hover.
+      expect(moves).not.toContain('atlas-layer-cuenca-x')
+      expect(moves).toEqual([
+        'atlas-layer-rio-x-hit',
+        'atlas-layer-rio-x',
+        'atlas-layer-nodo-x',
+      ])
+    })
   })
 
   describe('updateLayerPGW', () => {    it('calls setCoordinates on the image source', () => {

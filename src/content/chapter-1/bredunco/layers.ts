@@ -16,6 +16,7 @@ const fill = (
   color: string,
   order: number,
   modalId?: string,
+  tooltip: boolean = true,
 ): Layer => ({
   id: `bredunco-${id}`,
   name,
@@ -27,6 +28,7 @@ const fill = (
   visibleByDefault: false,
   order,
   modalId,
+  tooltip,
   legend: { swatch: color, description: name },
 })
 
@@ -54,19 +56,21 @@ export const LAYERS: Layer[] = [
   fill('cuenca-alta', 'Cuenca alta', 'boundaries', '#4bcfff', 1),
   fill('cuenca-media', 'Cuenca media', 'boundaries', '#ffff03', 2),
   fill('cuenca-baja', 'Cuenca baja', 'boundaries', '#ff6b35', 3),
-  fill('cuenca-rio-cauca', 'Cuenca del río Cauca', 'boundaries', '#a9f7a4', 4),
+  fill('cuenca-rio-cauca', 'Cuenca del río Cauca', 'boundaries', '#a9f7a4', 4, undefined, false),
   fill('valle-alto-rio-cauca', 'Valle alto del río Cauca', 'boundaries', '#a9f7a4', 5),
-  fill('nodo-oriente-cali', 'Nodo Oriente Cali', 'nodes', '#81c640', 6),
-  fill('nodo-villa-rica', 'Nodo Villa Rica', 'nodes', '#ffea2b', 7),
-  fill('nodo-suarez', 'Nodo Suárez', 'nodes', '#ffaf25', 8),
-  line('rio-cauca', 'Río Cauca', '#377eb8', 9, 'cap1-voz-cuenca-alta'),
-  line('rio-magdalena', 'Río Magdalena', '#377eb8', 10),
-  line('rio-san-jorge', 'Río San Jorge', '#377eb8', 11),
-  line('rio-cesar', 'Río Cesar', '#377eb8', 12),
-  line('rio-nechi', 'Río Nechí', '#377eb8', 13),
-  line('rio-anchicaya', 'Río Anchicayá', '#377eb8', 14),
-  line('rio-san-juan', 'Río San Juan', '#377eb8', 15),
-  line('rio-atrato', 'Río Atrato', '#377eb8', 16),
+  line('rio-cauca', 'Río Cauca', '#377eb8', 6, 'cap1-voz-cuenca-alta'),
+  line('rio-magdalena', 'Río Magdalena', '#377eb8', 7),
+  line('rio-san-jorge', 'Río San Jorge', '#377eb8', 8),
+  line('rio-cesar', 'Río Cesar', '#377eb8', 9),
+  line('rio-nechi', 'Río Nechí', '#377eb8', 10),
+  line('rio-anchicaya', 'Río Anchicayá', '#377eb8', 11),
+  line('rio-san-juan', 'Río San Juan', '#377eb8', 12),
+  line('rio-atrato', 'Río Atrato', '#377eb8', 13),
+  /* Nodos al final (order alto = encima de todo): son pequeños y el
+   * área de hover de los ríos los tapaba. */
+  fill('nodo-oriente-cali', 'Nodo Oriente Cali', 'nodes', '#81c640', 20),
+  fill('nodo-villa-rica', 'Nodo Villa Rica', 'nodes', '#ffea2b', 21),
+  fill('nodo-suarez', 'Nodo Suárez', 'nodes', '#ffaf25', 22),
 ]
 
 export const GROUPS = [

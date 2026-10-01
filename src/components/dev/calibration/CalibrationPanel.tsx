@@ -14,6 +14,7 @@ import { saveCalibration } from '@services/SaveCalibration'
 import { updateLayerPGW, layerSourceId } from '@services/LayerManager'
 import {
   shiftFeatureCollection,
+  scaleFeatureCollection,
   shiftLngLat,
 } from '@services/shiftGeoJSON'
 import {
@@ -182,6 +183,9 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
   const [geoFine, setGeoFine] = useState(false)
   const [geoBulk, setGeoBulk] = useState(false)
   const geoOffsetsRef = useRef(new Map<string, { dlng: number; dlat: number }>())
+  /* Escala por capa vectorial (1 = original). Mismo patrón que offsets:
+   * Tamaño % la iguala, Escala H/V la ajustan por eje. */
+  const geoScalesRef = useRef(new Map<string, { sx: number; sy: number }>())
   const geoOriginalsRef = useRef(new Map<string, { data: { type: 'FeatureCollection'; features: Array<{ geometry: unknown }> }; file: string }>())
   /* Estado vivo por slug (offset + tamaño). Sin tocar = valores del content. */
   const subStateRef = useRef(new Map<string, { dlng: number; dlat: number; width: number; height: number }>())
@@ -1046,11 +1050,24 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
     const orig = geoOriginalsRef.current.get(id)
     if (!orig) return
     const off = geoOffsetsRef.current.get(id) ?? { dlng: 0, dlat: 0 }
+    const scale = geoScalesRef.current.get(id) ?? { sx: 1, sy: 1 }
     try {
       liveGeoJSONSource(map, layerSourceId(id))?.setData(
-        shiftFeatureCollection(orig.data, off.dlng, off.dlat),
+        shiftFeatureCollection(
+          scale.sx === 1 && scale.sy === 1
+            ? orig.data
+            : scaleFeatureCollection(orig.data, scale.sx, scale.sy),
+          off.dlng,
+          off.dlat,
+        ),
       )
     } catch { /* source aún no lista */ }
+  }
+
+  function setGeoScale(id: string, sx: number, sy: number): void {
+    geoScalesRef.current.set(id, { sx, sy })
+    applyGeoShift(id)
+    setEncTick((t) => t + 1)
   }
 
   function addGeoOffset(id: string, dLng: number, dLat: number): void {
@@ -1073,6 +1090,34 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
     for (const layer of targets) addGeoOffset(layer.id, delta.dlng, delta.dlat)
   }, [mapId, geoIdx, geoFine, geoBulk, pxDeltaToGeo])
 
+  /* Tamaño de capas vectoriales (genérico GeoJSON): escala alrededor del
+   * centroide. Tamaño % iguala ambos ejes; H/V los ajustan por separado. */
+  function scaleGeoTargets(sx: number, sy: number): void {
+    const list: GeojsonLayer[] = (getMapContent(mapId)?.layers ?? []).filter(
+      (l): l is GeojsonLayer => l.type === 'geojson',
+    )
+    const one = list[geoIdx]
+    const targets = geoBulk ? list : one === undefined ? [] : [one]
+    for (const layer of targets) setGeoScale(layer.id, sx, sy)
+  }
+
+  function scaleGeoUniform(pct: number): void {
+    const f = pct / 100
+    scaleGeoTargets(f, f)
+  }
+
+  function scaleGeoAxis(axis: 'x' | 'y', pct: number): void {
+    const list: GeojsonLayer[] = (getMapContent(mapId)?.layers ?? []).filter(
+      (l): l is GeojsonLayer => l.type === 'geojson',
+    )
+    const one = list[geoIdx]
+    const targets = geoBulk ? list : one === undefined ? [] : [one]
+    for (const layer of targets) {
+      const cur = geoScalesRef.current.get(layer.id) ?? { sx: 1, sy: 1 }
+      setGeoScale(layer.id, axis === 'x' ? pct / 100 : cur.sx, axis === 'y' ? pct / 100 : cur.sy)
+    }
+  }
+
   function selectGeo(idx: number) {
     if (geoList.length === 0) return
     setGeoIdx(idx < 0 ? geoList.length - 1 : idx >= geoList.length ? 0 : idx)
@@ -1083,6 +1128,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       (l): l is GeojsonLayer => l.type === 'geojson',
     )
     geoOffsetsRef.current.clear()
+    geoScalesRef.current.clear()
     for (const layer of list) applyGeoShift(layer.id)
     setEncTick((t) => t + 1)
   }, [mapId])
@@ -1092,13 +1138,20 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       (l): l is GeojsonLayer => l.type === 'geojson',
     )
     const r6 = (n: number): number => Math.round(n * 1e6) / 1e6
+    const r4 = (n: number): number => Math.round(n * 1e4) / 1e4
     const lines: string[] = []
     for (const layer of list) {
       const off = geoOffsetsRef.current.get(layer.id)
-      if (!off || (off.dlng === 0 && off.dlat === 0)) continue
+      const scale = geoScalesRef.current.get(layer.id)
+      const moved = off !== undefined && (off.dlng !== 0 || off.dlat !== 0)
+      const scaled = scale !== undefined && (scale.sx !== 1 || scale.sy !== 1)
+      if (!moved && !scaled) continue
       const orig = geoOriginalsRef.current.get(layer.id)
       if (!orig) continue
-      lines.push(`node scripts/shift-geojson.mjs --lng ${r6(off.dlng)} --lat ${r6(off.dlat)} ${orig.file}`)
+      const scaleFlags = scaled === true && scale !== undefined
+        ? ` --scale-x ${r4(scale.sx)} --scale-y ${r4(scale.sy)}`
+        : ''
+      lines.push(`node scripts/shift-geojson.mjs${scaleFlags} --lng ${r6(off?.dlng ?? 0)} --lat ${r6(off?.dlat ?? 0)} ${orig.file}`)
     }
     if (lines.length === 0) return
     try {
@@ -1130,6 +1183,13 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
   const subCur = subStored ?? (subBase ? { dlng: 0, dlat: 0, width: subBase.width, height: subBase.height } : null)
   const subPct =
     subBase && subBase.width > 0 && subCur ? Math.round((subCur.width / subBase.width) * 100) : 100
+
+  /* Escala viva de la capa vectorial seleccionada (1 = original).
+   * Tamaño % muestra H; al moverlo iguala ambos ejes. */
+  const geoScaleCur = geoScalesRef.current.get(geoList[geoIdx]?.id ?? '') ?? { sx: 1, sy: 1 }
+  const geoPct = Math.round(geoScaleCur.sx * 100)
+  const geoPctH = Math.round(geoScaleCur.sx * 100)
+  const geoPctV = Math.round(geoScaleCur.sy * 100)
 
   if (!state) return null
 
@@ -1556,6 +1616,10 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
                   <span>{fmtNum(geoOffsetsRef.current.get(geoList[geoIdx]?.id ?? '')?.dlat ?? 0, 6)}°</span>
                 </div>
                 <div className={styles.readoutRow}>
+                  <span>Escala:</span>
+                  <span>{geoScaleCur.sx.toFixed(2)}×{geoScaleCur.sy.toFixed(2)}</span>
+                </div>
+                <div className={styles.readoutRow}>
                   <span>Archivo:</span>
                   <span>{geoOriginalsRef.current.get(geoList[geoIdx]?.id ?? '')?.file ?? '—'}</span>
                 </div>
@@ -1563,6 +1627,87 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
                   <span>Nota:</span>
                   <span>enciende la capa en el menú para verla · el archivo puede usarse en otros mapas</span>
                 </div>
+              </div>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Tamaño %</label>
+                <input
+                  className={styles.sizeSlider}
+                  type="range"
+                  min={5}
+                  max={500}
+                  step={1}
+                  value={geoPct}
+                  onChange={(e) => scaleGeoUniform(Number(e.target.value))}
+                  title="Escalar la capa vectorial en porcentaje (ambos ejes)"
+                />
+                <input
+                  className={styles.sizePctInput}
+                  type="number"
+                  min={5}
+                  max={500}
+                  step={1}
+                  value={geoPct}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value, 10)
+                    if (Number.isFinite(v)) scaleGeoUniform(v)
+                  }}
+                  title="Escribir porcentaje manualmente"
+                />
+                <span className={styles.displayValue}>%</span>
+              </div>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Escala H %</label>
+                <input
+                  className={styles.sizeSlider}
+                  type="range"
+                  min={5}
+                  max={500}
+                  step={1}
+                  value={geoPctH}
+                  onChange={(e) => scaleGeoAxis('x', Number(e.target.value))}
+                  title="Ancho de la capa vectorial (porcentaje)"
+                />
+                <input
+                  className={styles.sizePctInput}
+                  type="number"
+                  min={5}
+                  max={500}
+                  step={1}
+                  value={geoPctH}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value, 10)
+                    if (Number.isFinite(v)) scaleGeoAxis('x', v)
+                  }}
+                  title="Ancho manual (porcentaje)"
+                />
+                <span className={styles.displayValue}>%</span>
+              </div>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Escala V %</label>
+                <input
+                  className={styles.sizeSlider}
+                  type="range"
+                  min={5}
+                  max={500}
+                  step={1}
+                  value={geoPctV}
+                  onChange={(e) => scaleGeoAxis('y', Number(e.target.value))}
+                  title="Alto de la capa vectorial (porcentaje)"
+                />
+                <input
+                  className={styles.sizePctInput}
+                  type="number"
+                  min={5}
+                  max={500}
+                  step={1}
+                  value={geoPctV}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value, 10)
+                    if (Number.isFinite(v)) scaleGeoAxis('y', v)
+                  }}
+                  title="Alto manual (porcentaje)"
+                />
+                <span className={styles.displayValue}>%</span>
               </div>
               <div className={styles.separator} />
             </>

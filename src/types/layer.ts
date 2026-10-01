@@ -25,6 +25,9 @@ export interface LayerBase {
   /** Si está presente, el click sobre la capa abre este modal del sistema
    *  (mismo patrón que Poi.modalId). Ej: cuencas Tejidos del Agua. */
   modalId?: string
+  /** Etiqueta de hover con el nombre (opt-in por mapa: ui.layerTooltips).
+   *  Default: true. En false la capa no muestra tooltip. */
+  tooltip?: boolean
   legend?: {
     swatch?: string
     description?: string
