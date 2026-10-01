@@ -9,7 +9,7 @@ const encuadres = [
     id: 'encuadre-mosaicos',
     name: 'Mosaico de \ncuencas y aguas',
     targetMapId: 'chapter1-mosaicos-del-agua',
-    labelCoords: [-75.955, 2.475] as [number, number],
+    labelCoords: [-76.4733, 3.0707] as [number, number],
     url: '/assets/geojson/encuadre-sur-valle.json',
   },
   {
@@ -36,7 +36,7 @@ const encuadres = [
     id: 'encuadre-un-rio-cauca',
     name: 'Un río Cauca, muchos mundos... \nen transición',
     targetMapId: 'chapter1-un-rio-cauca',
-    labelCoords: [-67.14, 1.69] as [number, number],
+    labelCoords: [-75.3, 3.5] as [number, number],
     url: '/assets/geojson/encuadre-limites-cuenca.json',
   },
 ]

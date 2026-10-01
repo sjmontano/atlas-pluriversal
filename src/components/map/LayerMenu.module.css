@@ -202,6 +202,24 @@
   padding: 7vh 24px 7vh 40px;
 }
 
+/* Ventanas angostas (pero no móvil): el panel de 25vw deja ~30px al texto.
+ * Se ensancha a 32vw y se recorta cromo (paddings/sangrías) para que los
+ * nombres quepan en 2 líneas legibles en vez de picarse por letra. */
+@media (max-width: 1100px) {
+  .panel {
+    width: 32vw;
+  }
+  .body {
+    padding: 7vh 16px 7vh 20px;
+  }
+  .groupChildren {
+    padding-left: 10px;
+  }
+  .layerRow {
+    padding-left: 8px;
+  }
+}
+
 /* ── Título del menú (v17 .subtitle, opcional por mapa) ───────────────── */
 .menuTitle {
   margin: 0 0 12px;
@@ -233,13 +251,8 @@
   line-height: 1.35;
 }
 
-.groupName {
-  color: #fffeee;
-  font-size: 14px;
-  font-weight: 700;
-  flex: 1;
-  cursor: pointer;
-}
+/* Base única (no duplicar): min-width:0 para que el flex-item encoja y el
+   texto envuelva dentro del panel en vez de desbordarlo. */
 
 /* Chevron v17 (^ expandido / v colapsado) */
 .chevBtn {
@@ -328,6 +341,9 @@
   font-size: 14px;
   font-weight: 700;
   flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  hyphens: auto;
   cursor: pointer;
 }
 
@@ -357,6 +373,9 @@
 .layerName {
   color: #fffeee;
   flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  hyphens: auto;
   font-size: 14px;
   line-height: 1.35;
   text-wrap: pretty;

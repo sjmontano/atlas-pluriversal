@@ -6,13 +6,30 @@
  * `targetMapId` y este servicio puro renderiza polígono (opcional) +
  * etiqueta clickeable y delega la navegación (URL-first) al callback.
  *
+ * Las etiquetas son IMÁGENES en capas symbol (no Markers DOM): el Marker
+ * HTML se posiciona por JS en cada frame y podía desfasarse del canvas
+ * WebGL al zoom (deriva etiqueta vs polígono). El `icon-image` vive en el
+ * mismo pase de render que fill/line: imposible que diverja, en todo zoom
+ * y pantalla. Sin `text-field` (BLANK_STYLE no tiene `glyphs`): el texto va
+ * horneado en la imagen (ver `encuadreLabelIcons.ts`).
+ *
+ * Interacción con hit-test manual (`map.project` + radio), igual que
+ * `PoiManager.bindPoiEvents`: MapLibre v6 lanza en `queryRenderedFeatures`
+ * sobre capas con `icon-image`, así que nada de `map.on(capa)` para labels.
+ *
  * Patrón: igual que BasemapManager/PoiManager — add/remove con IDs
  * prefijados y try/catch defensivo en destroy.
  */
 
 import type * as maplibregl from 'maplibre-gl'
-import { Marker } from 'maplibre-gl'
 import type { Encuadre } from '../types/content.ts'
+import {
+  composeEncuadreLabel,
+  loadWithTimeout,
+  LABEL_ICON_SIZE,
+  LABEL_METRICS,
+  LABEL_METRICS_COMPACT,
+} from './encuadreLabelIcons.ts'
 
 interface FeatureCollectionData {
   type: 'FeatureCollection'
@@ -27,12 +44,29 @@ const LABEL_BG = '/assets/ui/tooltips/fondo-tooltip-4.webp'
 const LABEL_BG_HOVER = '/assets/ui/tooltips/fondo-tooltip-3.webp'
 const LABEL_TEXT = '#ffffff'
 const LABEL_TEXT_HOVER = '#193965'
+/* Respaldo si el webp no carga (offline total): azul noche / celeste claro. */
+const LABEL_BG_FALLBACK = '#0a2240'
+const LABEL_BG_HOVER_FALLBACK = '#dce9f2'
+/* Medio punto de la etiqueta + holgura para el hit-test (como los 24px POI). */
+const HIT_SLOP_PX = 8
+
+interface LabelBox {
+  id: string
+  targetMapId: string
+  coords: [number, number]
+  halfW: number
+  halfH: number
+  hasPolygon: boolean
+}
 
 interface Tracked {
   sources: string[]
   layers: string[]
-  markers: Marker[]
+  images: string[]
   layerHandlers: Array<{ layer: string; type: 'click' | 'mouseenter' | 'mouseleave'; fn: (ev: unknown) => void }>
+  mapHandlers: Array<{ type: 'click' | 'mousemove'; fn: (ev: maplibregl.MapMouseEvent) => void }>
+  labels: LabelBox[]
+  canvasLeave: (() => void) | null
 }
 
 const trackedByMap = new WeakMap<maplibregl.Map, Tracked>()
@@ -40,112 +74,24 @@ const trackedByMap = new WeakMap<maplibregl.Map, Tracked>()
 function track(map: maplibregl.Map): Tracked {
   let t = trackedByMap.get(map)
   if (t === undefined) {
-    t = { sources: [], layers: [], markers: [], layerHandlers: [] }
+    t = { sources: [], layers: [], images: [], layerHandlers: [], mapHandlers: [], labels: [], canvasLeave: null }
     trackedByMap.set(map, t)
   }
   return t
 }
 
-interface EncuadreHighlight {
-  on: () => void
-  off: () => void
+function isCompact(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(max-width: 768px)').matches
+  )
 }
 
-const NO_HIGHLIGHT: EncuadreHighlight = { on: () => undefined, off: () => undefined }
-
-function labelElement(
-  encuadre: Encuadre,
-  onNavigate: (target: string) => void,
-  highlight: EncuadreHighlight,
-): HTMLButtonElement {
-  const el = document.createElement('button')
-  el.type = 'button'
-  el.setAttribute('aria-label', `Ir a: ${encuadre.name}`)
-  /* Clase para el ajuste responsive (AtlasMap.module.css): en móvil las
-     etiquetas se compactan. OJO: MapLibre posiciona el marker escribiendo
-     `transform` en este elemento. NO tocar el.style.transform aquí (rompe
-     la posición); lo visual va en el wrapper interno. */
-  el.className = 'atlas-encuadre-label'
-  Object.assign(el.style, {
-    all: 'unset',
-    cursor: 'pointer',
-    position: 'relative',
-    display: 'block',
-    //maxWidth: '220px',
-  } satisfies Partial<CSSStyleDeclaration>)
-
-  const inner = document.createElement('span')
-  inner.className = 'atlas-encuadre-label-inner'
-  /* Rotación opt-in por encuadre (v17: 19° en intro cap 3). Va en el
-   * wrapper interno porque MapLibre escribe `transform` en el botón. */
-  const rotate = encuadre.labelRotate ?? 0
-  const baseTransform = rotate !== 0 ? `rotate(${rotate}deg)` : ''
-  /* Estilo verbatim v17: Noto Sans itálica 500, 1.8vh/2vh, blanco sobre
-   * FondoTooltip4. Sin borde propio (v17 solo redondea el fondo a 6px).
-   * Se conserva whiteSpace normal (nuestros names no traen <br> como v17)
-   * y el responsive de AtlasMap.module.css sigue mandando en móvil. */
-  Object.assign(inner.style, {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '8px 8px',
-    fontFamily: '"Noto Sans", sans-serif',
-    fontStyle: 'italic',
-    fontSize: '1.8vh',
-    fontWeight: '500',
-    lineHeight: '2vh',
-    textAlign: 'center',
-    color: LABEL_TEXT,
-    whiteSpace: 'pre-line',
-    textShadow: '0 1px 3px rgba(3, 9, 30, 0.85)',
-    transition: 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), filter 0.25s ease',
-    transform: baseTransform,
-  } satisfies Partial<CSSStyleDeclaration>)
-
-  const bg = document.createElement('img')
-  bg.src = LABEL_BG
-  bg.alt = ''
-  Object.assign(bg.style, {
-    position: 'absolute',
-    inset: '0',
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    zIndex: '-1',
-    borderRadius: '6px',
-    pointerEvents: 'none',
-  } satisfies Partial<CSSStyleDeclaration>)
-  inner.appendChild(bg)
-
-  const text = document.createElement('span')
-  const raw = encuadre.tooltip ?? encuadre.name
-  raw.split('\n').forEach((line, i) => {
-    if (i > 0) text.appendChild(document.createElement('br'))
-    text.appendChild(document.createTextNode(line))
-  })
-  inner.appendChild(text)
-  el.appendChild(inner)
-
-  el.addEventListener('mouseenter', () => {
-    inner.style.transform = `${baseTransform} scale(1.06)`.trim()
-    inner.style.filter = 'brightness(1.15)'
-    bg.src = LABEL_BG_HOVER
-    text.style.color = LABEL_TEXT_HOVER
-    highlight.on()
-  })
-  el.addEventListener('mouseleave', () => {
-    inner.style.transform = baseTransform
-    inner.style.filter = ''
-    bg.src = LABEL_BG
-    text.style.color = ''
-    highlight.off()
-  })
-  el.addEventListener('click', (e) => {
-    e.stopPropagation()
-    onNavigate(encuadre.targetMapId)
-  })
-  return el
+function setPolygonHighlight(map: maplibregl.Map, id: string, on: boolean): void {
+  try {
+    map.setPaintProperty(`${PREFIX}-fill-${id}`, 'fill-opacity', on ? 0.25 : 0)
+  } catch { /* capa aún no lista o encuadre sin polígono */ }
 }
 
 export async function addEncuadres(
@@ -153,11 +99,27 @@ export async function addEncuadres(
   encuadres: Encuadre[],
   onNavigate: (targetMapId: string) => void,
 ): Promise<void> {
+  /* Idempotente (PoiManager.addPois hace lo mismo): evita duplicar capas
+   * si el efecto se re-ejecuta sobre el mismo mapa. */
+  removeEncuadres(map)
   const t = track(map)
+  const compact = isCompact()
+  const metrics = compact ? LABEL_METRICS_COMPACT : LABEL_METRICS
+
+  /* Fuente del canvas: esperar Noto Sans para hornear el texto correcto. */
+  try {
+    await (document as Document & { fonts?: { ready: Promise<unknown> } }).fonts?.ready
+  } catch { /* jsdom o fuente bloqueada: se sigue con fallback */ }
+  const [bgNormal, bgHover] = await Promise.all([
+    loadWithTimeout(LABEL_BG),
+    loadWithTimeout(LABEL_BG_HOVER),
+  ])
 
   await Promise.all(
     encuadres.map(async (encuadre) => {
-      /* Polígono (opcional) */
+      /* Polígono (opcional) — sin cambios: fill sin relleno base + línea
+       * punteada, clickeables, con cursor pointer en hover. */
+      let hasPolygon = false
       if (encuadre.url !== undefined) {
         try {
           const res = await fetch(encuadre.url)
@@ -204,40 +166,141 @@ export async function addEncuadres(
             { layer: fillId, type: 'mouseleave', fn: pointerOff },
             { layer: lineId, type: 'mouseleave', fn: pointerOff },
           )
+          hasPolygon = true
         } catch {
           /* polígono ausente: la etiqueta sigue navegable */
         }
       }
 
-      /* Resaltado sutil del cuadrante al hover de la etiqueta: solo relleno,
-       * sin cambio de grosor (el salto de line-width no tiene transición en
-       * MapLibre y se ve brusco). */
-      const highlight: EncuadreHighlight = encuadre.url === undefined
-        ? NO_HIGHLIGHT
-        : {
-          on: () => {
-            try {
-              map.setPaintProperty(`${PREFIX}-fill-${encuadre.id}`, 'fill-opacity', 0.25)
-              map.setPaintProperty(`${PREFIX}-line-${encuadre.id}`, 'line-width', 2.5)
-
-            } catch { /* capa aún no lista */ }
+      /* Etiqueta como imagen canvas en capa symbol: mismo transform que el
+       * polígono en todo zoom/pantalla. `icon-rotate` preserva los 19° del
+       * intro cap 3 sin tocar transforms del DOM. */
+      try {
+        const normal = composeEncuadreLabel(encuadre.name, {
+          metrics,
+          textColor: LABEL_TEXT,
+          bg: bgNormal,
+          fallbackBg: LABEL_BG_FALLBACK,
+        })
+        const hover = composeEncuadreLabel(encuadre.name, {
+          metrics,
+          textColor: LABEL_TEXT_HOVER,
+          bg: bgHover,
+          fallbackBg: LABEL_BG_HOVER_FALLBACK,
+        })
+        const imgId = `${PREFIX}-img-${encuadre.id}`
+        const imgHoverId = `${PREFIX}-img-${encuadre.id}-hover`
+        const labelSid = `${PREFIX}-labelsrc-${encuadre.id}`
+        const labelId = `${PREFIX}-label-${encuadre.id}`
+        map.addImage(imgId, normal)
+        map.addImage(imgHoverId, hover)
+        map.addSource(labelSid, {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                properties: {},
+                geometry: { type: 'Point', coordinates: encuadre.labelCoords },
+              },
+            ],
           },
-          off: () => {
-            try {
-              map.setPaintProperty(`${PREFIX}-fill-${encuadre.id}`, 'fill-opacity', 0)
-              map.setPaintProperty(`${PREFIX}-line-${encuadre.id}`, 'line-width', 2.5)
-
-            } catch { /* noop */ }
+        })
+        map.addLayer({
+          id: labelId,
+          type: 'symbol',
+          source: labelSid,
+          layout: {
+            'icon-image': imgId,
+            'icon-size': LABEL_ICON_SIZE,
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+            'icon-rotate': encuadre.labelRotate ?? 0,
+            'icon-rotation-alignment': 'viewport',
           },
-        }
-
-      /* Etiqueta clickeable */
-      const marker = new Marker({ element: labelElement(encuadre, onNavigate, highlight) })
-        .setLngLat(encuadre.labelCoords)
-        .addTo(map)
-      t.markers.push(marker)
+        })
+        t.images.push(imgId, imgHoverId)
+        t.sources.push(labelSid)
+        t.layers.push(labelId)
+        t.labels.push({
+          id: encuadre.id,
+          targetMapId: encuadre.targetMapId,
+          coords: encuadre.labelCoords,
+          halfW: (normal.width * LABEL_ICON_SIZE) / 2,
+          halfH: (normal.height * LABEL_ICON_SIZE) / 2,
+          hasPolygon,
+        })
+      } catch {
+        /* sin etiqueta canvas (WebGL sin imágenes): el polígono navega igual */
+      }
     }),
   )
+
+  /* Hit-test manual de etiquetas (nunca queryRenderedFeatures: bug v6 con
+   * icon-image). El hover conmuta la imagen normal/hover y el relleno del
+   * polígono; el click navega. */
+  let hoveredId: string | null = null
+  const pick = (point: { x: number; y: number }): LabelBox | null => {
+    let best: LabelBox | null = null
+    let bestScore = Infinity
+    for (const label of t.labels) {
+      let p: { x: number; y: number }
+      try {
+        p = map.project(label.coords)
+      } catch {
+        continue
+      }
+      const dx = Math.abs(p.x - point.x)
+      const dy = Math.abs(p.y - point.y)
+      if (dx > label.halfW + HIT_SLOP_PX || dy > label.halfH + HIT_SLOP_PX) continue
+      const score = Math.max(dx / (label.halfW + 1), dy / (label.halfH + 1))
+      if (score < bestScore) {
+        best = label
+        bestScore = score
+      }
+    }
+    return best
+  }
+  const applyHover = (id: string | null) => {
+    if (id === hoveredId) return
+    const prev = t.labels.find((l) => l.id === hoveredId)
+    const next = t.labels.find((l) => l.id === id)
+    hoveredId = id
+    try {
+      if (prev !== undefined) {
+        map.setLayoutProperty(`${PREFIX}-label-${prev.id}`, 'icon-image', `${PREFIX}-img-${prev.id}`)
+        if (prev.hasPolygon) setPolygonHighlight(map, prev.id, false)
+      }
+      if (next !== undefined) {
+        map.setLayoutProperty(`${PREFIX}-label-${next.id}`, 'icon-image', `${PREFIX}-img-${next.id}-hover`)
+        if (next.hasPolygon) setPolygonHighlight(map, next.id, true)
+      }
+      map.getCanvas().style.cursor = next !== undefined ? 'pointer' : ''
+    } catch { /* capa aún no lista */ }
+  }
+  const onMove = (e: maplibregl.MapMouseEvent) => {
+    applyHover(pick(e.point)?.id ?? null)
+  }
+  const onClick = (e: maplibregl.MapMouseEvent) => {
+    const hit = pick(e.point)
+    if (hit !== null) onNavigate(hit.targetMapId)
+  }
+  const onLeave = () => applyHover(null)
+  map.on('mousemove', onMove)
+  map.on('click', onClick)
+  t.mapHandlers.push({ type: 'mousemove', fn: onMove }, { type: 'click', fn: onClick })
+  try {
+    const canvas = map.getCanvas()
+    if (canvas !== null && typeof canvas.addEventListener === 'function') {
+      canvas.addEventListener('mouseleave', onLeave)
+      t.canvasLeave = () => {
+        try {
+          canvas.removeEventListener('mouseleave', onLeave)
+        } catch { /* noop */ }
+      }
+    }
+  } catch { /* entorno sin canvas */ }
 }
 
 export function removeEncuadres(map: maplibregl.Map): void {
@@ -246,14 +309,20 @@ export function removeEncuadres(map: maplibregl.Map): void {
   for (const h of t.layerHandlers) {
     try { map.off(h.type, h.layer, h.fn) } catch { /* noop */ }
   }
+  for (const h of t.mapHandlers) {
+    try { map.off(h.type, h.fn) } catch { /* noop */ }
+  }
+  try {
+    t.canvasLeave?.()
+  } catch { /* noop */ }
   for (const id of t.layers) {
     try { if (map.getLayer(id)) map.removeLayer(id) } catch { /* noop */ }
   }
   for (const id of t.sources) {
     try { if (map.getSource(id)) map.removeSource(id) } catch { /* noop */ }
   }
-  for (const m of t.markers) {
-    try { m.remove() } catch { /* noop */ }
+  for (const id of t.images) {
+    try { if (map.hasImage(id)) map.removeImage(id) } catch { /* noop */ }
   }
   trackedByMap.delete(map)
 }
