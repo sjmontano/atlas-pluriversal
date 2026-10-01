@@ -141,6 +141,48 @@ const AT_ASOCOMS: Modal = fichaPerfil(
   'chapter2-suarez',
 )
 
+const AT_ASOMUAFROYO: Modal = fichaPerfil(
+  'cap2-at-asomuafroyo',
+  'ASOMUAFROYO',
+  'Asociacion de Mujeres Afrodescendientes Yolombo y Gelima',
+  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761186008/geoImages/i44mm4ct4uxhaga8zlnj.webp',
+  'Monte Redondo. Suarez, Cauca.',
+  'Veredas Yolombo y Gelima.',
+  'Suarez, Cauca',
+  'Organizacion de mujeres afrodescendientes que trabajan por la defensa de los derechos territoriales y la autonomia economica.',
+  ['Desigualdad de genero', 'Falta de oportunidades economicas', 'Presion territorial'],
+  ['Fortalecimiento de la economia comunitaria', 'Defensa de los derechos territoriales', 'Formacion en derechos humanos'],
+  'chapter2-suarez',
+)
+
+const AT_CONSEJO_OVEJAS: Modal = fichaPerfil(
+  'cap2-at-consejo-ovejas',
+  'Consejo Comunitario de Comunidades Negras Cuenca Río Ovejas',
+  'Consejo Comunitario Cuenca Rio Ovejas',
+  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761186036/geoImages/mbyeccjbklrgzx4c3824.webp',
+  'Suarez, Cauca.',
+  'Cuenca Rio Ovejas.',
+  'Suarez, Cauca',
+  'Consejo comunitario que defiende los derechos colectivos de las comunidades negras de la cuenca del rio Ovejas.',
+  ['Titulos mineros no consultados', 'Contaminacion del rio', 'Presion sobre el territorio'],
+  ['Defensa del territorio y el rio', 'Consulta previa libre e informada', 'Fortalecimiento de la organizacion comunitaria'],
+  'chapter2-suarez',
+)
+
+const AT_CMJ: Modal = fichaPerfil(
+  'cap2-at-cmj',
+  'Consejo Municipal de Juventud',
+  'Consejo Municipal de Juventud de Suarez',
+  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761186247/geoImages/ul3u7hmi5jzvmwgars7z.webp',
+  'Suarez, Cauca.',
+  'Zona urbana y rural de Suarez.',
+  'Suarez, Cauca',
+  'Instancia de participacion juvenil para la incidencia en politicas publicas municipales.',
+  ['Baja participacion juvenil', 'Falta de espacios de decision', 'Desconexion con administracion municipal'],
+  ['Incidencia en planes de desarrollo', 'Veeduria a recursos publicos', 'Fortalecimiento de agendas juveniles'],
+  'chapter2-suarez',
+)
+
 const AT_PLATAFORMA_JUVENTUDES: Modal = fichaPerfil(
   'cap2-at-plataforma-juventudes',
   'Plataforma de Juventudes Suarez',
@@ -408,6 +450,9 @@ export const CHAPTER2_MODALS: Modal[] = [
   AT_ASOYOGE,
   AT_GUARDIA_CIMARRONA,
   AT_ASOCOMS,
+  AT_ASOMUAFROYO,
+  AT_CONSEJO_OVEJAS,
+  AT_CMJ,
   AT_PLATAFORMA_JUVENTUDES,
   AT_CASA_NINO,
   AT_UOAFROC,
