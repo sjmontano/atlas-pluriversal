@@ -16,7 +16,7 @@ const encuadres = [
     id: 'encuadre-ecosistemas',
     name: 'Existencias y transformaciones ecosistémicas',
     targetMapId: 'chapter1-ecosistemas',
-    labelCoords: [-75.045, 2.68] as [number, number],
+    labelCoords: [-75.72, 4.6] as [number, number],
     url: '/assets/geojson/encuadre-cuenca-alta.json',
   },
   {

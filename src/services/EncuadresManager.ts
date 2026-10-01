@@ -10,8 +10,8 @@
  * prefijados y try/catch defensivo en destroy.
  */
 
-import { Marker } from 'maplibre-gl'
 import type * as maplibregl from 'maplibre-gl'
+import { Marker } from 'maplibre-gl'
 import type { Encuadre } from '../types/content.ts'
 
 interface FeatureCollectionData {
@@ -20,7 +20,7 @@ interface FeatureCollectionData {
 }
 
 const PREFIX = 'atlas-encuadre'
-const DEFAULT_COLOR = '#5577af'
+const DEFAULT_COLOR = '#193965'
 /* v17 (agregarEncueadres.jsx): fondo oscuro por defecto (FondoTooltip4),
  * hover → fondo claro (FondoTooltip3) + texto azul #193965. */
 const LABEL_BG = '/assets/ui/tooltips/fondo-tooltip-4.webp'
@@ -97,7 +97,7 @@ function labelElement(
     lineHeight: '2vh',
     textAlign: 'center',
     color: LABEL_TEXT,
-    whiteSpace: 'normal',
+    whiteSpace: 'pre-line',
     textShadow: '0 1px 3px rgba(3, 9, 30, 0.85)',
     transition: 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), filter 0.25s ease',
     transform: baseTransform,
@@ -181,7 +181,7 @@ export async function addEncuadres(
             id: lineId,
             type: 'line',
             source: sid,
-            paint: { 'line-color': color, 'line-width': 1.5, 'line-dasharray': [2, 2] },
+            paint: { 'line-color': color, 'line-width': 2.5, 'line-dasharray': [2, 2] },
           })
 
           const go = () => onNavigate(encuadre.targetMapId)
@@ -209,23 +209,27 @@ export async function addEncuadres(
         }
       }
 
-      /* Resaltado sutil del cuadrante al hover de la etiqueta */
+      /* Resaltado sutil del cuadrante al hover de la etiqueta: solo relleno,
+       * sin cambio de grosor (el salto de line-width no tiene transición en
+       * MapLibre y se ve brusco). */
       const highlight: EncuadreHighlight = encuadre.url === undefined
         ? NO_HIGHLIGHT
         : {
-            on: () => {
-              try {
-                map.setPaintProperty(`${PREFIX}-fill-${encuadre.id}`, 'fill-opacity', 0.25)
-                map.setPaintProperty(`${PREFIX}-line-${encuadre.id}`, 'line-width', 3)
-              } catch { /* capa aún no lista */ }
-            },
-            off: () => {
-              try {
-                map.setPaintProperty(`${PREFIX}-fill-${encuadre.id}`, 'fill-opacity', 0)
-                map.setPaintProperty(`${PREFIX}-line-${encuadre.id}`, 'line-width', 1.5)
-              } catch { /* noop */ }
-            },
-          }
+          on: () => {
+            try {
+              map.setPaintProperty(`${PREFIX}-fill-${encuadre.id}`, 'fill-opacity', 0.25)
+              map.setPaintProperty(`${PREFIX}-line-${encuadre.id}`, 'line-width', 2.5)
+
+            } catch { /* capa aún no lista */ }
+          },
+          off: () => {
+            try {
+              map.setPaintProperty(`${PREFIX}-fill-${encuadre.id}`, 'fill-opacity', 0)
+              map.setPaintProperty(`${PREFIX}-line-${encuadre.id}`, 'line-width', 2.5)
+
+            } catch { /* noop */ }
+          },
+        }
 
       /* Etiqueta clickeable */
       const marker = new Marker({ element: labelElement(encuadre, onNavigate, highlight) })
