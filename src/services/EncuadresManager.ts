@@ -71,7 +71,7 @@ function labelElement(
     cursor: 'pointer',
     position: 'relative',
     display: 'block',
-    maxWidth: '220px',
+    //maxWidth: '220px',
   } satisfies Partial<CSSStyleDeclaration>)
 
   const inner = document.createElement('span')

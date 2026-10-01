@@ -16,12 +16,12 @@ const encuadres = [
     id: 'encuadre-ecosistemas',
     name: 'Existencias y transformaciones ecosistémicas',
     targetMapId: 'chapter1-ecosistemas',
-    labelCoords: [-75.72, 4.6] as [number, number],
+    labelCoords: [-75.045, 2.68] as [number, number],
     url: '/assets/geojson/encuadre-cuenca-alta.json',
   },
   {
     id: 'encuadre-bredunco',
-    name: 'Bredunco, Caucayaco o Cauca en la vertiente del Caribe',
+    name: 'Bredunco, Caucayaco o \nCauca en la vertiente del Caribe',
     targetMapId: 'chapter1-bredunco',
     labelCoords: [-78.095, 9.25] as [number, number],
     url: '/assets/geojson/encuadre-cuenca-completa.json',
@@ -34,14 +34,12 @@ const encuadres = [
   },
   {
     id: 'encuadre-un-rio-cauca',
-    name: 'Un río Cauca, muchos mundos... en transición',
+    name: 'Un río Cauca, muchos mundos... \nen transición',
     targetMapId: 'chapter1-un-rio-cauca',
-    labelCoords: [-78.095, 9.25] as [number, number],
+    labelCoords: [-67.14, 1.69] as [number, number],
     url: '/assets/geojson/encuadre-limites-cuenca.json',
-    tooltip: 'Un Río Cauca, muchos mundos en transición',
   },
 ]
-
 const geo = {
   pgw: [0, 0.002291904891, 0.002292263474, 0, -79.43968707918096, -1.987827190702011] as const,
   width: 3649,
@@ -54,7 +52,6 @@ const config = {
   viewportMaxBounds: null,
   dragPan: false,
   scrollZoom: true,
-  useImageBase: false,
 }
 
 export default {
