@@ -43,7 +43,7 @@ async function addVectorBasemap(map: maplibregl.Map, requestId: number): Promise
       sprite?: string
     }
 
-    const beforeLayer = map.getLayer('atlas-base-image-layer') ? 'atlas-base-image-layer' : undefined
+    const anchor = bottomAnchor(map)
 
     if (style.glyphs) {
       try { (map as unknown as { setGlyphs?: (url: string) => void }).setGlyphs?.(style.glyphs) } catch { /* noop */ }
@@ -60,6 +60,7 @@ async function addVectorBasemap(map: maplibregl.Map, requestId: number): Promise
       }
     }
 
+    const layerIds: string[] = []
     for (const layer of style.layers ?? []) {
       if (requestId !== vectorRequestId) return
       const source = layer['source'] as string | undefined
@@ -68,14 +69,42 @@ async function addVectorBasemap(map: maplibregl.Map, requestId: number): Promise
         id: `${VECTOR_PREFIX}-${layer['id']}`,
         ...(source ? { source: `${VECTOR_PREFIX}-${source}` } : {}),
       }
-      if (!map.getLayer(namespacedLayer.id as string)) {
-        map.addLayer(namespacedLayer as never, beforeLayer)
+      const id = namespacedLayer.id as string
+      layerIds.push(id)
+      if (!map.getLayer(id)) {
+        map.addLayer(namespacedLayer as never, anchor)
+      }
+    }
+
+    // Refuerzo determinista del orden: todas las capas del basemap justo
+    // antes del ancla, en orden → quedan debajo de todo el contenido.
+    if (anchor && map.getLayer(anchor)) {
+      for (const id of layerIds) {
+        try {
+          if (map.getLayer(id)) map.moveLayer(id, anchor)
+        } catch { /* noop */ }
       }
     }
 
     logger.info(CATEGORY, 'Basemap added: light (OpenFreeMap Positron, vector)')
   } catch (e) {
     logger.warn(CATEGORY, 'Error adding vector basemap', e)
+  }
+}
+
+/** Ancla de inserción: primera capa de contenido del Atlas (imagen base,
+ *  tiles XYZ, capas de datos, POIs…). Insertar el basemap justo antes de
+ *  ella lo deja POR DEBAJO DE TODO, solo encima del `background` del estilo
+ *  base (que es opaco: debajo de él sería invisible). */
+function bottomAnchor(map: maplibregl.Map): string | undefined {
+  try {
+    const layers = map.getStyle()?.layers ?? []
+    const anchor = layers.find(
+      (l) => l.id !== 'background' && !l.id.startsWith(`${VECTOR_PREFIX}-`) && l.id !== BASEMAP_LAYER_ID,
+    )
+    return anchor?.id
+  } catch {
+    return undefined
   }
 }
 
@@ -100,7 +129,7 @@ export function addBasemap(map: maplibregl.Map, style: BasemapStyle): void {
       attribution: BASEMAP_ATTRIBUTION[style],
     })
 
-    const beforeLayer = map.getLayer('atlas-base-image-layer') ? 'atlas-base-image-layer' : undefined
+    const beforeLayer = bottomAnchor(map)
     map.addLayer({
       id: BASEMAP_LAYER_ID,
       type: 'raster',
