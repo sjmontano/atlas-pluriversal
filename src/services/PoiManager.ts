@@ -4,14 +4,15 @@ import type { Poi, PoiVariant } from '../types/poi.ts'
 import { composeArrowIcon, composeGotaIcon, ARROW_COLOR } from './poiIcons'
 import { POI_THEME } from '@content/theme'
 
-interface GeoJSONFeature {
+export interface GeoJSONFeature {
   type: 'Feature'
   id?: string | number
   properties: Record<string, unknown>
   geometry: { type: 'Point'; coordinates: [number, number] }
 }
 
-const POIS_SOURCE_ID = 'atlas-pois-source'
+/** Source única de POIs (la usa también el panel dev para recalibrar). */
+export const POIS_SOURCE_ID = 'atlas-pois-source'
 const POIS_LAYER_ID = 'atlas-pois-layer'
 const POIS_CIRCLE_LAYER_ID = 'atlas-pois-circle-layer'
 const POIS_PULSE_LAYER_ID = 'atlas-pois-pulse-layer'
@@ -298,6 +299,26 @@ function variantOf(poi: Poi): PoiVariant {
   return poi.variant ?? 'number'
 }
 
+/** Feature GeoJSON de un POI (mismo mapeo que usa addPois; reutilizable). */
+export function poiToFeature(poi: Poi): GeoJSONFeature {
+  const variant = variantOf(poi)
+  return {
+    type: 'Feature',
+    id: poi.id,
+    properties: {
+      id: poi.id,
+      name: poi.name,
+      numero: poi.numero,
+      popupTitle: poi.popup.title,
+      size: poi.size ?? 'normal',
+      variant,
+      angle: poi.angle ?? 0,
+      markerIcon: poi.id,
+    },
+    geometry: { type: 'Point', coordinates: poi.coords },
+  }
+}
+
 // Filtros por variante: cada capa sólo renderiza los features de su tipo.
 const variantFilter = (variant: PoiVariant): ExpressionSpecification => [
   '==',
@@ -389,24 +410,7 @@ export function addPois(
   // `icon-image` que aún no existe en el sprite.
   setupImageResolver(map, pois)
 
-  const features: GeoJSONFeature[] = pois.map((poi) => {
-    const variant = variantOf(poi)
-    return {
-      type: 'Feature',
-      id: poi.id,
-      properties: {
-        id: poi.id,
-        name: poi.name,
-        numero: poi.numero,
-        popupTitle: poi.popup.title,
-        size: poi.size ?? 'normal',
-        variant,
-        angle: poi.angle ?? 0,
-        markerIcon: poi.id,
-      },
-      geometry: { type: 'Point', coordinates: poi.coords },
-    }
-  })
+  const features: GeoJSONFeature[] = pois.map((poi) => poiToFeature(poi))
 
   map.addSource(POIS_SOURCE_ID, {
     type: 'geojson',

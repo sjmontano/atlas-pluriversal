@@ -20,10 +20,12 @@ import {
   encuadrePolygonSourceId,
   encuadreLabelSourceId,
 } from '@services/EncuadresManager'
+import { POIS_SOURCE_ID, poiToFeature } from '@services/PoiManager'
 import { processBounds } from '@services/BoundsCalculator'
 import { useLayerStore } from '@stores/layerStore'
 import type { Layer } from '../../../types/layer.ts'
 import type { Encuadre } from '../../../types/content.ts'
+import type { Poi } from '../../../types/poi.ts'
 import type { BoundsResult } from '@services/BoundsCalculator'
 import styles from './CalibrationPanel.module.css'
 
@@ -44,6 +46,7 @@ type CalibrationTarget =
   | { kind: 'map' }
   | { kind: 'layers'; layerIds: string[] }
   | { kind: 'encuadres' }
+  | { kind: 'pois' }
 
 /** Paso de flechas en px de pantalla (fino 1px). Válido con cualquier bearing. */
 const ENC_PX_STEP = 5
@@ -131,6 +134,59 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
   const [, setEncTick] = useState(0)
   const encOffsetsRef = useRef(new Map<string, { dlng: number; dlat: number }>())
   const encOriginalsRef = useRef(new Map<string, EncuadreOriginal>())
+
+  /* ── Target POIs: mismo patrón que encuadres (offsets GEO + bulk).
+   * Los originales son los coords del content (sin fetch). Al mover se
+   * reconstruye la source atlas-pois-source: círculos, pulso e iconos se
+   * mueven juntos por construcción. OJO dev: el hit-test de tooltips de
+   * PoiManager usa los coords originales, así que durante la calibración
+   * el hover/click del POI responde en su posición vieja; al pegar los
+   * coords en el pois.ts y recargar, todo vuelve a coincidir. */
+  const [poiIdx, setPoiIdx] = useState(0)
+  const [poiFine, setPoiFine] = useState(false)
+  const [poiBulk, setPoiBulk] = useState(false)
+  const poiOffsetsRef = useRef(new Map<string, { dlng: number; dlat: number }>())
+
+  /** Convierte un desplazamiento en px de pantalla a delta geo al zoom
+   *  actual (válido con cualquier bearing). Null si el mapa no responde. */
+  const pxDeltaToGeo = (dxPx: number, dyPx: number): { dlng: number; dlat: number } | null => {
+    const map = controllerRef.current?.map
+    if (!map) return null
+    try {
+      const center = map.getCenter()
+      const p = map.project(center)
+      const g = map.unproject([p.x + dxPx, p.y + dyPx])
+      return { dlng: g.lng - center.lng, dlat: g.lat - center.lat }
+    } catch {
+      return null
+    }
+  }
+
+  /* Antes del efecto de drag (TDZ): reconstruye la source de POIs con offsets. */
+  const rebuildPoiSource = useCallback(() => {
+    const map = controllerRef.current?.map
+    if (!map) return
+    const list = getMapContent(mapId)?.pois ?? []
+    try {
+      const features = list.map((poi) => {
+        const feature = poiToFeature(poi)
+        const off = poiOffsetsRef.current.get(poi.id)
+        if (off) {
+          const [lng, lat] = shiftLngLat(poi.coords, off.dlng, off.dlat)
+          feature.geometry.coordinates = [lng, lat]
+        }
+        return feature
+      })
+      liveGeoJSONSource(map, POIS_SOURCE_ID)?.setData({ type: 'FeatureCollection', features })
+    } catch { /* source aún no lista */ }
+  }, [controllerRef, mapId])
+
+  const addPoiOffset = useCallback((poi: Poi, dLng: number, dLat: number) => {
+    const cur = poiOffsetsRef.current.get(poi.id) ?? { dlng: 0, dlat: 0 }
+    poiOffsetsRef.current.set(poi.id, { dlng: cur.dlng + dLng, dlat: cur.dlat + dLat })
+    rebuildPoiSource()
+    setEncTick((t) => t + 1)
+  }, [rebuildPoiSource])
 
   /* Declarados antes del efecto de drag (TDZ): aplican el offset en vivo. */
   const applyEncShift = useCallback((enc: Encuadre, off: { dlng: number; dlat: number }) => {
@@ -314,6 +370,15 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       const dLng = geo.lng - dragRef.current.startGeo.lng
       const dLat = geo.lat - dragRef.current.startGeo.lat
 
+      if (target.kind === 'pois') {
+        const list = getMapContent(mapId)?.pois ?? []
+        const one = list[poiIdx]
+        const targets = poiBulk ? list : one === undefined ? [] : [one]
+        for (const p of targets) addPoiOffset(p, dLng, dLat)
+        dragRef.current.startGeo = { lng: geo.lng, lat: geo.lat }
+        return
+      }
+
       if (target.kind === 'encuadres') {
         const list = getMapContent(mapId)?.encuadres ?? []
         const one = list[encIdx]
@@ -384,7 +449,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       try { map.dragPan.enable() } catch { /* noop */ }
       dragRef.current = null
     }
-  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, encBulk, mapId, addEncOffset])
+  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, encBulk, poiIdx, poiBulk, mapId, addEncOffset, addPoiOffset])
 
   const nudge = useCallback((key: FieldKey, sign: 1 | -1, fine: boolean) => {
     setState((prev) => {
@@ -675,16 +740,11 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
     const one = list[encIdx]
     const targets = encBulk ? list : one === undefined ? [] : [one]
     if (targets.length === 0) return
-    const map = controllerRef.current?.map
-    if (!map) return
     const step = encFine ? ENC_PX_STEP_FINE : ENC_PX_STEP
-    try {
-      const center = map.getCenter()
-      const p = map.project(center)
-      const g = map.unproject([p.x + dirX * step, p.y + dirY * step])
-      for (const enc of targets) addEncOffset(enc, g.lng - center.lng, g.lat - center.lat)
-    } catch { /* noop */ }
-  }, [controllerRef, mapId, encIdx, encFine, encBulk, addEncOffset])
+    const delta = pxDeltaToGeo(dirX * step, dirY * step)
+    if (!delta) return
+    for (const enc of targets) addEncOffset(enc, delta.dlng, delta.dlat)
+  }, [controllerRef, mapId, encIdx, encFine, encBulk, addEncOffset, pxDeltaToGeo])
 
   function selectEncuadre(idx: number) {
     if (encList.length === 0) return
@@ -720,6 +780,48 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       lines.push(`labelCoords: [${r6(lng)}, ${r6(lat)}],  // ${enc.id} (su encuadres/map.ts)`)
     }
     if (lines.length === 0) return
+    try {
+      void navigator.clipboard.writeText(lines.join('\n')).catch(() => { /* noop */ })
+    } catch { /* portapapeles no disponible */ }
+  }, [mapId])
+
+  const poiList: Poi[] = getMapContent(mapId)?.pois ?? []
+
+  const nudgePoi = useCallback((dirX: -1 | 0 | 1, dirY: -1 | 0 | 1) => {
+    const list = getMapContent(mapId)?.pois ?? []
+    const one = list[poiIdx]
+    const targets = poiBulk ? list : one === undefined ? [] : [one]
+    if (targets.length === 0) return
+    const step = poiFine ? ENC_PX_STEP_FINE : ENC_PX_STEP
+    const delta = pxDeltaToGeo(dirX * step, dirY * step)
+    if (!delta) return
+    for (const poi of targets) addPoiOffset(poi, delta.dlng, delta.dlat)
+  }, [mapId, poiIdx, poiFine, poiBulk, addPoiOffset, pxDeltaToGeo])
+
+  function selectPoi(idx: number) {
+    if (poiList.length === 0) return
+    setPoiIdx(idx < 0 ? poiList.length - 1 : idx >= poiList.length ? 0 : idx)
+  }
+
+  const poiReset = useCallback(() => {
+    poiOffsetsRef.current.clear()
+    rebuildPoiSource()
+    setEncTick((t) => t + 1)
+  }, [rebuildPoiSource])
+
+  const copyPoi = useCallback(() => {
+    const list = getMapContent(mapId)?.pois ?? []
+    const r6 = (n: number): number => Math.round(n * 1e6) / 1e6
+    const lines: string[] = [`// ${mapId} — pegar coords en su pois.ts:`]
+    let dirty = false
+    for (const poi of list) {
+      const off = poiOffsetsRef.current.get(poi.id)
+      if (!off || (off.dlng === 0 && off.dlat === 0)) continue
+      dirty = true
+      const [lng, lat] = shiftLngLat(poi.coords, off.dlng, off.dlat)
+      lines.push(`coords: [${r6(lng)}, ${r6(lat)}],  // ${poi.id}`)
+    }
+    if (!dirty) return
     try {
       void navigator.clipboard.writeText(lines.join('\n')).catch(() => { /* noop */ })
     } catch { /* portapapeles no disponible */ }
@@ -790,6 +892,19 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
               </button>
             </div>
           )}
+          {ENABLE_DEV_TOOLS && poiList.length > 0 && (
+            <div className={styles.overridesSection}>
+              <button
+                className={`${styles.headerBtn} ${target.kind === 'pois' ? styles.targetActive : ''}`}
+                onClick={() => {
+                  setTarget({ kind: 'pois' })
+                  setPoiIdx(0)
+                }}
+              >
+                📍 POIs: {poiList.length}
+              </button>
+            </div>
+          )}
         {target.kind === 'layers' && target.layerIds.length > 0 && (
           <div className={styles.overridesSection}>
             <button className={styles.headerBtn} onClick={() => selectLayer(activeLayerIdx - 1)} title="Capa anterior">◀</button>
@@ -812,6 +927,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
             title="Reset a valores originales de geo.js"
             onClick={() => {
               if (target.kind === 'encuadres') encReset()
+              else if (target.kind === 'pois') poiReset()
               else reset()
             }}
           >
@@ -825,6 +941,8 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
             onClick={() => {
               if (target.kind === 'encuadres') {
                 setSaveError('Encuadres: usa 📋 Copiar y corre el comando en terminal + pega labelCoords (no vive en geo.js).')
+              } else if (target.kind === 'pois') {
+                setSaveError('POIs: usa 📋 Copiar y pega coords en su pois.ts (no vive en geo.js).')
               } else {
                 void apply()
               }
@@ -837,6 +955,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
             title="Copiar a portapapeles (formato geo.js)"
             onClick={() => {
               if (target.kind === 'encuadres') copyEnc()
+              else if (target.kind === 'pois') copyPoi()
               else copyPGW()
             }}
           >
@@ -917,6 +1036,57 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
                 <div className={styles.readoutRow}>
                   <span>Nota:</span>
                   <span>la etiqueta se mueve junto al polígono</span>
+                </div>
+              </div>
+              <div className={styles.separator} />
+            </>
+          ) : target.kind === 'pois' ? (
+            <>
+              <div className={styles.overridesSection}>
+                <button className={styles.headerBtn} onClick={() => selectPoi(poiIdx - 1)} title="POI anterior">◀</button>
+                <span className={styles.layerNavLabel}>
+                  {poiBulk
+                    ? `Todos (${poiList.length})`
+                    : poiList.length === 0 ? '—' : `${poiIdx + 1}/${poiList.length} ${poiList[poiIdx]?.name ?? ''}`}
+                </span>
+                <button className={styles.headerBtn} onClick={() => selectPoi(poiIdx + 1)} title="POI siguiente">▶</button>
+                <button
+                  className={`${styles.headerBtn} ${poiBulk ? styles.targetActive : ''}`}
+                  title="Mover todos a la vez"
+                  onClick={() => setPoiBulk((b) => !b)}
+                >
+                  {poiBulk ? 'Todos ✓' : 'Uno'}
+                </button>
+              </div>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Mover (px pantalla)</label>
+                <div className={styles.stepper}>
+                  <button className={styles.stepBtn} title="izquierda" onClick={() => nudgePoi(-1, 0)}>←</button>
+                  <button className={styles.stepBtn} title="arriba" onClick={() => nudgePoi(0, -1)}>↑</button>
+                  <button className={styles.stepBtn} title="abajo" onClick={() => nudgePoi(0, 1)}>↓</button>
+                  <button className={styles.stepBtn} title="derecha" onClick={() => nudgePoi(1, 0)}>→</button>
+                  <button
+                    className={styles.headerBtn}
+                    title="paso fino 1px / normal 5px"
+                    onClick={() => setPoiFine((f) => !f)}
+                  >
+                    {poiFine ? '1px ✓' : '5px'}
+                  </button>
+                </div>
+              </div>
+              <div className={styles.readout}>
+                <div className={styles.readoutTitle}>Offset POI (vivo)</div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lng:</span>
+                  <span>{fmtNum(poiOffsetsRef.current.get(poiList[poiIdx]?.id ?? '')?.dlng ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lat:</span>
+                  <span>{fmtNum(poiOffsetsRef.current.get(poiList[poiIdx]?.id ?? '')?.dlat ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Nota:</span>
+                  <span>el tooltip responde en la posición original hasta recargar</span>
                 </div>
               </div>
               <div className={styles.separator} />
