@@ -45,5 +45,7 @@ export function resolveMapUI(map: MapContent): Required<MapUI> & { sidebar: MapU
     northIndicator: map.ui?.northIndicator ?? true,
     homeNav: map.ui?.homeNav ?? true,
     sidebar: map.ui?.sidebar ?? DEFAULT_SIDEBAR,
+    layerTooltips: map.ui?.layerTooltips ?? false,
+    layerMenu: map.ui?.layerMenu ?? true,
   }
 }

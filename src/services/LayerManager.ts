@@ -1,9 +1,11 @@
-import type * as maplibregl from 'maplibre-gl'
-import { processBounds, type PGWData, type ImageCoordinates } from './BoundsCalculator'
 import { LAYER_CALIBRATIONS } from '@content/calibration/layers'
 import { LAYER_STYLES } from '@content/theme'
-import type { Layer, RasterPgwLayer, GeojsonLayer } from '../types/layer.ts'
+import type * as maplibregl from 'maplibre-gl'
+import type { ExpressionSpecification } from 'maplibre-gl'
+import type { GeojsonLayer, Layer, RasterPgwLayer } from '../types/layer.ts'
+import { processBounds, type ImageCoordinates, type PGWData } from './BoundsCalculator'
 import { logger } from './MapLogger'
+import { hideMapTooltip, layerTooltipHtml, moveMapTooltip, showMapTooltip } from './PoiManager'
 
 const CATEGORY = 'LayerManager'
 const SOURCE_PREFIX = 'atlas-layer-'
@@ -16,6 +18,53 @@ interface StoreSnapshot {
 
 function sourceId(layerId: string): string {
   return `${SOURCE_PREFIX}${layerId}`
+}
+
+/* ── Área de hover para líneas (ríos) ───────────────────────────────────
+   Las líneas finas (2px) son difíciles de hoverear en vista lejana. Cada
+   línea lleva una gemela INVISIBLE (`line-opacity: 0`, misma source) más
+   gruesa que solo sirve al hit-test del hover. Su ancho escala con el
+   zoom: gruesa de lejos → casi la visible de cerca. `round` extiende el
+   área en uniones y extremos. Solo existe si el mapa opta-in (hitArea). */
+const HIT_SUFFIX = '-hit'
+
+function hitLayerId(layerId: string): string {
+  return `${sourceId(layerId)}${HIT_SUFFIX}`
+}
+
+/** Ancho del área de hover en px de pantalla: 18px a zoom ≤2 → 4px a zoom ≥10. */
+const HIT_WIDTH = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  2, 38,
+  10, 4,
+] as ExpressionSpecification
+
+function addHitLayer(map: maplibregl.Map, layer: GeojsonLayer): void {
+  const hid = hitLayerId(layer.id)
+  if (map.getLayer(hid)) return
+  map.addLayer(
+    {
+      id: hid,
+      type: 'line',
+      source: sourceId(layer.id),
+      paint: {
+        'line-color': '#000000',
+        'line-opacity': 0,
+        'line-width': HIT_WIDTH,
+      },
+      layout: {
+        /* Siempre visible: es invisible al ojo y su único fin es el
+         * hit-test del hover. Así el tooltip sobrevive aunque la capa
+         * padre esté apagada (ej. Bredunco sin menú de capas). */
+        visibility: 'visible',
+        'line-cap': 'round',
+        'line-join': 'round',
+      },
+    } as maplibregl.AddLayerObject,
+    sourceId(layer.id),
+  )
 }
 
 /** Propiedad de opacidad válida según el tipo/geometría de la capa.
@@ -66,6 +115,7 @@ export function addLayer(
   layer: Layer,
   store: StoreSnapshot,
   allLayers?: Layer[],
+  opts?: { hitArea?: boolean },
 ): void {
   const sid = sourceId(layer.id)
 
@@ -118,6 +168,12 @@ export function addLayer(
       } as maplibregl.AddLayerObject,
       allLayers ? getBeforeId(map, layer.order, allLayers) : undefined,
     )
+
+    if (opts?.hitArea === true && geojson.geometry === 'line') {
+      try {
+        addHitLayer(map, geojson)
+      } catch { /* sin área de hover: la línea visible sigue hovereable */ }
+    }
   }
 
   logger.info(CATEGORY, `Layer added: ${layer.id}`)
@@ -125,6 +181,10 @@ export function addLayer(
 
 export function removeLayer(map: maplibregl.Map, layerId: string): void {
   const sid = sourceId(layerId)
+  const hid = hitLayerId(layerId)
+  try {
+    if (map.getLayer(hid)) map.removeLayer(hid)
+  } catch { /* noop */ }
   try {
     if (map.getLayer(sid)) map.removeLayer(sid)
   } catch { /* noop */ }
@@ -163,7 +223,46 @@ export function bindLayerClicks(
   }
 }
 
+/* ── Hover en capa → etiqueta con el nombre ────────────────────────────
+   Opt-in por mapa (`ui.layerTooltips`, ej. chapter1-bredunco): la misma
+   etiqueta flotante que los POIs (PoiManager). Sale con el mouse encima
+   de la geometría y se oculta al salir. Solo capas visibles: las ocultas
+   no tienen geometría que hoverear. Registro deduplicado por mapa. */
+const boundLayerTooltips = new WeakMap<maplibregl.Map, Set<string>>()
+
+export function bindLayerTooltips(
+  map: maplibregl.Map,
+  layers: Layer[],
+): void {
+  let bound = boundLayerTooltips.get(map)
+  if (bound === undefined) {
+    bound = new Set()
+    boundLayerTooltips.set(map, bound)
+  }
+
+  for (const layer of layers) {
+    if (bound.has(layer.id)) continue
+    const sid = sourceId(layer.id)
+    const html = layerTooltipHtml(layer.name)
+    /* Líneas: el área de hover vive en la gemela invisible (más gruesa);
+     * se escucha también la visible por si la gemela aún no existe. */
+    const targets = layer.type === 'geojson' && (layer as GeojsonLayer).geometry === 'line'
+      ? [hitLayerId(layer.id), sid]
+      : [sid]
+    for (const target of targets) {
+      map.on('mousemove', target, (e) => {
+        showMapTooltip(html)
+        if (e.lngLat) moveMapTooltip(map, e.lngLat)
+      })
+      map.on('mouseleave', target, () => { hideMapTooltip() })
+    }
+    bound.add(layer.id)
+  }
+}
+
 export function removeAll(map: maplibregl.Map): void {
+  /* Las capas se van: ninguna etiqueta de hover debe quedar huérfana. */
+  try { hideMapTooltip() } catch { /* noop */ }
   const style = map.getStyle()
   if (!style?.layers) return
   for (const l of style.layers) {
@@ -202,12 +301,15 @@ export function sync(
   layers: Layer[],
   _groups: unknown,
   store: StoreSnapshot,
+  opts?: { hitArea?: boolean },
 ): void {
   const currentIds = new Set<string>()
   const style = map.getStyle()
   if (style?.layers) {
     for (const l of style.layers) {
-      if (l.id.startsWith(SOURCE_PREFIX)) {
+      /* Las gemelas de hover (-hit) no son capas de contenido: se gestionan
+       * junto a su padre y no entran al diff. */
+      if (l.id.startsWith(SOURCE_PREFIX) && !l.id.endsWith(HIT_SUFFIX)) {
         currentIds.add(l.id.slice(SOURCE_PREFIX.length))
       }
     }
@@ -221,16 +323,31 @@ export function sync(
     }
   }
 
+  const wantHit = (layer: Layer): boolean =>
+    opts?.hitArea === true &&
+    layer.type === 'geojson' &&
+    (layer as GeojsonLayer).geometry === 'line'
+
   for (const layer of layers) {
     if (!currentIds.has(layer.id)) {
-      if (layer.visibleByDefault || store.visibleLayers.has(layer.id)) {
-        addLayer(map, layer, store, layers)
+      /* Con hitArea las líneas se agregan aunque estén apagadas: el padre
+       * queda oculto pero su gemela de hover sí detecta el mouse. */
+      if (layer.visibleByDefault || store.visibleLayers.has(layer.id) || wantHit(layer)) {
+        addLayer(map, layer, store, layers, opts)
       }
     } else {
       const sid = sourceId(layer.id)
       const visible = store.visibleLayers.has(layer.id)
       if (map.getLayer(sid)) {
         map.setLayoutProperty(sid, 'visibility', visible ? 'visible' : 'none')
+      }
+      if (wantHit(layer)) {
+        const hid = hitLayerId(layer.id)
+        if (!map.getLayer(hid)) {
+          try { addHitLayer(map, layer as GeojsonLayer) } catch { /* noop */ }
+        } else {
+          map.setLayoutProperty(hid, 'visibility', 'visible')
+        }
       }
       const opacity = store.opacities[layer.id] ?? layer.opacity ?? LAYER_STYLES[layer.category].defaultOpacity ?? 1
       if (map.getLayer(sid)) {

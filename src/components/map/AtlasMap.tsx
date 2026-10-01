@@ -15,9 +15,16 @@ import {
   sync as syncLayers,
   removeAll as removeAllLayers,
   bindLayerClicks,
+  bindLayerTooltips,
 } from '@services/LayerManager'
 import { addPois, removePois } from '@services/PoiManager'
 import { addEncuadres, removeEncuadres } from '@services/EncuadresManager'
+import {
+  addSubcuencas,
+  removeSubcuencas,
+  highlightSubcuenca,
+  subcuencaSlugOfModal,
+} from '@services/SubcuencaManager'
 import { getMapContent } from '@content'
 import { getModalById } from '@content/modals'
 import { routeForMap } from '@data/chapters/chapters.ts'
@@ -159,19 +166,36 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     } catch { /* noop */ }
   }, [tilesVisible, tilesStatus, mapRef])
 
+  const layerTooltips = content?.ui?.layerTooltips === true
+
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapBuilt || !layers) return
-    syncLayers(map, mapId, layers, groups, { visibleLayers, opacities })
-  }, [mapRef, mapId, layers, groups, visibleLayers, opacities, mapBuilt])
+    syncLayers(map, mapId, layers, groups, { visibleLayers, opacities }, { hitArea: layerTooltips })
+  }, [mapRef, mapId, layers, groups, visibleLayers, opacities, mapBuilt, layerTooltips])
 
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapBuilt || !pois) return
-    addPois(map, mapId, pois, handlePoiClick, { static: lowPowerMode })
-  }, [mapRef, mapId, pois, mapBuilt, lowPowerMode, handlePoiClick])
+    /* Subcuencas (port v17): hover en el POI muestra su cuenca.
+     * Las capas viven fuera del menú (SubcuencaManager) y van DEBAJO de los
+     * puntos: se agregan antes que addPois. */
+    const subcuencas = content?.subcuencas ?? null
+    if (subcuencas) addSubcuencas(map, subcuencas)
+    addPois(map, mapId, pois, handlePoiClick, {
+      static: lowPowerMode,
+      onHover: subcuencas
+        ? (poi) => highlightSubcuenca(map, poi ? subcuencaSlugOfModal(poi.modalId) : null)
+        : undefined,
+    })
+    return () => {
+      removeSubcuencas(map)
+    }
+  }, [mapRef, mapId, pois, mapBuilt, lowPowerMode, handlePoiClick, content])
 
-  /* Click en capa → modal (cuencas Tejidos del Agua, Voz del río…) */
+  /* Click en capa → modal (cuencas Tejidos del Agua, Voz del río…)
+   * Hover en capa → etiqueta con el nombre (opt-in por mapa:
+   * ui.layerTooltips, ej. chapter1-bredunco). */
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapBuilt || !layers) return
@@ -179,8 +203,8 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
       const modal = getModalById(modalId)
       if (modal) useModalStore.getState().openModal(modal)
     })
-  }, [mapRef, mapBuilt, layers])
-
+    if (content?.ui?.layerTooltips === true) bindLayerTooltips(map, layers)
+  }, [mapRef, mapBuilt, layers, content])
   /* Encuadres navegables (polígono + etiqueta → otro mapa, URL-first) */
   useEffect(() => {
     const map = mapRef.current
@@ -208,7 +232,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
         </div>
       )}
 
-      {!loading && !error && !hideLayerMenu && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} offsetTop={layerMenuOffsetTop} />}
+      {!loading && !error && !hideLayerMenu && (content?.ui?.layerMenu ?? true) && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} offsetTop={layerMenuOffsetTop} />}
 
       {activePoi && (
         <PoiModal poi={activePoi} onClose={() => setActivePoi(null)} />

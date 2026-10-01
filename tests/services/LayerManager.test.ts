@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import * as maplibregl from 'maplibre-gl'
-import { sync, addLayer, removeLayer, removeAll, updateLayerPGW } from '@services/LayerManager'
+import { sync, addLayer, removeLayer, removeAll, updateLayerPGW, bindLayerTooltips } from '@services/LayerManager'
 import { useLayerStore } from '@stores/layerStore'
 import type { RasterPgwLayer, GeojsonLayer } from '@types/layer'
 
@@ -196,8 +196,130 @@ describe('LayerManager', () => {
     })
   })
 
-  describe('updateLayerPGW', () => {
-    it('calls setCoordinates on the image source', () => {
+  describe('bindLayerTooltips', () => {
+    function makeHoverMap() {
+      const map = makeMap()
+      ;(map.getCanvas as ReturnType<typeof vi.fn>).mockReturnValue({
+        style: {},
+        getBoundingClientRect: () => ({ left: 0, top: 0, width: 800, height: 600 }),
+      })
+      ;(map as unknown as Record<string, unknown>).project = vi.fn(() => ({ x: 100, y: 200 }))
+      return map
+    }
+
+    it('muestra el nombre de la capa al hover y lo oculta al salir', () => {
+      const map = makeHoverMap()
+      bindLayerTooltips(map, [GEOJSON_LAYER])
+      const calls = (map.on as ReturnType<typeof vi.fn>).mock.calls as Array<[string, string, (e?: never) => void]>
+      const move = calls.find((c) => c[0] === 'mousemove' && c[1] === 'atlas-layer-nodo-suarez')
+      const leave = calls.find((c) => c[0] === 'mouseleave' && c[1] === 'atlas-layer-nodo-suarez')
+      expect(move).toBeDefined()
+      expect(leave).toBeDefined()
+      move![2]({ lngLat: { lng: -77, lat: 2 } } as never)
+      expect(document.body.innerHTML).toContain('Nodo Suárez')
+      const tip = document.body.lastElementChild as HTMLElement
+      expect(tip.style.display).toBe('block')
+      leave![2]()
+      expect(tip.style.display).toBe('none')
+    })
+
+    it('no duplica listeners al llamar dos veces', () => {
+      const map = makeMap()
+      bindLayerTooltips(map, [GEOJSON_LAYER])
+      bindLayerTooltips(map, [GEOJSON_LAYER])
+      const moves = ((map.on as ReturnType<typeof vi.fn>).mock.calls as Array<[string, string]>)
+        .filter((c) => c[0] === 'mousemove' && c[1] === 'atlas-layer-nodo-suarez')
+      expect(moves.length).toBe(1)
+    })
+  })
+
+  describe('hitArea (hover de líneas)', () => {
+    const LINE_LAYER: GeojsonLayer = {
+      id: 'rio-cauca',
+      name: 'Río Cauca',
+      type: 'geojson',
+      category: 'rivers',
+      url: '/data/rios/cauca.geojson',
+      geometry: 'line',
+      paint: { 'line-color': '#377eb8', 'line-width': 2 },
+      order: 9,
+      visibleByDefault: true,
+    }
+
+    it('crea gemela invisible con ancho por zoom solo en líneas con flag', () => {
+      const map = makeMap()
+      addLayer(map, LINE_LAYER, { visibleLayers: new Set(['rio-cauca']), opacities: {} }, [], { hitArea: true })
+      expect(map.addLayer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'atlas-layer-rio-cauca-hit',
+          type: 'line',
+          source: 'atlas-layer-rio-cauca',
+          paint: expect.objectContaining({
+            'line-opacity': 0,
+            'line-width': expect.arrayContaining(['interpolate']),
+          }),
+          layout: expect.objectContaining({ visibility: 'visible' }),
+        }),
+        'atlas-layer-rio-cauca',
+      )
+    })
+
+    it('no crea gemela sin flag o en geometrías no-lineales', () => {
+      const map = makeMap()
+      addLayer(map, LINE_LAYER, { visibleLayers: new Set(['rio-cauca']), opacities: {} })
+      addLayer(map, GEOJSON_LAYER, { visibleLayers: new Set(['nodo-suarez']), opacities: {} }, [], { hitArea: true })
+      const ids = ((map.addLayer as ReturnType<typeof vi.fn>).mock.calls as Array<[{ id: string }]>)
+        .map((c) => c[0].id)
+      expect(ids).not.toContain('atlas-layer-rio-cauca-hit')
+      expect(ids).not.toContain('atlas-layer-nodo-suarez-hit')
+    })
+
+    it('removeLayer elimina también la gemela', () => {
+      const map = makeMap()
+      addLayer(map, LINE_LAYER, { visibleLayers: new Set(['rio-cauca']), opacities: {} }, [], { hitArea: true })
+      removeLayer(map, 'rio-cauca')
+      expect(map.removeLayer).toHaveBeenCalledWith('atlas-layer-rio-cauca-hit')
+      expect(map.removeLayer).toHaveBeenCalledWith('atlas-layer-rio-cauca')
+    })
+
+    it('sync crea la gemela aunque la línea esté apagada y la deja visible', () => {
+      const map = makeMap()
+      // Línea apagada: el padre ni se agrega… salvo con hitArea.
+      sync(map, 'test', [LINE_LAYER], [], {
+        visibleLayers: new Set(),
+        opacities: {},
+      }, { hitArea: true })
+      expect(map.addSource).toHaveBeenCalledWith(
+        'atlas-layer-rio-cauca',
+        expect.objectContaining({ type: 'geojson' }),
+      )
+      expect(map.addLayer).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'atlas-layer-rio-cauca-hit' }),
+        'atlas-layer-rio-cauca',
+      )
+      // Segunda pasada (padre ya existe, apagado): la gemela sigue visible.
+      ;(map.addSource as ReturnType<typeof vi.fn>).mockClear()
+      sync(map, 'test', [LINE_LAYER], [], {
+        visibleLayers: new Set(),
+        opacities: {},
+      }, { hitArea: true })
+      expect(map.addSource).not.toHaveBeenCalled()
+      expect(map.setLayoutProperty).toHaveBeenCalledWith('atlas-layer-rio-cauca', 'visibility', 'none')
+      expect(map.setLayoutProperty).toHaveBeenCalledWith('atlas-layer-rio-cauca-hit', 'visibility', 'visible')
+    })
+
+    it('bindLayerTooltips escucha la gemela en líneas', () => {
+      const map = makeMap()
+      bindLayerTooltips(map, [LINE_LAYER])
+      const targets = ((map.on as ReturnType<typeof vi.fn>).mock.calls as Array<[string, string]>)
+        .filter((c) => c[0] === 'mousemove')
+        .map((c) => c[1])
+      expect(targets).toContain('atlas-layer-rio-cauca-hit')
+      expect(targets).toContain('atlas-layer-rio-cauca')
+    })
+  })
+
+  describe('updateLayerPGW', () => {    it('calls setCoordinates on the image source', () => {
       const map = makeMap()
       const setCoords = vi.fn()
       map._sources.set('atlas-layer-test-layer', { setCoordinates: setCoords, type: 'image' })

@@ -18,12 +18,15 @@ const POIS_CIRCLE_LAYER_ID = 'atlas-pois-circle-layer'
 const POIS_PULSE_LAYER_ID = 'atlas-pois-pulse-layer'
 const POIS_ICON_LAYER_ID = 'atlas-pois-icon-layer'
 const POIS_ARROW_LAYER_ID = 'atlas-pois-arrow-layer'
+/** Anillo de énfasis en hover (mismo transform que el punto: sin deriva). */
+const POIS_HOVER_LAYER_ID = 'atlas-pois-hover-layer'
 const ALL_POI_LAYER_IDS = [
   POIS_LAYER_ID,
   POIS_PULSE_LAYER_ID,
   POIS_CIRCLE_LAYER_ID,
   POIS_ICON_LAYER_ID,
   POIS_ARROW_LAYER_ID,
+  POIS_HOVER_LAYER_ID,
 ]
 
 const GOTA_ICON_URL = POI_THEME.gota.url
@@ -197,6 +200,33 @@ function hideTooltip(): void {
   el.style.display = 'none'
 }
 
+/** Etiqueta flotante compartida del mapa (mismo singleton que los POIs).
+ *  Reutilizable por otros managers (ej. LayerManager para el hover de
+ *  capas). Mientras el mouse esté encima, el dueño re-llama a show/move;
+ *  al salir debe llamar a hideMapTooltip. */
+export function showMapTooltip(html: string): void {
+  showTooltip(html)
+}
+
+export function moveMapTooltip(map: maplibregl.Map, lngLat: maplibregl.LngLat): void {
+  moveTooltip(map, lngLat)
+}
+
+export function hideMapTooltip(): void {
+  hideTooltip()
+}
+
+/** HTML de etiqueta para una capa: mismo estilo que el tooltip de POI
+ *  (fondo oficial + nombre). Sin subtítulo: las capas Bredunco no traen
+ *  `capa` con contenido útil. */
+export function layerTooltipHtml(name: string): string {
+  return `
+    <div style="position:relative;display:inline-block;padding:6px 18px;text-align:center;">
+      <img src="${TOOLTIP_BG}" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;border-radius:6px;" />
+      <div style="position:relative;z-index:2;font-size:16px;color:white;">${name}</div>
+    </div>`
+}
+
 function stopPulse(): void {
   if (pulseRaf !== null) {
     cancelAnimationFrame(pulseRaf)
@@ -207,6 +237,9 @@ function stopPulse(): void {
 export interface PulseOptions {
   /** true = sin animación (valores medios estáticos). Para lowPower. */
   static?: boolean
+  /** Callback de hover (POI o null al salir). Opt-in: lo usa el resaltado
+   *  de subcuencas del mosaico; el resto de mapas lo omite. */
+  onHover?: (poi: Poi | null) => void
 }
 
 /** ~30fps para todos: indistinguible en un pulso de 2200ms, mitad de CPU/GC. */
@@ -326,6 +359,11 @@ const variantFilter = (variant: PoiVariant): ExpressionSpecification => [
   variant,
 ] as ExpressionSpecification
 
+/* Hover por feature-state (solo paint: no toca el path con bug de v6).
+ * El anillo vive en el mismo render que el punto: énfasis sin deriva. */
+const hoveredExpr = (): ExpressionSpecification =>
+  ['boolean', ['feature-state', 'hover'], false] as ExpressionSpecification
+
 const notArrowFilter: ExpressionSpecification = [
   '!=',
   ['get', 'variant'],
@@ -336,6 +374,7 @@ function bindPoiEvents(
   map: maplibregl.Map,
   pois: Poi[],
   onPoiClick: (poi: Poi) => void,
+  onHover?: (poi: Poi | null) => void,
 ): void {
   /* Hit-test manual por proximidad (radio 24px).
    * Workaround bug MapLibre v6: `queryRenderedFeatures` lanza
@@ -364,8 +403,28 @@ function bindPoiEvents(
     const poi = hitAt(e.point)
     if (poi) onPoiClick(poi)
   }
+  /* Anillo de énfasis: feature-state por id (las capas lo leen en paint).
+   * Closure por mapa: al remover capas el estado muere con ellas. */
+  let hoveredId: string | null = null
+  const setHover = (poi: Poi | null): void => {
+    const nextId = poi ? poi.id : null
+    if (nextId === hoveredId) return
+    try {
+      if (hoveredId !== null) {
+        map.setFeatureState({ source: POIS_SOURCE_ID, id: hoveredId }, { hover: false })
+      }
+      if (nextId !== null) {
+        map.setFeatureState({ source: POIS_SOURCE_ID, id: nextId }, { hover: true })
+      }
+    } catch { /* mock o source aún no lista */ }
+    hoveredId = nextId
+    try {
+      onHover?.(poi)
+    } catch { /* callback del consumidor: no romper el mapa */ }
+  }
   const onMove = (e: maplibregl.MapMouseEvent): void => {
     const poi = hitAt(e.point)
+    setHover(poi)
     if (poi) {
       map.getCanvas().style.cursor = 'pointer'
       showTooltip(tooltipHtml(poi))
@@ -376,6 +435,7 @@ function bindPoiEvents(
     }
   }
   const onLeave = (): void => {
+    setHover(null)
     map.getCanvas().style.cursor = ''
     hideTooltip()
   }
@@ -446,6 +506,23 @@ export function addPois(
         'circle-color': circleColor,
       },
     })
+
+    /* Anillo blanco solo sobre el POI con hover (feature-state en paint).
+     * Relleno transparente: no tapa el punto; opacidad 0 cuando nadie. */
+    map.addLayer({
+      id: POIS_HOVER_LAYER_ID,
+      type: 'circle',
+      source: POIS_SOURCE_ID,
+      filter: notArrowFilter,
+      paint: {
+        'circle-radius': zoomSize(sizeMatch(POI_RADIUS, POI_RADIUS_LARGE), 1.6),
+        'circle-color': 'rgba(0,0,0,0)',
+        'circle-opacity': ['case', hoveredExpr(), 0.95, 0] as ExpressionSpecification,
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-width': 2.5,
+        'circle-stroke-opacity': ['case', hoveredExpr(), 0.95, 0] as ExpressionSpecification,
+      },
+    })
   }
 
   if (hasNumber) {
@@ -496,7 +573,7 @@ export function addPois(
 
   if (hasDot) startPulse(map, opts)
 
-  bindPoiEvents(map, pois, onPoiClick)
+  bindPoiEvents(map, pois, onPoiClick, opts?.onHover)
 }
 
 export function removePois(map: maplibregl.Map): void {

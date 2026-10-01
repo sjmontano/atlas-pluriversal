@@ -7,6 +7,8 @@ export default makeMap({
   ui: {
     title: 'Bredunco, Caucayaco o Cauca en la vertiente del Caribe',
     minimap: 'valle',
+    layerTooltips: true,
+    layerMenu: false,
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap1-presentacion-bredunco' },
       { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1A7Jw4LORNUxoopVOMvVyahswDT4-VxS1/view' },

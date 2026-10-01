@@ -97,6 +97,14 @@ export interface MapUI {
   homeNav?: boolean
   /** Botones del sidebar (ToolRail). Si se omite, sidebar vacío. */
   sidebar?: MapUISidebarItem[]
+  /** Etiqueta flotante con el nombre de la capa al hover sobre su
+   *  geometría en el mapa (misma etiqueta que los POIs). Default: false.
+   *  Opt-in por mapa (ej. chapter1-bredunco). Las líneas conservan el
+   *  hover aun apagadas (gemela invisible); el resto requiere visibilidad. */
+  layerTooltips?: boolean
+  /** Muestra el menú de capas del mapa. Default: true.
+   *  Opt-out por mapa (ej. chapter1-bredunco sin menú). */
+  layerMenu?: boolean
 }
 
 export interface MapContent {
@@ -116,8 +124,21 @@ export interface MapContent {
   menuTitle?: string
   /** Encuadres navegables (rectángulos clickeables que llevan a otro mapa). */
   encuadres?: Encuadre[]
+  /** Subcuencas resaltables en hover (port v17, fuera del menú de capas). */
+  subcuencas?: SubcuencaDef[]
 }
 
+/** Subcuenca resaltable en hover (port v17): imagen + PGW propio opcional.
+ *  Vive fuera del menú de capas (la opera SubcuencaManager); el panel dev
+ *  las calibra con target propio. Sin pgw hereda el footprint de agua. */
+export interface SubcuencaDef {
+  /** Coincide con el slug de `cap1-cuenca-<slug>`. */
+  slug: string
+  image: string
+  pgw?: PGWData
+  width?: number
+  height?: number
+}
 /** Encuadre navegable: polígono opcional + etiqueta clickeable que lleva
  *  a otro mapa del atlas (port data-driven del flujo de v17). */
 export interface Encuadre {
