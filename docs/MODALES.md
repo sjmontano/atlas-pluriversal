@@ -12,18 +12,17 @@
 | `src/content/modals/chapter-3.ts` | intro + 5 presentaciones |
 | `src/content/modals/chapter-4.ts` | intro + 10 presentaciones + 14 diagramas |
 | `src/content/modals/inicio.ts` | `creditos` + 16 fichas de POIs del home |
-| `src/content/intro/modals.ts` | `presentacion`, `cuenca-cauca`, `en-construccion` |
+| `src/content/modals/intro.ts` | `presentacion`, `cuenca-cauca`, `en-construccion` |
 | `src/content/modals/index.ts` | Registro maestro `MODALS` (id → Modal) + `ficha-tecnica`, `galeria-ejemplo` |
-| `src/content/modals/_helpers.ts` | Fábricas: `presentacion()`, `fichaPerfil()`, `paragraphs()` |
-| `src/content/modals/cap1-textos.generated.ts` | Textos C1 extraídos de v17 (generado, NO editar) |
+| `src/content/modals/_helpers.ts` | Fábricas: `presentacion()` (sin link, `large`), `fichaPerfil()`, `paragraphs()` |
 
 ## Capítulo 1 — `chapter-1.ts`
 
 | Id | Rol | Forma | Trigger |
 |---|---|---|---|
-| `cap1-presentacion-encuadres/bredunco/formas-paisaje/ecosistemas/mosaicos-del-agua/un-rio-cauca` (×6, vía `presentacion(1,…)`, textos `CAP1_TEXTOS` 2–7) | presentación por mapa | `paragraph ×2–3 + link?`, `large`, icon `presentation` | botón → `chapter1-<mapa>` |
+| `cap1-presentacion-encuadres/bredunco/formas-paisaje/ecosistemas/mosaicos-del-agua/un-rio-cauca` (×6, vía `presentacion(1,…)`, textos `CAP1_TEXTOS` 2–7 inline) | presentación por mapa | `paragraph ×2–3`, `large`, icon `presentation` | botón → `chapter1-<mapa>` |
 | `cap1-atlas-proyecto` | presentación del proyecto | `paragraph ×2 + quote`, `large` | botón → `intro` |
-| `cap1-perfil-cuenca` | perfil de la cuenca | `carousel` 3 SVG (`assets/ui/perfil/`), `large`, icon `perfil` | botón → `chapter1-encuadres` |
+| `cap1-perfil-cuenca` | perfil de la cuenca | `carousel` 3 SVG (`assets/ui/perfil/`), `xl` full-bleed sin header, icon `perfil` | botón → `chapter1-encuadres` |
 | `cap1-cuenca-*` (×11, textos 8–18) | cuenca Tejidos del Agua | `paragraph ×1–2`, `medium`, icon `marker` + `iconImage` cuenca-N | poi (click en capa `chapter1-mosaicos-del-agua`) |
 | `cap1-voz-*` (×4, textos 23–26) | tramo Voz del río | `paragraph ×1–2`, `medium`, icon `fichatecnica` | poi (click en tramo, mapa `chapter1-bredunco`) |
 
@@ -64,9 +63,9 @@ Diagramas portados de v17 `iconsCap4/` → `public/assets/modal/chapter-4/`
 |---|---|---|
 | 16 POIs del home | `inicio.ts` | `paragraph`, `xl` + `fullImage`, icon `marker`, trigger `poi` |
 | `creditos` | `inicio.ts` | `heading/paragraph`, `medium`, icon `credits` |
-| `presentacion` | `intro/modals.ts` | `carousel` + `columns`, `xl` |
-| `cuenca-cauca` | `intro/modals.ts` | `paragraph + quote`, `large` |
-| `en-construccion` | `intro/modals.ts` | `paragraph`, `xs` (aviso) |
+| `presentacion` | `modals/intro.ts` | `carousel` + `columns`, `xl` |
+| `cuenca-cauca` | `modals/intro.ts` | `paragraph + quote`, `large` |
+| `en-construccion` | `modals/intro.ts` | `paragraph`, `xs` (aviso) |
 | `ficha-tecnica` | `index.ts` | `paragraph + meta + link`, `small` (única con `meta`) |
 | `galeria-ejemplo` | `index.ts` | `carousel`, demo sin `mapId` |
 

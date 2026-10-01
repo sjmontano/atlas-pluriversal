@@ -39,22 +39,24 @@ export interface EncuadreLabelMetrics {
 export const LABEL_ART_SCALE = 2
 export const LABEL_ICON_SIZE = 1 / LABEL_ART_SCALE
 
-/** Métricas verbatim del Marker anterior (1.8vh/2vh, padding 8, max 220). */
+/** Métricas de escritorio: tipo contenida sin perder legibilidad. */
 export const LABEL_METRICS: EncuadreLabelMetrics = {
-  fontPx: 17,
-  linePx: 19,
-  padX: 8,
-  padY: 8,
-  maxWidthPx: 220,
+  fontPx: 14,
+  linePx: 16,
+  padX: 7,
+  padY: 7,
+  maxWidthPx: 190,
   radiusPx: 6,
 }
 
-/** Compacto móvil (mismo breakpoint del CSS: 768px, 11px, max 150). */
+/** Compacto móvil (mismo breakpoint del CSS anterior: 768px). Nunca bajo
+ *  de 12px de fuente para no sacrificar lectura; lo táctil lo garantiza
+ *  el área mínima de hit-test en el manager, no el tamaño visual. */
 export const LABEL_METRICS_COMPACT: EncuadreLabelMetrics = {
-  fontPx: 11,
-  linePx: 12,
-  padX: 10,
-  padY: 5,
+  fontPx: 12,
+  linePx: 14,
+  padX: 8,
+  padY: 6,
   maxWidthPx: 150,
   radiusPx: 6,
 }

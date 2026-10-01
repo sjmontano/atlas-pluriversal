@@ -49,6 +49,9 @@ const LABEL_BG_FALLBACK = '#0a2240'
 const LABEL_BG_HOVER_FALLBACK = '#dce9f2'
 /* Medio punto de la etiqueta + holgura para el hit-test (como los 24px POI). */
 const HIT_SLOP_PX = 8
+/* Objetivo táctil mínimo WCAG (44px): aunque lo visual sea más bajo, la
+ * zona tocable nunca baja de esto. Se aplica expandiendo la caja. */
+const MIN_TOUCH_HALF_PX = 22
 
 interface LabelBox {
   id: string
@@ -253,8 +256,11 @@ export async function addEncuadres(
       }
       const dx = Math.abs(p.x - point.x)
       const dy = Math.abs(p.y - point.y)
-      if (dx > label.halfW + HIT_SLOP_PX || dy > label.halfH + HIT_SLOP_PX) continue
-      const score = Math.max(dx / (label.halfW + 1), dy / (label.halfH + 1))
+      /* Caja efectiva: visual o mínimo táctil (lo que sea mayor) + holgura */
+      const hw = Math.max(label.halfW, MIN_TOUCH_HALF_PX) + HIT_SLOP_PX
+      const hh = Math.max(label.halfH, MIN_TOUCH_HALF_PX) + HIT_SLOP_PX
+      if (dx > hw || dy > hh) continue
+      const score = Math.max(dx / (hw + 1), dy / (hh + 1))
       if (score < bestScore) {
         best = label
         bestScore = score

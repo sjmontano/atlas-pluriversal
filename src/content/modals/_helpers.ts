@@ -25,7 +25,7 @@ export interface PresentacionEntry {
   title: string
   highlight: string
   texto: string | null
-  /** Si existe y no es vacío, agrega bloque link "Ver documento completo". */
+  /** En desuso: el bloque link "Ver documento completo" está desactivado globalmente. */
   link?: string
   /** Etiqueta del trigger. Default: 'Presentación'. */
   triggerLabel?: string
@@ -96,13 +96,10 @@ export function presentacion(
 ): Modal {
   const id = `cap${cap}-presentacion-${mapKey}`
   const blocks = paragraphs(entry.texto, id)
-  if (entry.link !== undefined && entry.link !== '') {
-    blocks.push({ type: 'link', id: `${id}-link`, href: entry.link, label: 'Ver documento completo' })
-  }
   return {
     id,
     section: `capitulo-${cap}`,
-    variant: 'xl',
+    variant: 'large',
     title: entry.title,
     highlight: entry.highlight,
     icon: 'presentation',

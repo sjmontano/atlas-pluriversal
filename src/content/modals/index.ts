@@ -12,7 +12,7 @@
  * al agregar contenido. El contenido se agrega AQUÍ sin tocar componentes.
  *
  * Estructura por secciones:
- * - `../intro/modals.ts` : modales del mapa intro (presentación, en construcción)
+  * - `./intro.ts` : modales del mapa intro (presentación, en construcción)
  * - `inicio.ts`          : los 16 POIs de la home (fullImage)
  * - `chapter-{1,2,3,4}.ts` : modales por capítulo (ids `capN-…`)
  * - `legales.ts`           : términos y condiciones (id `terminos-condiciones`)
@@ -22,7 +22,7 @@
  */
 
 import type { Modal } from '../../types/modal.ts'
-import { INTRO_MODALS } from '../intro/modals.ts'
+import { INTRO_MODALS } from './intro.ts'
 import { CHAPTER1_MODALS } from './chapter-1.ts'
 import { CHAPTER2_MODALS } from './chapter-2.ts'
 import { CHAPTER3_MODALS } from './chapter-3.ts'
