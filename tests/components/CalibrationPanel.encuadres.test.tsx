@@ -119,6 +119,20 @@ describe('CalibrationPanel target encuadres', () => {
     expect(point).toEqual([-76.5, 3])
   })
 
+  it('modo Todas aplica el mismo delta a toda la lista', async () => {
+    const { setDataCalls } = await openEncuadres()
+    fireEvent.click(screen.getByTitle('Mover todas a la vez'))
+    fireEvent.click(screen.getByTitle('izquierda'))
+    const lastFor = (id: string) => {
+      const calls = setDataCalls.filter((c) => c.id === id)
+      return calls[calls.length - 1]?.data as { features: Array<{ geometry: { coordinates: unknown } }> }
+    }
+    /* e1 con polígono y e2 (solo etiqueta) reciben el mismo (-0.5, 0) */
+    expect(lastFor('atlas-encuadre-labelsrc-e1').features[0]?.geometry.coordinates).toEqual([-76.5, 3])
+    expect(lastFor('atlas-encuadre-labelsrc-e2').features[0]?.geometry.coordinates).toEqual([-75.5, 4])
+    expect(lastFor('atlas-encuadre-src-e1').features[0]?.geometry.coordinates[0]?.[0]).toEqual([-0.5, 0])
+  })
+
   it('drag en modo mover desplaza el encuadre seleccionado', async () => {
     const { listeners, setDataCalls } = await openEncuadres()
     fireEvent.click(screen.getByText(/↕ Mover/))

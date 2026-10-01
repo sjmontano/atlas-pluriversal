@@ -125,6 +125,9 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
    * con cualquier bearing (con -90° la X visual es latitud). */
   const [encIdx, setEncIdx] = useState(0)
   const [encFine, setEncFine] = useState(false)
+  /* Bulk: flechas y drag aplican el mismo delta a TODA la lista (p. ej.
+   * recorregir la tanda completa de GeoJSON de una vez). */
+  const [encBulk, setEncBulk] = useState(false)
   const [, setEncTick] = useState(0)
   const encOffsetsRef = useRef(new Map<string, { dlng: number; dlat: number }>())
   const encOriginalsRef = useRef(new Map<string, EncuadreOriginal>())
@@ -313,8 +316,9 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
 
       if (target.kind === 'encuadres') {
         const list = getMapContent(mapId)?.encuadres ?? []
-        const enc = list[encIdx]
-        if (enc) addEncOffset(enc, dLng, dLat)
+        const one = list[encIdx]
+        const targets = encBulk ? list : one === undefined ? [] : [one]
+        for (const enc of targets) addEncOffset(enc, dLng, dLat)
         dragRef.current.startGeo = { lng: geo.lng, lat: geo.lat }
         return
       }
@@ -380,7 +384,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       try { map.dragPan.enable() } catch { /* noop */ }
       dragRef.current = null
     }
-  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, mapId, addEncOffset])
+  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, encBulk, mapId, addEncOffset])
 
   const nudge = useCallback((key: FieldKey, sign: 1 | -1, fine: boolean) => {
     setState((prev) => {
@@ -668,8 +672,9 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
 
   const nudgeEnc = useCallback((dirX: -1 | 0 | 1, dirY: -1 | 0 | 1) => {
     const list = getMapContent(mapId)?.encuadres ?? []
-    const enc = list[encIdx]
-    if (!enc) return
+    const one = list[encIdx]
+    const targets = encBulk ? list : one === undefined ? [] : [one]
+    if (targets.length === 0) return
     const map = controllerRef.current?.map
     if (!map) return
     const step = encFine ? ENC_PX_STEP_FINE : ENC_PX_STEP
@@ -677,9 +682,9 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       const center = map.getCenter()
       const p = map.project(center)
       const g = map.unproject([p.x + dirX * step, p.y + dirY * step])
-      addEncOffset(enc, g.lng - center.lng, g.lat - center.lat)
+      for (const enc of targets) addEncOffset(enc, g.lng - center.lng, g.lat - center.lat)
     } catch { /* noop */ }
-  }, [controllerRef, mapId, encIdx, encFine, addEncOffset])
+  }, [controllerRef, mapId, encIdx, encFine, encBulk, addEncOffset])
 
   function selectEncuadre(idx: number) {
     if (encList.length === 0) return
@@ -866,9 +871,18 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
               <div className={styles.overridesSection}>
                 <button className={styles.headerBtn} onClick={() => selectEncuadre(encIdx - 1)} title="Encuadre anterior">◀</button>
                 <span className={styles.layerNavLabel}>
-                  {encList.length === 0 ? '—' : `${encIdx + 1}/${encList.length} ${encList[encIdx]?.name ?? ''}`}
+                  {encBulk
+                    ? `Todas (${encList.length})`
+                    : encList.length === 0 ? '—' : `${encIdx + 1}/${encList.length} ${encList[encIdx]?.name ?? ''}`}
                 </span>
                 <button className={styles.headerBtn} onClick={() => selectEncuadre(encIdx + 1)} title="Encuadre siguiente">▶</button>
+                <button
+                  className={`${styles.headerBtn} ${encBulk ? styles.targetActive : ''}`}
+                  title="Mover todas a la vez"
+                  onClick={() => setEncBulk((b) => !b)}
+                >
+                  {encBulk ? 'Todas ✓' : 'Una'}
+                </button>
               </div>
               <div className={styles.paramRow}>
                 <label className={styles.paramLabel}>Mover (px pantalla)</label>
