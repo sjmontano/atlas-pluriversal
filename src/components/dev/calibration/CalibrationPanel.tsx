@@ -12,9 +12,18 @@ import {
 } from '@services/MapCalibration'
 import { saveCalibration } from '@services/SaveCalibration'
 import { updateLayerPGW } from '@services/LayerManager'
+import {
+  shiftFeatureCollection,
+  shiftLngLat,
+} from '@services/shiftGeoJSON'
+import {
+  encuadrePolygonSourceId,
+  encuadreLabelSourceId,
+} from '@services/EncuadresManager'
 import { processBounds } from '@services/BoundsCalculator'
 import { useLayerStore } from '@stores/layerStore'
 import type { Layer } from '../../../types/layer.ts'
+import type { Encuadre } from '../../../types/content.ts'
 import type { BoundsResult } from '@services/BoundsCalculator'
 import styles from './CalibrationPanel.module.css'
 
@@ -34,6 +43,30 @@ type FieldKey = 'd' | 'b' | 'c' | 'f' | 'width' | 'height'
 type CalibrationTarget =
   | { kind: 'map' }
   | { kind: 'layers'; layerIds: string[] }
+  | { kind: 'encuadres' }
+
+/** Paso de flechas en px de pantalla (fino 1px). Válido con cualquier bearing. */
+const ENC_PX_STEP = 5
+const ENC_PX_STEP_FINE = 1
+
+interface EncuadreOriginal {
+  polygon: { type: 'FeatureCollection'; features: Array<{ geometry: unknown }> } | null
+  label: [number, number]
+  file: string | null
+}
+
+/** Source GeoJSON viva (setData) sin acoplar tipos de maplibre. */
+function liveGeoJSONSource(map: unknown, id: string): { setData: (data: unknown) => void } | undefined {
+  try {
+    const src = (map as { getSource?: (sid: string) => unknown }).getSource?.(id) as
+      | { setData?: unknown }
+      | undefined
+    if (src !== null && src !== undefined && typeof src.setData === 'function') {
+      return src as { setData: (data: unknown) => void }
+    }
+  } catch { /* noop */ }
+  return undefined
+}
 
 const PCT_STEPS = [0.0001, 0.001, 0.01, 0.1]
 const DEG_STEP_DEFAULT = 0.0005
@@ -85,6 +118,50 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
 
   const stepPctRef = useRef(PCT_STEPS[1])
   const [stepPctIdx, setStepPctIdx] = useState(1)
+
+  /* ── Target encuadres: offsets en GEO (estables ante zoom), aplicados en
+   * vivo al polígono y a la etiqueta a la vez para que nunca se despeguen.
+   * Las flechas trabajan en PX de pantalla convertidos por frame: válidas
+   * con cualquier bearing (con -90° la X visual es latitud). */
+  const [encIdx, setEncIdx] = useState(0)
+  const [encFine, setEncFine] = useState(false)
+  const [, setEncTick] = useState(0)
+  const encOffsetsRef = useRef(new Map<string, { dlng: number; dlat: number }>())
+  const encOriginalsRef = useRef(new Map<string, EncuadreOriginal>())
+
+  /* Declarados antes del efecto de drag (TDZ): aplican el offset en vivo. */
+  const applyEncShift = useCallback((enc: Encuadre, off: { dlng: number; dlat: number }) => {
+    const map = controllerRef.current?.map
+    if (!map) return
+    const orig = encOriginalsRef.current.get(enc.id)
+    if (!orig) return
+    try {
+      if (orig.polygon !== null) {
+        liveGeoJSONSource(map, encuadrePolygonSourceId(enc.id))?.setData(
+          shiftFeatureCollection(orig.polygon, off.dlng, off.dlat),
+        )
+      }
+      const [lng, lat] = shiftLngLat(orig.label, off.dlng, off.dlat)
+      liveGeoJSONSource(map, encuadreLabelSourceId(enc.id))?.setData({
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'Point', coordinates: [lng, lat] },
+          },
+        ],
+      })
+    } catch { /* source aún no lista */ }
+  }, [controllerRef])
+
+  const addEncOffset = useCallback((enc: Encuadre, dLng: number, dLat: number) => {
+    const cur = encOffsetsRef.current.get(enc.id) ?? { dlng: 0, dlat: 0 }
+    const next = { dlng: cur.dlng + dLng, dlat: cur.dlat + dLat }
+    encOffsetsRef.current.set(enc.id, next)
+    applyEncShift(enc, next)
+    setEncTick((t) => t + 1)
+  }, [applyEncShift])
 
   const viewportMarginsOriginalRef = useRef({ h: DEFAULT_VIEWPORT_MARGIN, v: DEFAULT_VIEWPORT_MARGIN })
   const [viewportMarginH, setViewportMarginH] = useState(DEFAULT_VIEWPORT_MARGIN)
@@ -234,6 +311,14 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       const dLng = geo.lng - dragRef.current.startGeo.lng
       const dLat = geo.lat - dragRef.current.startGeo.lat
 
+      if (target.kind === 'encuadres') {
+        const list = getMapContent(mapId)?.encuadres ?? []
+        const enc = list[encIdx]
+        if (enc) addEncOffset(enc, dLng, dLat)
+        dragRef.current.startGeo = { lng: geo.lng, lat: geo.lat }
+        return
+      }
+
       if (target.kind === 'layers' && target.layerIds.length > 0) {
         const activeId = target.layerIds[activeLayerIdx]
         if (!activeId) return
@@ -295,7 +380,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       try { map.dragPan.enable() } catch { /* noop */ }
       dragRef.current = null
     }
-  }, [moveMode, controllerRef, target, activeLayerIdx])
+  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, mapId, addEncOffset])
 
   const nudge = useCallback((key: FieldKey, sign: 1 | -1, fine: boolean) => {
     setState((prev) => {
@@ -537,6 +622,104 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
     }
   }
 
+  const encList: Encuadre[] = getMapContent(mapId)?.encuadres ?? []
+
+  /* Foto de originales al entrar al target (polígono fresco + labelCoords). */
+  useEffect(() => {
+    if (target.kind !== 'encuadres') return
+    let cancelled = false
+    void (async () => {
+      const list = getMapContent(mapId)?.encuadres ?? []
+      for (const enc of list) {
+        if (encOriginalsRef.current.has(enc.id)) continue
+        let polygon: EncuadreOriginal['polygon'] = null
+        if (enc.url !== undefined) {
+          try {
+            const res = await fetch(enc.url)
+            if (res.ok) {
+              const data = (await res.json()) as {
+                type?: unknown
+                features?: unknown
+              }
+              if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+                polygon = data as EncuadreOriginal['polygon']
+              }
+            }
+          } catch { /* sin polígono: solo se mueve la etiqueta */ }
+        }
+        if (cancelled) return
+        encOriginalsRef.current.set(enc.id, {
+          polygon,
+          label: [enc.labelCoords[0], enc.labelCoords[1]],
+          file: enc.url !== undefined ? enc.url.replace(/^\//, '') : null,
+        })
+      }
+      if (!cancelled) {
+        setEncIdx(0)
+        setEncTick((t) => t + 1)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [mapId, target.kind])
+
+  /* applyEncShift/addEncOffset viven arriba (antes del efecto de drag). */
+
+  const nudgeEnc = useCallback((dirX: -1 | 0 | 1, dirY: -1 | 0 | 1) => {
+    const list = getMapContent(mapId)?.encuadres ?? []
+    const enc = list[encIdx]
+    if (!enc) return
+    const map = controllerRef.current?.map
+    if (!map) return
+    const step = encFine ? ENC_PX_STEP_FINE : ENC_PX_STEP
+    try {
+      const center = map.getCenter()
+      const p = map.project(center)
+      const g = map.unproject([p.x + dirX * step, p.y + dirY * step])
+      addEncOffset(enc, g.lng - center.lng, g.lat - center.lat)
+    } catch { /* noop */ }
+  }, [controllerRef, mapId, encIdx, encFine, addEncOffset])
+
+  function selectEncuadre(idx: number) {
+    if (encList.length === 0) return
+    setEncIdx(idx < 0 ? encList.length - 1 : idx >= encList.length ? 0 : idx)
+  }
+
+  const encReset = useCallback(() => {
+    const list = getMapContent(mapId)?.encuadres ?? []
+    for (const enc of list) {
+      const zero = { dlng: 0, dlat: 0 }
+      encOffsetsRef.current.set(enc.id, zero)
+      applyEncShift(enc, zero)
+    }
+    setEncTick((t) => t + 1)
+  }, [mapId, applyEncShift])
+
+  const copyEnc = useCallback(() => {
+    const list = getMapContent(mapId)?.encuadres ?? []
+    const r6 = (n: number): number => Math.round(n * 1e6) / 1e6
+    const lines: string[] = []
+    for (const enc of list) {
+      const off = encOffsetsRef.current.get(enc.id)
+      if (!off || (off.dlng === 0 && off.dlat === 0)) continue
+      const orig = encOriginalsRef.current.get(enc.id)
+      if (orig?.file) {
+        lines.push(`node scripts/shift-geojson.mjs --lng ${r6(off.dlng)} --lat ${r6(off.dlat)} ${orig.file}`)
+      }
+      const [lng, lat] = shiftLngLat(
+        orig ? orig.label : ([enc.labelCoords[0], enc.labelCoords[1]] as [number, number]),
+        off.dlng,
+        off.dlat,
+      )
+      lines.push(`labelCoords: [${r6(lng)}, ${r6(lat)}],  // ${enc.id} (su encuadres/map.ts)`)
+    }
+    if (lines.length === 0) return
+    try {
+      void navigator.clipboard.writeText(lines.join('\n')).catch(() => { /* noop */ })
+    } catch { /* portapapeles no disponible */ }
+  }, [mapId])
+
   const convertF = state ? state.f + state.b * state.height : 0
   const sizePct = (() => {
     if (target.kind === 'layers' && target.layerIds.length > 0) {
@@ -589,6 +772,19 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
             </button>
           </div>
         )}
+          {ENABLE_DEV_TOOLS && encList.length > 0 && (
+            <div className={styles.overridesSection}>
+              <button
+                className={`${styles.headerBtn} ${target.kind === 'encuadres' ? styles.targetActive : ''}`}
+                onClick={() => {
+                  setTarget({ kind: 'encuadres' })
+                  setEncIdx(0)
+                }}
+              >
+                ⬚ Encuadres: {encList.length}
+              </button>
+            </div>
+          )}
         {target.kind === 'layers' && target.layerIds.length > 0 && (
           <div className={styles.overridesSection}>
             <button className={styles.headerBtn} onClick={() => selectLayer(activeLayerIdx - 1)} title="Capa anterior">◀</button>
@@ -609,21 +805,35 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
           <button
             className={styles.headerBtn}
             title="Reset a valores originales de geo.js"
-            onClick={reset}
+            onClick={() => {
+              if (target.kind === 'encuadres') encReset()
+              else reset()
+            }}
           >
             ↺ Reset
           </button>
           <button
             className={styles.headerBtn}
-            title="Guardar valores en geo.js y reconstruir mapa"
-            onClick={apply}
+            title={target.kind === 'encuadres'
+              ? 'Los encuadres se persisten con Copiar (comando + labelCoords)'
+              : 'Guardar valores en geo.js y reconstruir mapa'}
+            onClick={() => {
+              if (target.kind === 'encuadres') {
+                setSaveError('Encuadres: usa 📋 Copiar y corre el comando en terminal + pega labelCoords (no vive en geo.js).')
+              } else {
+                void apply()
+              }
+            }}
           >
             ⟳ Aplicar
           </button>
           <button
             className={styles.headerBtn}
             title="Copiar a portapapeles (formato geo.js)"
-            onClick={copyPGW}
+            onClick={() => {
+              if (target.kind === 'encuadres') copyEnc()
+              else copyPGW()
+            }}
           >
             📋 Copiar
           </button>
@@ -651,6 +861,54 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
           {saveError && (
             <div className={styles.error}>{saveError}</div>
           )}
+          {target.kind === 'encuadres' ? (
+            <>
+              <div className={styles.overridesSection}>
+                <button className={styles.headerBtn} onClick={() => selectEncuadre(encIdx - 1)} title="Encuadre anterior">◀</button>
+                <span className={styles.layerNavLabel}>
+                  {encList.length === 0 ? '—' : `${encIdx + 1}/${encList.length} ${encList[encIdx]?.name ?? ''}`}
+                </span>
+                <button className={styles.headerBtn} onClick={() => selectEncuadre(encIdx + 1)} title="Encuadre siguiente">▶</button>
+              </div>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Mover (px pantalla)</label>
+                <div className={styles.stepper}>
+                  <button className={styles.stepBtn} title="izquierda" onClick={() => nudgeEnc(-1, 0)}>←</button>
+                  <button className={styles.stepBtn} title="arriba" onClick={() => nudgeEnc(0, -1)}>↑</button>
+                  <button className={styles.stepBtn} title="abajo" onClick={() => nudgeEnc(0, 1)}>↓</button>
+                  <button className={styles.stepBtn} title="derecha" onClick={() => nudgeEnc(1, 0)}>→</button>
+                  <button
+                    className={styles.headerBtn}
+                    title="paso fino 1px / normal 5px"
+                    onClick={() => setEncFine((f) => !f)}
+                  >
+                    {encFine ? '1px ✓' : '5px'}
+                  </button>
+                </div>
+              </div>
+              <div className={styles.readout}>
+                <div className={styles.readoutTitle}>Offset encuadre (vivo)</div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lng:</span>
+                  <span>{fmtNum(encOffsetsRef.current.get(encList[encIdx]?.id ?? '')?.dlng ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lat:</span>
+                  <span>{fmtNum(encOffsetsRef.current.get(encList[encIdx]?.id ?? '')?.dlat ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Archivo:</span>
+                  <span>{encOriginalsRef.current.get(encList[encIdx]?.id ?? '')?.file ?? '—'}</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Nota:</span>
+                  <span>la etiqueta se mueve junto al polígono</span>
+                </div>
+              </div>
+              <div className={styles.separator} />
+            </>
+          ) : (
+            <>
           <div className={styles.paramRow}>
             <label className={styles.paramLabel}>step %</label>
             <select
@@ -884,6 +1142,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
               </>
             )}
           </div>
+          </>)}
         </div>
       )}
     </div>

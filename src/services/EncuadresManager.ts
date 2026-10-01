@@ -37,6 +37,10 @@ interface FeatureCollectionData {
 }
 
 const PREFIX = 'atlas-encuadre'
+
+/** Ids estables para que el panel dev opere sobre las mismas sources. */
+export const encuadrePolygonSourceId = (id: string): string => `${PREFIX}-src-${id}`
+export const encuadreLabelSourceId = (id: string): string => `${PREFIX}-labelsrc-${id}`
 const DEFAULT_COLOR = '#193965'
 /* v17 (agregarEncueadres.jsx): fondo oscuro por defecto (FondoTooltip4),
  * hover → fondo claro (FondoTooltip3) + texto azul #193965. */
@@ -128,7 +132,7 @@ export async function addEncuadres(
           const res = await fetch(encuadre.url)
           if (!res.ok) throw new Error(`HTTP ${res.status}`)
           const data = (await res.json()) as FeatureCollectionData
-          const sid = `${PREFIX}-src-${encuadre.id}`
+          const sid = encuadrePolygonSourceId(encuadre.id)
           const fillId = `${PREFIX}-fill-${encuadre.id}`
           const lineId = `${PREFIX}-line-${encuadre.id}`
           const color = encuadre.color ?? DEFAULT_COLOR
@@ -198,7 +202,7 @@ export async function addEncuadres(
         })
         const imgId = `${PREFIX}-img-${encuadre.id}`
         const imgHoverId = `${PREFIX}-img-${encuadre.id}-hover`
-        const labelSid = `${PREFIX}-labelsrc-${encuadre.id}`
+        const labelSid = encuadreLabelSourceId(encuadre.id)
         const labelId = `${PREFIX}-label-${encuadre.id}`
         map.addImage(imgId, normal)
         map.addImage(imgHoverId, hover)
