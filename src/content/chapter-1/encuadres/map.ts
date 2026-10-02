@@ -25,7 +25,7 @@ const encuadres = [
     id: 'encuadre-bredunco',
     name: 'Bredunco, Caucayaco o \nCauca en la vertiente del Caribe',
     targetMapId: 'chapter1-bredunco',
-    labelCoords: [-77.87, 8.324437] as [number, number],
+    labelCoords: [-77.87, 9.48] as [number, number],
     url: '/assets/geojson/encuadre-cuenca-completa.json',
   },
   {
@@ -78,7 +78,7 @@ export default {
   /* Port v17 (MapComponent.jsx): etiquetas de océanos, solo en esta vista
    * Colombia completa. Coordenadas originales de v17. */
   oceanLabels: [
-    { id: 'oceano-pacifico', name: 'OCÉANO PACÍFICO', coords: [-78.54, 5.5] as [number, number] },
-    { id: 'mar-caribe', name: 'MAR CARIBE', coords: [-76.5319, 12.03] as [number, number] },
+    { id: 'oceano-pacifico', name: 'OCÉANO PACÍFICO', coords: [-78.45, 6.3] as [number, number] },
+    { id: 'mar-caribe', name: 'MAR CARIBE', coords: [-76.5319, 11.85] as [number, number] },
   ],
 } satisfies MapContent

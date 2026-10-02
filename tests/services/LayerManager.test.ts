@@ -233,7 +233,7 @@ describe('LayerManager', () => {
     })
   })
 
-  describe('hitArea (hover de líneas)', () => {
+  describe('hitArea (hover de capas: líneas y rellenos)', () => {
     const LINE_LAYER: GeojsonLayer = {
       id: 'rio-cauca',
       name: 'Río Cauca',
@@ -245,6 +245,47 @@ describe('LayerManager', () => {
       order: 9,
       visibleByDefault: true,
     }
+
+    it('crea gemela de relleno invisible siempre visible aunque el padre esté apagado', () => {
+      const map = makeMap()
+      addLayer(map, GEOJSON_LAYER, { visibleLayers: new Set(), opacities: {} }, [], { hitArea: true })
+      expect(map.addLayer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'atlas-layer-nodo-suarez-hit',
+          type: 'fill',
+          source: 'atlas-layer-nodo-suarez',
+          paint: expect.objectContaining({ 'fill-opacity': 0 }),
+          layout: expect.objectContaining({ visibility: 'visible' }),
+        }),
+        'atlas-layer-nodo-suarez',
+      )
+      // El padre queda oculto.
+      expect(map.addLayer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'atlas-layer-nodo-suarez',
+          layout: { visibility: 'none' },
+        }),
+        undefined,
+      )
+    })
+
+    it('no crea gemela en rellenos con tooltip:false', () => {
+      const map = makeMap()
+      const basin: GeojsonLayer = { ...GEOJSON_LAYER, id: 'cuenca-x', tooltip: false }
+      addLayer(map, basin, { visibleLayers: new Set(['cuenca-x']), opacities: {} }, [], { hitArea: true })
+      const ids = ((map.addLayer as ReturnType<typeof vi.fn>).mock.calls as Array<[{ id: string }]>)
+        .map((c) => c[0].id)
+      expect(ids).not.toContain('atlas-layer-cuenca-x-hit')
+    })
+
+    it('bindLayerTooltips escucha la gemela en rellenos', () => {
+      const map = makeMap()
+      bindLayerTooltips(map, [GEOJSON_LAYER])
+      const targets = ((map.on as ReturnType<typeof vi.fn>).mock.calls as Array<[string, string]>)
+        .filter((c) => c[0] === 'mousemove')
+        .map((c) => c[1])
+      expect(targets).toEqual(['atlas-layer-nodo-suarez-hit', 'atlas-layer-nodo-suarez'])
+    })
 
     it('crea gemela invisible con ancho por zoom solo en líneas con flag', () => {
       const map = makeMap()
@@ -264,14 +305,15 @@ describe('LayerManager', () => {
       )
     })
 
-    it('no crea gemela sin flag o en geometrías no-lineales', () => {
+    it('no crea gemela sin flag (ni con tooltip:false)', () => {
       const map = makeMap()
       addLayer(map, LINE_LAYER, { visibleLayers: new Set(['rio-cauca']), opacities: {} })
-      addLayer(map, GEOJSON_LAYER, { visibleLayers: new Set(['nodo-suarez']), opacities: {} }, [], { hitArea: true })
+      const plain: GeojsonLayer = { ...GEOJSON_LAYER, id: 'cuenca-x', tooltip: false }
+      addLayer(map, plain, { visibleLayers: new Set(['cuenca-x']), opacities: {} }, [], { hitArea: true })
       const ids = ((map.addLayer as ReturnType<typeof vi.fn>).mock.calls as Array<[{ id: string }]>)
         .map((c) => c[0].id)
       expect(ids).not.toContain('atlas-layer-rio-cauca-hit')
-      expect(ids).not.toContain('atlas-layer-nodo-suarez-hit')
+      expect(ids).not.toContain('atlas-layer-cuenca-x-hit')
     })
 
     it('removeLayer elimina también la gemela', () => {
@@ -332,6 +374,7 @@ describe('LayerManager', () => {
       expect(moves).toEqual([
         'atlas-layer-rio-x-hit',
         'atlas-layer-rio-x',
+        'atlas-layer-nodo-x-hit',
         'atlas-layer-nodo-x',
       ])
     })

@@ -23,12 +23,13 @@ function sourceId(layerId: string): string {
 /** Id de source de una capa de contenido (lo usa el panel dev). */
 export const layerSourceId = (layerId: string): string => sourceId(layerId)
 
-/* ── Área de hover para líneas (ríos) ───────────────────────────────────
-   Las líneas finas (2px) son difíciles de hoverear en vista lejana. Cada
-   línea lleva una gemela INVISIBLE (`line-opacity: 0`, misma source) más
-   gruesa que solo sirve al hit-test del hover. Su ancho escala con el
-   zoom: gruesa de lejos → casi la visible de cerca. `round` extiende el
-   área en uniones y extremos. Solo existe si el mapa opta-in (hitArea). */
+/* ── Área de hover para geometrías (ríos y rellenos) ───────────────────
+   Las líneas finas (2px) son difíciles de hoverear en vista lejana, y los
+   rellenos apagados no tienen geometría que hoverear. Cada capa lleva una
+   gemela INVISIBLE (`opacity: 0`, misma source) que solo sirve al hit-test
+   del hover. En líneas su ancho escala con el zoom: gruesa de lejos →
+   casi la visible de cerca. `round` extiende el área en uniones y
+   extremos. Solo existe si el mapa opta-in (hitArea). */
 const HIT_SUFFIX = '-hit'
 
 function hitLayerId(layerId: string): string {
@@ -47,27 +48,42 @@ const HIT_WIDTH = [
 function addHitLayer(map: maplibregl.Map, layer: GeojsonLayer): void {
   const hid = hitLayerId(layer.id)
   if (map.getLayer(hid)) return
+  const paint = layer.geometry === 'fill'
+    ? { 'fill-color': '#000000', 'fill-opacity': 0 }
+    : {
+      'line-color': '#000000',
+      'line-opacity': 0,
+      'line-width': HIT_WIDTH,
+    }
+  const layout: Record<string, unknown> = {
+    /* Siempre visible: es invisible al ojo y su único fin es el
+     * hit-test del hover. Así el tooltip sobrevive aunque la capa
+     * padre esté apagada (ej. Bredunco sin menú de capas). */
+    visibility: 'visible',
+  }
+  if (layer.geometry === 'line') {
+    layout['line-cap'] = 'round'
+    layout['line-join'] = 'round'
+  }
   map.addLayer(
     {
       id: hid,
-      type: 'line',
+      type: layer.geometry,
       source: sourceId(layer.id),
-      paint: {
-        'line-color': '#000000',
-        'line-opacity': 0,
-        'line-width': HIT_WIDTH,
-      },
-      layout: {
-        /* Siempre visible: es invisible al ojo y su único fin es el
-         * hit-test del hover. Así el tooltip sobrevive aunque la capa
-         * padre esté apagada (ej. Bredunco sin menú de capas). */
-        visibility: 'visible',
-        'line-cap': 'round',
-        'line-join': 'round',
-      },
+      paint,
+      layout,
     } as maplibregl.AddLayerObject,
     sourceId(layer.id),
   )
+}
+
+/** Capas con gemela de hover: GeoJSON de área o línea, salvo opt-out
+ *  (`tooltip: false`). */
+function wantHit(layer: Layer, hitArea: boolean | undefined): boolean {
+  return hitArea === true &&
+    layer.tooltip !== false &&
+    layer.type === 'geojson' &&
+    ((layer as GeojsonLayer).geometry === 'line' || (layer as GeojsonLayer).geometry === 'fill')
 }
 
 /** Propiedad de opacidad válida según el tipo/geometría de la capa.
@@ -172,10 +188,10 @@ export function addLayer(
       allLayers ? getBeforeId(map, layer.order, allLayers) : undefined,
     )
 
-    if (opts?.hitArea === true && geojson.geometry === 'line') {
+    if (wantHit(layer, opts?.hitArea)) {
       try {
         addHitLayer(map, geojson)
-      } catch { /* sin área de hover: la línea visible sigue hovereable */ }
+      } catch { /* sin área de hover: la geometría visible sigue hovereable */ }
     }
   }
 
@@ -255,9 +271,10 @@ export function bindLayerTooltips(
     if (bound.has(layer.id)) continue
     const sid = sourceId(layer.id)
     const html = layerTooltipHtml(layer.name)
-    /* Líneas: el área de hover vive en la gemela invisible (más gruesa);
+    /* Líneas y rellenos: el área de hover vive en la gemela invisible;
      * se escucha también la visible por si la gemela aún no existe. */
-    const targets = layer.type === 'geojson' && (layer as GeojsonLayer).geometry === 'line'
+    const targets = layer.type === 'geojson' &&
+      ((layer as GeojsonLayer).geometry === 'line' || (layer as GeojsonLayer).geometry === 'fill')
       ? [hitLayerId(layer.id), sid]
       : [sid]
     for (const target of targets) {
@@ -334,16 +351,11 @@ export function sync(
     }
   }
 
-  const wantHit = (layer: Layer): boolean =>
-    opts?.hitArea === true &&
-    layer.type === 'geojson' &&
-    (layer as GeojsonLayer).geometry === 'line'
-
   for (const layer of layers) {
     if (!currentIds.has(layer.id)) {
-      /* Con hitArea las líneas se agregan aunque estén apagadas: el padre
+      /* Con hitArea las capas se agregan aunque estén apagadas: el padre
        * queda oculto pero su gemela de hover sí detecta el mouse. */
-      if (layer.visibleByDefault || store.visibleLayers.has(layer.id) || wantHit(layer)) {
+      if (layer.visibleByDefault || store.visibleLayers.has(layer.id) || wantHit(layer, opts?.hitArea)) {
         addLayer(map, layer, store, layers, opts)
       }
     } else {
@@ -352,7 +364,7 @@ export function sync(
       if (map.getLayer(sid)) {
         map.setLayoutProperty(sid, 'visibility', visible ? 'visible' : 'none')
       }
-      if (wantHit(layer)) {
+      if (wantHit(layer, opts?.hitArea)) {
         const hid = hitLayerId(layer.id)
         if (!map.getLayer(hid)) {
           try { addHitLayer(map, layer as GeojsonLayer) } catch { /* noop */ }
