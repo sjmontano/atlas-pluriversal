@@ -154,8 +154,10 @@ export interface SubcuencaDef {
 export interface Encuadre {
   id: string
   name: string
-  /** Mapa destino (navegación URL-first: /capitulo/:n/:mapId). */
-  targetMapId: string
+  /** Mapa destino (navegación URL-first: /capitulo/:n/:mapId).
+   *  Opcional: sin él la etiqueta es estática no navegable
+   *  (p. ej. los tramos de chapter3-humedales, port de v17 namesTramos). */
+  targetMapId?: string
   /** Posición de la etiqueta [lng, lat]. */
   labelCoords: [number, number]
   /** GeoJSON del polígono (archivo estático en /assets/geojson). */

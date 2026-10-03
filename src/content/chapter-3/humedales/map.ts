@@ -2,6 +2,7 @@ import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 import { GROUPS } from './groups'
 import { LEGENDS } from './legends'
+import { ENCUADRES } from './encuadres'
 
 const base =
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1763847570/geoImages/n4gxlxxpeoqnfma5dylj.webp'
@@ -25,5 +26,5 @@ export default makeMap({
   base,
   full: base,
   zoomMax: 11,
-  extras: { layers: LAYERS, groups: GROUPS, legends: LEGENDS },
+  extras: { layers: LAYERS, groups: GROUPS, legends: LEGENDS, encuadres: ENCUADRES },
 })

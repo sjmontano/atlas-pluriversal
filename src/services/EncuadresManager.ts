@@ -59,7 +59,8 @@ const MIN_TOUCH_HALF_PX = 22
 
 interface LabelBox {
   id: string
-  targetMapId: string
+  /** Sin destino la etiqueta es estática: hover sí, click no navega. */
+  targetMapId?: string
   coords: [number, number]
   halfW: number
   halfH: number
@@ -153,7 +154,9 @@ export async function addEncuadres(
             paint: { 'line-color': color, 'line-width': 2.5, 'line-dasharray': [2, 2] },
           })
 
-          const go = () => onNavigate(encuadre.targetMapId)
+          const go = () => {
+            if (encuadre.targetMapId !== undefined) onNavigate(encuadre.targetMapId)
+          }
           const pointerOn = () => { map.getCanvas().style.cursor = 'pointer' }
           const pointerOff = () => { map.getCanvas().style.cursor = '' }
           map.on('click', fillId, go)
@@ -291,7 +294,7 @@ export async function addEncuadres(
         map.setLayoutProperty(`${PREFIX}-label-${next.id}`, 'icon-image', `${PREFIX}-img-${next.id}-hover`)
         if (next.hasPolygon) setPolygonHighlight(map, next.id, true)
       }
-      map.getCanvas().style.cursor = next !== undefined ? 'pointer' : ''
+      map.getCanvas().style.cursor = next?.targetMapId !== undefined ? 'pointer' : ''
     } catch { /* capa aún no lista */ }
   }
   const onMove = (e: maplibregl.MapMouseEvent) => {
@@ -299,7 +302,7 @@ export async function addEncuadres(
   }
   const onClick = (e: maplibregl.MapMouseEvent) => {
     const hit = pick(e.point)
-    if (hit !== null) onNavigate(hit.targetMapId)
+    if (hit?.targetMapId !== undefined) onNavigate(hit.targetMapId)
   }
   const onLeave = () => applyHover(null)
   map.on('mousemove', onMove)
