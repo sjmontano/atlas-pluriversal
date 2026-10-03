@@ -11,7 +11,7 @@
  * (vw/vh con piso en px por accesibilidad táctil). */
 .tabs {
   position: absolute;
-  bottom: 0;
+  bottom: -5px;
   left: 50%;
   transform: translateX(-50%);
   width: max-content;
@@ -338,7 +338,7 @@
 }
 
 .tabs[data-autohide='true'][data-state='peek'] {
-  transform: translateX(-50%) translateY(calc(100% - 14px));
+  transform: translateX(-50%) translateY(calc(100% - 18px));
 }
 
 .tabs[data-autohide='true'][data-state='hidden'] {
@@ -347,7 +347,7 @@
 
 .tabs[data-autohide='true'][data-state='open'] {
   transform: translateX(-50%) translateY(0);
-  animation: tabs-pop 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: tabs-pop 0.5s cubic-bezier(0.28, 1.1, 0.36, 1);
 }
 
 @keyframes tabs-pop {
@@ -355,12 +355,12 @@
     transform: translateX(-50%) translateY(88%);
   }
 
-  60% {
-    transform: translateX(-50%) translateY(-3%);
+  55% {
+    transform: translateX(-50%) translateY(-2.3%);
   }
 
-  80% {
-    transform: translateX(-50%) translateY(1%);
+  72% {
+    transform: translateX(-50%) translateY(0.5%);
   }
 
   100% {

@@ -83,7 +83,13 @@ export function ChapterTabs({ autoHide = false, autoHideKey }: ChapterTabsProps)
     setState('open')
   }
   const maybeHide = (): void => {
-    if (!inZone()) setState('hidden')
+    if (!inZone()) {
+      /* Retardo breve: el mouse puede haber salido de la zona por un
+         frame mientras el menú subía (el borde del aside se mueve). */
+      hideTimer.current = window.setTimeout(() => {
+        if (!inZone()) setState('hidden')
+      }, 120)
+    }
   }
 
   return (
