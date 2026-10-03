@@ -4,8 +4,14 @@
  * Barra inferior centrada con los Cap. I–IV: numeral + flecha ↑ en el
  * overlay; hover (no seleccionado) crece, muestra imagen de fondo y
  * descriptor; el seleccionado cambia de color y no navega.
+ *
+ * Modo autoHide (solo mapas de contenido): arranca en peek (una franja
+ * visible), a los ~3s se baja a hidden (88% oculto) y sube completo al
+ * acercar el cursor al borde inferior (zona invisible de 48px) con un
+ * rebote elástico sutil. En intros se monta sin autoHide (siempre visible).
  */
 
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CHAPTERS } from '@data/chapters/chapters.ts'
 import { useChapterStore } from '@stores/chapterStore'
@@ -13,6 +19,16 @@ import { SHELL_ASSETS } from './assets'
 import type { Chapter } from '../../types/chapter.ts'
 import { Glyph } from '../modal/primitives/Glyph'
 import styles from './ChapterTabs.module.css'
+
+/** Ms en peek antes de bajarse solo. */
+const PEEK_MS = 2800
+
+export interface ChapterTabsProps {
+  /** Ocultado automático con peek (mapas de contenido). Default: false. */
+  autoHide?: boolean
+  /** Clave para reiniciar el ciclo peek→hidden (p. ej. mapId). */
+  autoHideKey?: string
+}
 
 /** Quita el prefijo "I. " del título del registro para el descriptor. */
 function shortTitle(chapter: Chapter): string {
@@ -27,12 +43,77 @@ const SILHOUETTES: Record<number, string> = {
   4: '/assets/ui/layer-chapter/chapter4-cacao.svg',
 }
 
-export function ChapterTabs() {
+export function ChapterTabs({ autoHide = false, autoHideKey }: ChapterTabsProps) {
   const activeChapter = useChapterStore((s) => s.activeChapter)
+  const [state, setState] = useState<'peek' | 'hidden' | 'open'>('peek')
+  const hideTimer = useRef<number | null>(null)
+  const cursor = useRef({ x: -1, y: -1 })
+  const zoneRef = useRef<HTMLDivElement>(null)
+
+  /* Posición del cursor: si al ocultar está sobre la zona, no ocultar. */
+  useEffect(() => {
+    if (!autoHide) return
+    const onMove = (e: PointerEvent): void => {
+      cursor.current = { x: e.clientX, y: e.clientY }
+    }
+    window.addEventListener('pointermove', onMove)
+    return () => window.removeEventListener('pointermove', onMove)
+  }, [autoHide])
+
+  /* Ciclo peek (visible al montar / navegar) → hidden tras PEEK_MS. */
+  useEffect(() => {
+    if (!autoHide) return
+    setState('peek')
+    hideTimer.current = window.setTimeout(() => setState('hidden'), PEEK_MS)
+    return () => {
+      if (hideTimer.current !== null) window.clearTimeout(hideTimer.current)
+    }
+  }, [autoHide, autoHideKey])
+
+  const inZone = (): boolean => {
+    const z = zoneRef.current
+    if (!z) return false
+    const r = z.getBoundingClientRect()
+    const p = cursor.current
+    return p.x >= r.left && p.x <= r.right && p.y >= r.top && p.y <= r.bottom
+  }
+
+  const open = (): void => {
+    if (hideTimer.current !== null) window.clearTimeout(hideTimer.current)
+    setState('open')
+  }
+  const maybeHide = (): void => {
+    if (!inZone()) setState('hidden')
+  }
 
   return (
-    <aside className={styles.tabs} aria-label="Capítulos">
-      {CHAPTERS.map((chapter) => {
+    <>
+      {autoHide && (
+        <div
+          ref={zoneRef}
+          className={styles.hoverZone}
+          data-active={state !== 'open'}
+          aria-hidden="true"
+          onMouseEnter={open}
+        />
+      )}
+      <aside
+        className={styles.tabs}
+        aria-label="Capítulos"
+        data-autohide={autoHide}
+        data-state={state}
+        onMouseEnter={autoHide ? open : undefined}
+        onMouseLeave={autoHide ? maybeHide : undefined}
+        onFocus={autoHide ? open : undefined}
+        onBlur={
+          autoHide
+            ? (e) => {
+                if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setState('hidden')
+              }
+            : undefined
+        }
+      >
+        {CHAPTERS.map((chapter) => {
         const selected = chapter.id === activeChapter
         const className = `${styles.tab}${selected ? ` ${styles.selected}` : ''}`
         const body = (
@@ -75,6 +156,7 @@ export function ChapterTabs() {
           </Link>
         )
       })}
-    </aside>
+      </aside>
+    </>
   )
 }

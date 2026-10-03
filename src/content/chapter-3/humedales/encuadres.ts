@@ -12,25 +12,25 @@ export const ENCUADRES: Encuadre[] = [
   {
     id: 'tramo-cap3-1',
     name: 'Tramo 1: Buenos Aires - Yumbo',
-    labelCoords: [-76.4, 3.31],
+    labelCoords: [-76.385307, 3.465347],
     labelMaxWidth: LABEL_W,
   },
   {
     id: 'tramo-cap3-2',
     name: 'Tramo 2: Yumbo - San Pedro',
-    labelCoords: [-76.398, 3.78],
+    labelCoords: [-76.383307, 3.922157],
     labelMaxWidth: LABEL_W,
   },
   {
     id: 'tramo-cap3-3',
     name: 'Tramo 3. San Pedro - Zarzal',
-    labelCoords: [-76.395, 4.26],
+    labelCoords: [-76.380307, 4.390433],
     labelMaxWidth: LABEL_W,
   },
   {
     id: 'tramo-cap3-4',
     name: 'Tramo 4: Zarzal - La Victoria',
-    labelCoords: [-76.392, 4.73],
+    labelCoords: [-76.377307, 4.86483],
     labelMaxWidth: LABEL_W,
   },
 ]

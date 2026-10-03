@@ -313,3 +313,78 @@
     animation: none;
   }
 }
+
+/* ── 11. Auto-hide (solo mapas de contenido) ─────────────────────────
+ * peek: franja de 14px visible · hidden: 88% oculto · open: completo con
+ * rebote elástico sutil (sube de más y asienta en dos tiempos). La zona
+ * invisible de 48px al borde inferior activa la apertura; se desactiva al
+ * abrir para no bloquear el mapa ni impedir el re-ocultado. */
+.hoverZone {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  z-index: 19;
+  pointer-events: none;
+}
+
+.hoverZone[data-active='true'] {
+  pointer-events: auto;
+}
+
+.tabs[data-autohide='true'] {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tabs[data-autohide='true'][data-state='peek'] {
+  transform: translateX(-50%) translateY(calc(100% - 14px));
+}
+
+.tabs[data-autohide='true'][data-state='hidden'] {
+  transform: translateX(-50%) translateY(88%);
+}
+
+.tabs[data-autohide='true'][data-state='open'] {
+  transform: translateX(-50%) translateY(0);
+  animation: tabs-pop 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes tabs-pop {
+  0% {
+    transform: translateX(-50%) translateY(88%);
+  }
+
+  60% {
+    transform: translateX(-50%) translateY(-3%);
+  }
+
+  80% {
+    transform: translateX(-50%) translateY(1%);
+  }
+
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Táctil: sin hover no hay auto-hide (quedaría inalcanzable) */
+@media (hover: none) {
+  .tabs[data-autohide='true'] {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .hoverZone {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabs[data-autohide='true'] {
+    transition: none;
+  }
+
+  .tabs[data-autohide='true'][data-state='open'] {
+    animation: none;
+  }
+}

@@ -82,9 +82,12 @@ export function ChapterPage() {
       numeral={isFirstMap ? chapter.roman : undefined}
       railItems={railItems}
       minimap={ui?.minimap ?? mapRef.minimap ?? 'cuenca'}
-      showNorth={ui?.northIndicator ?? true}
+      showNorth={ui?.homeNav ?? true}
       showHome={ui?.homeNav ?? true}
       showChapters={showChapters}
+      /* Auto-hide solo en mapas de contenido: las intros conservan el menú fijo */
+      chaptersAutoHide={!isFirstMap}
+      chaptersAutoHideKey={mapRef.mapId}
     >
       <AtlasMap key={mapRef.mapId} mapId={mapRef.mapId} />
     </ShellLayout>

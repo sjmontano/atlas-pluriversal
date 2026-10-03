@@ -33,6 +33,11 @@ export interface ShellLayoutProps {
   minimap?: MiniMapKey
   /** Tabs de capítulos abajo (default: true). */
   showChapters?: boolean
+  /** Auto-hide de los tabs (peek→hidden→open al borde inferior).
+   *  Solo mapas de contenido; intros y /intro lo omiten (default: false). */
+  chaptersAutoHide?: boolean
+  /** Clave para reiniciar el ciclo de auto-hide (p. ej. mapId). */
+  chaptersAutoHideKey?: string
   /** Icono del norte (default: true). */
   showNorth?: boolean
   /** Botones casa / un-rio-cauca (default: true). */
@@ -47,6 +52,8 @@ export function ShellLayout({
   railItems,
   minimap,
   showChapters = true,
+  chaptersAutoHide = false,
+  chaptersAutoHideKey,
   showNorth = true,
   showHome = true,
   children,
@@ -57,7 +64,7 @@ export function ShellLayout({
 
       {title !== undefined && <SectionHeader title={title} backTo={backTo} numeral={numeral} />}
       {railItems !== undefined && railItems.length > 0 && <ToolRail items={railItems} />}
-      {showChapters && <ChapterTabs />}
+      {showChapters && <ChapterTabs autoHide={chaptersAutoHide} autoHideKey={chaptersAutoHideKey} />}
       {minimap !== undefined && <MiniMap variant={minimap} />}
       {showNorth && <NorthIndicator />}
       {showHome && <HomeNav />}
