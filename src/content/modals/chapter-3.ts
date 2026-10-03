@@ -5,6 +5,35 @@
 import type { Modal } from '../../types/modal.ts'
 import { paragraphs, presentacion } from './_helpers.ts'
 
+/* ── Diagramas/Imagen full-bleed (portados de v17 ModalImagen) ────────────────
+ * Imagen única 100% sin header, X arriba-derecha, contain para no recortar. */
+function diagrama(
+  id: string,
+  title: string,
+  highlight: string,
+  icon: string,
+  frame: string,
+  src: string,
+  mapId: string,
+  label: string,
+): Modal {
+  return {
+    id,
+    section: 'capitulo-3',
+    variant: 'large',
+    title,
+    highlight,
+    icon,
+    image: src,
+    fullImage: true,
+    hideHeader: true,
+    closeLeft: false,
+    theme: { bgFit: 'contain', bgColor: '#ffffff', size: { width: '90vw', height: '90vh' } },
+    body: [],
+    trigger: { type: 'button', icon, frame, label, mapId },
+  }
+}
+
 /* ── cap3-intro: Introduction ──────────────────────────────────────────────── */
 
 const CAP3_INTRO: Modal = {
@@ -84,6 +113,54 @@ const CAP3_ARCILLA: Modal = presentacion(3, 'arcilla', {
   triggerLabel: 'Presentacion',
 })
 
+/* ── Tramos «Se encharca arriba se deseca abajo» (ids 66–69 v17) ─────────────
+ * 4 imágenes full-bleed (webp 8035×5118, fondo blanco), estilo diagrama cap4.
+ * Trigger: markers del geojson cap3-se-encharca.json (nombres tramos). */
+
+const CAP3_TRAMO_1: Modal = diagrama(
+  'cap3-tramo-1',
+  'Tramo 1: Buenos Aires - Yumbo',
+  'Se encharca arriba se deseca abajo',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-3/tramo1humedales.webp',
+  'chapter3-encharcaron',
+  'Tramo 1',
+)
+
+const CAP3_TRAMO_2: Modal = diagrama(
+  'cap3-tramo-2',
+  'Tramo 2: Yumbo - San Pedro',
+  'Se encharca arriba se deseca abajo',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-3/tramo2humedales.webp',
+  'chapter3-encharcaron',
+  'Tramo 2',
+)
+
+const CAP3_TRAMO_3: Modal = diagrama(
+  'cap3-tramo-3',
+  'Tramo 3: San Pedro - Zarzal',
+  'Se encharca arriba se deseca abajo',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-3/tramo3humedales.webp',
+  'chapter3-encharcaron',
+  'Tramo 3',
+)
+
+const CAP3_TRAMO_4: Modal = diagrama(
+  'cap3-tramo-4',
+  'Tramo 4: Zarzal - La Victoria',
+  'Se encharca arriba se deseca abajo',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-3/tramo4humedales.webp',
+  'chapter3-encharcaron',
+  'Tramo 4',
+)
+
 /* ── Export ────────────────────────────────────────────────────────────── */
 
 export const CHAPTER3_MODALS: Modal[] = [
@@ -93,4 +170,8 @@ export const CHAPTER3_MODALS: Modal[] = [
   CAP3_CALI_DESECA,
   CAP3_HUMEDALES,
   CAP3_ARCILLA,
+  CAP3_TRAMO_1,
+  CAP3_TRAMO_2,
+  CAP3_TRAMO_3,
+  CAP3_TRAMO_4,
 ]
