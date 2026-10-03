@@ -255,8 +255,14 @@
 .staticRow {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 4px 0;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+/* Anidada bajo un grupo: misma sangría que las filas de sección con
+ * encabezado (16 del contenedor + 18 = 34px del eje). */
+.groupChildren > .staticRow {
+  padding-left: 18px;
 }
 
 .staticIcon {
@@ -279,7 +285,7 @@
 
 /* ── Título del menú (v17 .subtitle, opcional por mapa) ───────────────── */
 .menuTitle {
-  margin: 0 0 12px;
+  margin: 0 0 20px;
   color: #fffeee;
   font-size: 20px;
   font-weight: 800;
@@ -294,11 +300,12 @@
   padding-left: 16px;
 }
 
-/* Macro-grupo top-level: texto grande, sin sangría propia */
-.macro>.groupHeader>.groupName {
-  font-size: 17px;
+/* Macro-grupo top-level: mismo nivel jerárquico que título y secciones
+ * (20/800) para que '1970' y '2022' se lean iguales. */
+.macro > .groupHeader > .groupName {
+  font-size: 20px;
   font-weight: 800;
-  line-height: 1.3;
+  line-height: 1.25;
 }
 
 /* Subgrupo: un paso abajo en la escala */
@@ -384,14 +391,14 @@
 }
 
 .group {
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .groupHeader {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 0;
+  padding: 6px 0;
   cursor: pointer;
 }
 
@@ -410,7 +417,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 0 3px 24px;
+  padding: 5px 0 5px 24px;
   font-size: 13px;
 }
 
@@ -454,25 +461,39 @@
   border-top: none;
 }
 
-.legendSectionTitle {
-  color: #fffeee;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0 0 6px;
-}
-
+/* Ritmo vertical 8px: aire entre secciones, header pegado a sus filas. */
 .legendGroup {
-  margin-bottom: 4px;
+  margin: 0 0 24px;
 }
 
+.legendGroup:last-child {
+  margin-bottom: 8px;
+}
+
+/* Títulos de sección de leyenda: misma jerarquía que un encabezado de
+ * macro-grupo (20/800). La caja ::before reserva el ancho de un ojo para
+ * que el texto arranque alineado con los nombres de grupo; las filas con
+ * encabezado se sangran a ese mismo eje. */
 .legendGroupName {
   color: #fffeee;
   font-size: 20px;
   font-weight: 800;
   line-height: 1.25;
   padding: 2px 0;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legendGroupName::before {
+  content: '';
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.legendGroup:has(.legendGroupName) .legendRow {
+  padding-left: 34px;
 }
 
 /* Fila informativa v17: insignia circular + texto (no clickeable,
@@ -480,8 +501,8 @@
 .legendRow {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 0;
+  gap: 12px;
+  padding: 8px 0;
   font-size: 15px;
 }
 

@@ -102,9 +102,6 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
 
   const hasLayers = tree.roots.length > 0
   const hasLegends = tree.freeLegends.length > 0
-  /* El encabezado "Leyenda" solo cuando acompaña a capas; si la leyenda
-     ES el menú (v17 informativo), arranca directo como en el original. */
-  const showLegendHeader = hasLayers && hasLegends
 
   if (!hasLayers && !hasLegends) return null
 
@@ -251,7 +248,6 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
 
           {hasLegends && (
             <div className={styles.legendSection}>
-              {showLegendHeader && <div className={styles.legendSectionTitle}>Leyenda</div>}
               {legendGroups.map(([groupName, items], i) => (
                 <div key={`${groupName ?? '__ungrouped__'}-${i}`} className={styles.legendGroup}>
                   {groupName && <div className={styles.legendGroupName}>{groupName}</div>}

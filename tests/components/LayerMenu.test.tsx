@@ -167,9 +167,9 @@ describe('LayerMenu', () => {
     expect(container.querySelectorAll('.eye').length).toBe(0)
   })
 
-  it('renders the Leyenda header when legends accompany layers', () => {
+  it('renders the legend section without Leyenda header when legends accompany layers', () => {
     render(<LayerMenu mapId="mixed" />)
-    expect(screen.getByText('Leyenda')).toBeDefined()
+    expect(screen.queryByText('Leyenda')).toBeNull()
     expect(screen.getByText(/Layer One/)).toBeDefined()
     expect(screen.getByText('Río Cauca')).toBeDefined()
   })
