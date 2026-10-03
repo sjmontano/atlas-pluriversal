@@ -17,5 +17,6 @@ export const LAYERS: RasterPgwLayer[] = [
     9114,
     SWATCH.historico,
     10,
+    { group: 'hum-1970' },
   ),
 ]

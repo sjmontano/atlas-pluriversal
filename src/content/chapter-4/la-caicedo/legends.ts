@@ -1,14 +1,29 @@
 import type { LegendItem } from '../../../types/layer'
-import { legenda } from '../shared'
+
+// Leyenda v17 (laCaicedo, layerMenu.jsx): puramente informativa, sin ojos.
+const legenda = (
+  id: string,
+  name: string,
+  icon: string,
+  order: number,
+  group?: string,
+): LegendItem => ({
+  id,
+  name,
+  icon,
+  order,
+  ...(group === undefined ? {} : { group }),
+})
 
 export const LEGENDS: LegendItem[] = [
-  legenda('la-caicedo-leyenda-residuos', '2. Disposición de residuos', 'disposicion-residuos-2.svg', 10, 'Zonificación'),
-  legenda('la-caicedo-leyenda-entrada', '1. Entrada finca', 'entrada-predio.svg', 20, 'Zonificación'),
-  legenda('la-caicedo-leyenda-vivienda', '1. Vivienda y espacios asociados', 'vivienda-espacios-asociados.svg', 30, 'Zonificación'),
-  legenda('la-caicedo-leyenda-animales', '4. Cría de animales', 'cria-animales.svg', 40, 'Zonificación'),
-  legenda('la-caicedo-leyenda-transformacion', '5. Transformación productiva', 'transformacion-productiva.svg', 50, 'Zonificación'),
-  legenda('la-caicedo-leyenda-transicion', '7. Zonas en transición', 'zona-transicion.svg', 60, 'Zonificación'),
-  legenda('la-caicedo-leyenda-cultivos', '9. Cultivos diversos', 'cultivo-diverso.svg', 70, 'Zonificación'),
-  legenda('la-caicedo-leyenda-delimitacion', 'Delimitación', 'delimitacion.svg', 80, 'Zonificación'),
-  legenda('la-caicedo-leyenda-via', 'Vía', 'trocha.svg', 90, 'Zonificación'),
+
+  legenda('la-caicedo-leyenda-01-2-disposiciÃ³n-de-residuo', '2.DisposiciÃ³n de residuos', '/assets/legends/cap4/dispocisionResiduos2.svg', 10, 'ZonificaciÃ³n'),
+  legenda('la-caicedo-leyenda-02-1-entrada-finca', '1.Entrada finca', '/assets/legends/cap4/entradaPredio.svg', 20, 'ZonificaciÃ³n'),
+  legenda('la-caicedo-leyenda-03-1-vivienda-y-espacios-as', '1.Vivienda y espacios asociados', '/assets/legends/cap4/viviendaEspaciosAsociados.svg', 30, 'ZonificaciÃ³n'),
+  legenda('la-caicedo-leyenda-04-4-crÃ­a-de-animales', '4.CrÃ­a de animales', '/assets/legends/cap4/criaAnimales.svg', 40, 'ZonificaciÃ³n'),
+  legenda('la-caicedo-leyenda-05-5-transformaciÃ³n-product', '5.TransformaciÃ³n productiva', '/assets/legends/cap4/transformacionProductiva.svg', 50, 'ZonificaciÃ³n'),
+  legenda('la-caicedo-leyenda-06-7-zonas-en-transiciÃ³n', '7.Zonas en transiciÃ³n', '/assets/legends/cap4/zonaTransicion.svg', 60, 'ZonificaciÃ³n'),
+  legenda('la-caicedo-leyenda-07-9-cultivos-diversos', '9.Cultivos diversos', '/assets/legends/cap4/cultivoDiverso.svg', 70, 'ZonificaciÃ³n'),
+  legenda('la-caicedo-leyenda-08-delimitaciÃ³n', 'DelimitaciÃ³n', '/assets/legends/cap4/delimitacion.svg', 80, 'ZonificaciÃ³n'),
+  legenda('la-caicedo-leyenda-09-vÃ­a', 'VÃ­a', '/assets/legends/cap4/trocha.svg', 90, 'ZonificaciÃ³n'),
 ]

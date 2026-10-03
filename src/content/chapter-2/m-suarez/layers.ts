@@ -12,6 +12,7 @@ const nodeLayer = (id: string, name: string, url: string, color: string): Geojso
   opacity: 0.4,
   visibleByDefault: true,
   legend: { swatch: color, description: name },
+  hideInMenu: true,
 })
 
 export const LAYERS: GeojsonLayer[] = [

@@ -33,6 +33,8 @@ export interface LayerBase {
   tooltip?: boolean
   legend?: {
     swatch?: string
+    /** URL de icono (estilo v17: se muestra plano en la fila). */
+    icon?: string
     description?: string
     longText?: string
   }
@@ -75,6 +77,12 @@ export interface LayerGroup {
   /** Muestra encabezado (chevron+ojo+nombre). false = render plano:
    *  solo ojo + filas (estilo v17 un-rio-cauca). Default: true. */
   header?: boolean
+  /** Muestra el ojo del encabezado (toggle en cascada). false = título
+   *  estático (estilo v17 arcilla). Default: true. */
+  eye?: boolean
+  /** Permite colapsar (chevron). false = siempre expandido.
+   *  Default: automático (subgrupos o más de una capa). */
+  collapsible?: boolean
   /** Prefija el número de sección (1., 2.3.). Años y títulos como
    *  '1970' no se numeran. Default: true. */
   numbered?: boolean
@@ -87,6 +95,8 @@ export interface LegendItem {
   swatch?: string
   /** URL de icono SVG (para leyendas con símbolo propio del mapa) */
   icon?: string
+  /** Icono plano sin insignia (estilo v17 un-rio-cauca). Default: insignia. */
+  bare?: boolean
   group?: string
   order: number
   description?: string

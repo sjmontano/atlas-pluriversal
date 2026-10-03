@@ -1,5 +1,6 @@
 import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
+import { LEGENDS } from './legends'
 
 export default makeMap({
   mapId: 'chapter2-m-villa-rica',
@@ -20,5 +21,5 @@ export default makeMap({
   base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759612261/geoImages/pabcndrbg0gjx29iuccg.webp',
   full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1767891949/geoImages/knk721fgkqtvdxnppxzr.webp',
   zoomMax: 13,
-  extras: { layers: LAYERS },
+  extras: { layers: LAYERS, legends: LEGENDS },
 })

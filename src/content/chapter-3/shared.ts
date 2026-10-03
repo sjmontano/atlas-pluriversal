@@ -13,7 +13,7 @@ export const rasterLayer = (
   height: number,
   swatch: string,
   order: number,
-  opts?: { group?: string; opacity?: number; visibleByDefault?: boolean },
+  opts?: { group?: string; opacity?: number; visibleByDefault?: boolean; icon?: string },
 ): RasterPgwLayer => ({
   id,
   name,
@@ -27,7 +27,7 @@ export const rasterLayer = (
   visibleByDefault: opts?.visibleByDefault ?? false,
   order,
   group: opts?.group,
-  legend: { swatch, description: name },
+  legend: { swatch, description: name, ...(opts?.icon !== undefined ? { icon: opts.icon } : {}) },
 })
 
 // Textos confirmados desde fuentes del proyecto (v17 lugares.js / modalsData).

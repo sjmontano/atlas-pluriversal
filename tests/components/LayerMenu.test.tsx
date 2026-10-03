@@ -71,6 +71,30 @@ vi.mock('@content', () => ({
         ],
       }
     }
+    if (mapId === 'flat') {
+      return {
+        layers: [
+          {
+            id: 'flat-layer-1',
+            name: 'Layer One',
+            type: 'raster-pgw',
+            category: 'ecosystems',
+            group: 'group-1',
+            order: 1,
+            opacity: 0.8,
+            legend: { swatch: '#ff0000' },
+            image: '',
+            pgw: [0, 1, 1, 0, 0, 0],
+            width: 1,
+            height: 1,
+          },
+        ],
+        groups: [{ id: 'group-1', name: 'Flat group', order: 1, header: false }],
+        legends: [
+          { id: 'leg-1', name: 'Static legend', swatch: '#2b83ba', order: 1, group: 'group-1' },
+        ],
+      }
+    }
     return null
   }),
 }))
@@ -150,8 +174,11 @@ describe('LayerMenu', () => {
     expect(screen.getByText('Río Cauca')).toBeDefined()
   })
 
-  it('does not render a master eye when there are no activable layers', () => {
-    render(<LayerMenu mapId="legend-only" />)
-    expect(screen.queryByText(/Todas/)).toBeNull()
+  it('renders flat groups with eye plus static rows without header', () => {
+    render(<LayerMenu mapId="flat" />)
+    fireEvent.click(screen.getByRole('button', { name: 'Menú de capas' }))
+    expect(screen.getByRole('button', { name: 'Mostrar Flat group' })).toBeDefined()
+    expect(screen.getByText('Static legend')).toBeDefined()
+    expect(screen.queryByText(/1\./)).toBeNull()
   })
 })

@@ -19,6 +19,7 @@ export const ENCUADRES: Encuadre[] = [
     url: '/assets/geojson/cap3-nos-encharcaron.json',
     color: CAP3_BLUE,
     labelRotate: LABEL_ROTATE,
+    kind: 'line',
   },
   {
     id: 'encuadre-cap3-cali-deseca',
@@ -28,6 +29,7 @@ export const ENCUADRES: Encuadre[] = [
     url: '/assets/geojson/cap3-cali-deseca.json',
     color: CAP3_BLUE,
     labelRotate: LABEL_ROTATE,
+    kind: 'line',
   },
   {
     id: 'encuadre-cap3-se-encharca',
@@ -37,6 +39,7 @@ export const ENCUADRES: Encuadre[] = [
     url: '/assets/geojson/cap3-se-encharca.json',
     color: CAP3_BLUE,
     labelRotate: LABEL_ROTATE,
+    kind: 'line',
   },
   {
     id: 'encuadre-cap3-aguas',
@@ -46,6 +49,7 @@ export const ENCUADRES: Encuadre[] = [
     url: '/assets/geojson/cap3-aguas-que-llegan.json',
     color: CAP3_BLUE,
     labelRotate: LABEL_ROTATE,
+    kind: 'line',
   },
   {
     id: 'encuadre-cap3-monocultivo',
@@ -55,5 +59,6 @@ export const ENCUADRES: Encuadre[] = [
     url: '/assets/geojson/cap3-monocultivo.json',
     color: CAP3_BLUE,
     labelRotate: LABEL_ROTATE,
+    kind: 'line',
   },
 ]

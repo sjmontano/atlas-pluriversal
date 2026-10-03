@@ -1,45 +1,26 @@
 import type { LegendItem } from '../../../types/layer'
-import { SWATCH } from '@content/theme'
-import { LEG_RIO_CAUCA, TEXTO_HUMEDALES } from '../shared'
+import { TEXTO_RIO_CAUCA, TEXTO_HUMEDALES } from '../shared'
+
+// Filas v17 (humedalesCap3): insignias, orden e iconos exactos.
+const CAP3 = '/assets/legends/cap3'
+const VALLE = '/assets/legends/cap2-valle'
+
+const legenda = (
+  id: string,
+  name: string,
+  icon: string,
+  order: number,
+  group: string | undefined,
+  extra?: Partial<LegendItem>,
+): LegendItem => ({ id, name, icon, order, ...(group === undefined ? {} : { group }), ...extra })
 
 export const LEGENDS: LegendItem[] = [
-  { ...LEG_RIO_CAUCA('humedales-leyenda-rio-1970', 10), group: '1970' },
-  { ...LEG_RIO_CAUCA('humedales-leyenda-rio-2022', 20), group: '2022' },
-  {
-    id: 'humedales-leyenda-rios-principales',
-    name: 'Ríos principales',
-    swatch: SWATCH.rio,
-    order: 30,
-  },
-  {
-    id: 'humedales-leyenda-represas',
-    name: 'Represas',
-    swatch: SWATCH.represa,
-    order: 40,
-  },
-  {
-    id: 'humedales-leyenda-humedales',
-    name: 'Humedales',
-    swatch: SWATCH.humedal,
-    order: 50,
-    longText: TEXTO_HUMEDALES,
-  },
-  {
-    id: 'humedales-leyenda-zonas-urbanas',
-    name: 'Zonas urbanas',
-    swatch: SWATCH.zonaUrbana,
-    order: 60,
-  },
-  {
-    id: 'humedales-leyenda-diques-bordas',
-    name: 'Diques y bordas',
-    swatch: SWATCH.dique,
-    order: 70,
-  },
-  {
-    id: 'humedales-leyenda-curvas-nivel',
-    name: 'Curvas de nivel',
-    swatch: SWATCH.curvaNivel,
-    order: 80,
-  },
+  legenda('humedales-leyenda-rio-1970', 'Río Cauca', `${CAP3}/hum.svg`, 10, 'hum-1970', { longText: TEXTO_RIO_CAUCA }),
+  legenda('humedales-leyenda-rio-2022', 'Río Cauca', `${CAP3}/rioCauca.svg`, 20, '2022', { longText: TEXTO_RIO_CAUCA }),
+  legenda('humedales-leyenda-rios-principales', 'Ríos principales', `${VALLE}/riosPrincipales.svg`, 30, '2022'),
+  legenda('humedales-leyenda-represas', 'Represas', `${VALLE}/represas.svg`, 40, '2022'),
+  legenda('humedales-leyenda-humedales', 'Humedales', `${CAP3}/humedal.svg`, 50, '2022', { longText: TEXTO_HUMEDALES }),
+  legenda('humedales-leyenda-zonas-urbanas', 'Zonas urbanas', `${CAP3}/zonasUrbana.svg`, 60, '2022'),
+  legenda('humedales-leyenda-diques-bordas', 'Diques y bordas', `${CAP3}/diques.svg`, 70, '2022'),
+  legenda('humedales-leyenda-curvas-nivel', 'Curvas de nivel', `${CAP3}/curvasNivel.svg`, 80, '2022'),
 ]

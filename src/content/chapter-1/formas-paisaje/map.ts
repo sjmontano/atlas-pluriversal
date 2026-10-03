@@ -20,5 +20,12 @@ export default makeMap({
   base: '/assets/maps/cap1/formas-del-paisaje.png',
   full: '/assets/maps/cap1/formas-del-paisaje.png',
   zoomMax: 9,
-  extras: { pois: POIS },
+  extras: {
+    pois: POIS,
+    /* Port v17 (MapComponent.jsx): océanos, solo vistas Colombia completa. */
+    oceanLabels: [
+      { id: 'oceano-pacifico', name: 'OCÉANO PACÍFICO', coords: [-78.45, 6.3] as [number, number] },
+      { id: 'mar-caribe', name: 'MAR CARIBE', coords: [-76.5319, 11.85] as [number, number] },
+    ],
+  },
 })

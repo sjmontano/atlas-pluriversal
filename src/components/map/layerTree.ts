@@ -141,11 +141,11 @@ export function buildLayerTree(
     }
   }
 
-  // Secciones top-level: grupos y capas sueltas entremezclados por `order`,
-  // numerados en secuencia visual final (1., 2., 3.).
+  // Secciones top-level: grupos y capas sueltas entremezclados por `order`.
+  // Solo los grupos con encabezado numerado consumen número (1., 2., 3.).
   const sections = roots.map((group) => ({
     order: group.order,
-    node: buildGroupNode(group, 0, '', childrenOf, layersByGroup),
+    node: buildGroupNode(group, 0, '', childrenOf, layersByGroup, legendsByGroup),
   }))
   const merged: Array<{ order: number; node: TreeNode }> = [
     ...sections,
@@ -157,21 +157,54 @@ export function buildLayerTree(
 
   let n = 0
   for (const entry of merged) {
-    n += 1
-    entry.node.number = String(n)
+    const numbered =
+      entry.node.kind === 'layer' ||
+      (entry.node.group.header !== false && entry.node.group.numbered !== false)
+    if (numbered) {
+      n += 1
+      entry.node.number = String(n)
+    }
     if (entry.node.kind === 'group') renumber(entry.node)
   }
-  return merged.map((entry) => entry.node)
+  return { roots: merged.map((entry) => entry.node), freeLegends: groupLegends(free) }
 }
 
-/** Re-numera subgrupos recursivamente (`1.1.`, `2.3.`). Solo los subgrupos
- *  consumen número; las capas directas no alteran la secuencia. */
+/** Agrupa leyendas libres por su texto de sección, respetando el orden
+ *  global de aparición (una sección sin grupo puede ir primera). */
+function groupLegends(legends: LegendItem[]): Array<[string | null, LegendItem[]]> {
+  const sections: Array<[string | null, LegendItem[]]> = []
+  const indexByGroup = new Map<string, number>()
+  for (const item of legends) {
+    const key = item.group ?? null
+    if (key === null) {
+      const last = sections[sections.length - 1]
+      if (last !== undefined && last[0] === null) {
+        last[1].push(item)
+      } else {
+        sections.push([null, [item]])
+      }
+      continue
+    }
+    const at = indexByGroup.get(key)
+    if (at !== undefined) {
+      sections[at]?.[1].push(item)
+    } else {
+      indexByGroup.set(key, sections.length)
+      sections.push([key, [item]])
+    }
+  }
+  return sections
+}
+
+/** Re-numera subgrupos (`1.1.`, `2.3.`). Solo los subgrupos consumen
+ *  número; las capas directas no alteran la secuencia. Sin número padre,
+ *  secuencia plana. */
 function renumber(node: GroupNode): void {
   let n = 0
   for (const child of node.children) {
     if (child.kind === 'group') {
       n += 1
-      child.number = `${node.number}.${n}`
+      child.number = node.number !== '' ? `${node.number}.${n}` : String(n)
       renumber(child)
     }
   }

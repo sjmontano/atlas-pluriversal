@@ -171,6 +171,10 @@ export interface Encuadre {
   labelRotate?: number
   /** Texto del tooltip al hover. Si se omite, usa `name`. */
   tooltip?: string
+  /** Tipo de geometría: polígono relleno (default) o línea (franjas cap 3).
+   *  Cambia el target del panel: con `line` se usan 'franjas' + 'etiquetas'
+   *  en vez de 'encuadres' (línea y etiqueta se calibran por separado). */
+  kind?: 'polygon' | 'line'
 }
 
 /** Etiqueta geográfica estática no interactiva (port v17: los océanos del

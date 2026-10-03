@@ -1,6 +1,10 @@
 import type { LayerGroup } from '../../../types/layer'
 
-const g = (id: string, name: string, order: number): LayerGroup => ({ id, name, order })
+// Grupos planos v17 (menuCapas/Chapter1.jsx): una capa por grupo + filas
+// estáticas, sin encabezado ni número — solo el ojo + la leyenda.
+// El `name` alimenta el aria-label del ojo (no se muestra).
+
+const g = (id: string, name: string, order: number): LayerGroup => ({ id, name, order, header: false })
 
 export const GROUPS: LayerGroup[] = [
   g('urc-1', 'Parteaguas, estrellas fluviales, macizos y cordilleras', 1),

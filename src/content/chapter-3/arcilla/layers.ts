@@ -16,7 +16,7 @@ export const LAYERS: RasterPgwLayer[] = [
     7000,
     SWATCH.explotacion,
     10,
-    { group: 'arcilla-lagos' },
+    { group: 'arcilla-lagos', icon: '/assets/legends/cap3/explotacionAbiertos.svg' },
   ),
   rasterLayer(
     'enReanatualizacion',
@@ -27,7 +27,7 @@ export const LAYERS: RasterPgwLayer[] = [
     7000,
     SWATCH.renaturalizacion,
     20,
-    { group: 'arcilla-lagos' },
+    { group: 'arcilla-lagos', icon: '/assets/legends/cap3/procesoNaturalizacion.svg' },
   ),
   rasterLayer(
     'enRellenados',
@@ -38,6 +38,6 @@ export const LAYERS: RasterPgwLayer[] = [
     7000,
     SWATCH.relleno,
     30,
-    { group: 'arcilla-lagos' },
+    { group: 'arcilla-lagos', icon: '/assets/legends/cap3/rellenos.svg' },
   ),
 ]

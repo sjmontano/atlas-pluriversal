@@ -16,5 +16,6 @@ export const LAYERS: RasterPgwLayer[] = [
     8822,
     SWATCH.historico,
     10,
+    { group: 'ench-1970' },
   ),
 ]

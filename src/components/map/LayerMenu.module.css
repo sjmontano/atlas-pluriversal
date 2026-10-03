@@ -233,6 +233,50 @@
   }
 }
 
+/* ── Grupo plano v17 (sin encabezado): ojo + filas estáticas ───────────── */
+.flat {
+  margin-bottom: 8px;
+}
+
+.flatRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.flatChildren {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fila estática v17: icono plano inline (sin insignia) + nombre. */
+.staticRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.staticIcon {
+  width: 31px;
+  height: 20px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.staticName {
+  color: #fffeee;
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  font-size: 14px;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
 /* ── Título del menú (v17 .subtitle, opcional por mapa) ───────────────── */
 .menuTitle {
   margin: 0 0 12px;
@@ -425,8 +469,9 @@
 
 .legendGroupName {
   color: #fffeee;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.25;
   padding: 2px 0;
 }
 
@@ -452,8 +497,8 @@
 }
 
 .legendIcon {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -465,8 +510,8 @@
 }
 
 .legendIconImg {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
 }
 

@@ -16,38 +16,13 @@ import { useLayerStore } from '@stores/layerStore'
 import { getMapContent } from '@content'
 import { Glyph } from '../modal/primitives/Glyph'
 import type { Layer, LegendItem } from '../../types/layer.ts'
-import { buildLayerTree, triState, type GroupNode, type TreeNode, type TriState } from './layerTree'
+import { buildLayerTree, isCollapsible, triState, type GroupNode, type TreeNode, type TriState } from './layerTree'
 import styles from './LayerMenu.module.css'
 
 interface Props {
   mapId: string
   /** Desplaza el conjunto debajo de una topbar (solo /test). Default: false. */
   offsetTop?: boolean
-}
-
-function groupLegends(legends: LegendItem[]): Array<[string | null, LegendItem[]]> {
-  const orderedGroups: string[] = []
-  const byGroup = new Map<string, LegendItem[]>()
-  const ungrouped: LegendItem[] = []
-
-  for (const item of legends) {
-    if (!item.group) {
-      ungrouped.push(item)
-      continue
-    }
-    if (!byGroup.has(item.group)) {
-      byGroup.set(item.group, [])
-      orderedGroups.push(item.group)
-    }
-    byGroup.get(item.group)!.push(item)
-  }
-
-  const result: Array<[string | null, LegendItem[]]> = []
-  for (const group of orderedGroups) {
-    result.push([group, byGroup.get(group)!])
-  }
-  if (ungrouped.length > 0) result.push([null, ungrouped])
-  return result
 }
 
 function EyeButton({
@@ -99,8 +74,8 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
 
   const tree = useMemo(() => {
     const inMenu = (layers ?? []).filter((l) => l.hideInMenu !== true)
-    return buildLayerTree(groups ?? [], inMenu)
-  }, [groups, layers])
+    return buildLayerTree(groups ?? [], inMenu, legends ?? [])
+  }, [groups, layers, legends])
 
   /** Click abre/cierra el panel; el hover solo previsualiza. */
   const [pinned, setPinned] = useState(false)
@@ -125,15 +100,15 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
     }
   }, [pinned])
 
-  const hasLayers = tree.length > 0
-  const hasLegends = legends !== null && legends.length > 0
+  const hasLayers = tree.roots.length > 0
+  const hasLegends = tree.freeLegends.length > 0
   /* El encabezado "Leyenda" solo cuando acompaña a capas; si la leyenda
      ES el menú (v17 informativo), arranca directo como en el original. */
   const showLegendHeader = hasLayers && hasLegends
 
   if (!hasLayers && !hasLegends) return null
 
-  const legendGroups = hasLegends ? groupLegends(legends!) : []
+  const legendGroups = tree.freeLegends
 
   const isExpanded = (node: GroupNode): boolean =>
     expandedGroups[node.group.id] ?? node.group.expandedByDefault ?? true
@@ -156,38 +131,83 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
       )
     }
     const expanded = isExpanded(node)
+    const collapsible = node.group.collapsible ?? isCollapsible(node)
+    const showHeader = node.group.header !== false
+    const showEye = node.group.eye !== false
+    const showNumber = showHeader && node.group.numbered !== false && node.number !== ''
     const state: TriState = triState(visibleLayers, node.layerIds)
+    const eye = showEye ? (
+      <EyeButton
+        on={state === true}
+        mixed={state === 'mixed'}
+        label={state === true ? `Ocultar ${node.group.name}` : `Mostrar ${node.group.name}`}
+        onToggle={() => toggleGroup(node)}
+      />
+    ) : null
+    /* Fila de nombre de capa única: si el grupo tiene una sola capa directa,
+       el ojo del grupo ya la alterna y la fila sobra (v17 1970/un-rio-cauca).
+       Con varias capas se muestran para alternar individual. */
+    const directLayers = node.children.filter((c) => c.kind === 'layer')
+    const showLayerRows = directLayers.length !== 1 || !showEye
+    /* Grupo plano v17 (sin encabezado): un ojo que alterna sus capas +
+       filas estáticas. Los subgrupos siempre se renderizan. */
+    if (!showHeader) {
+      return (
+        <div key={node.group.id} className={`${styles.group} ${styles.flat}`}>
+          <div className={styles.flatRow}>
+            {eye}
+            <div className={styles.flatChildren}>
+              {showLayerRows &&
+                directLayers.map((child) => renderNode(child))}
+              {node.children.map((child) =>
+                child.kind === 'group' ? renderNode(child) : null,
+              )}
+              {node.legends.map((item) => (
+                <StaticRow key={item.id} item={item} />
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+    const open = !collapsible || expanded
     return (
       <div key={node.group.id} className={`${styles.group} ${node.depth === 0 ? styles.macro : styles.sub}`}>
         <div className={styles.groupHeader}>
-          <button
-            type="button"
-            className={styles.chevBtn}
-            onClick={() => toggleGroupExpanded(node.group.id)}
-            aria-expanded={expanded}
-            aria-label={expanded ? `Colapsar ${node.group.name}` : `Expandir ${node.group.name}`}
-            title={expanded ? 'Colapsar' : 'Expandir'}
-          >
-            <Chevron expanded={expanded} label={expanded ? 'Colapsar' : 'Expandir'} />
-          </button>
-          <EyeButton
-            on={state === true}
-            mixed={state === 'mixed'}
-            label={state === true ? `Ocultar ${node.group.name}` : `Mostrar ${node.group.name}`}
-            onToggle={() => toggleGroup(node)}
-          />
+          {collapsible && (
+            <button
+              type="button"
+              className={styles.chevBtn}
+              onClick={() => toggleGroupExpanded(node.group.id)}
+              aria-expanded={expanded}
+              aria-label={expanded ? `Colapsar ${node.group.name}` : `Expandir ${node.group.name}`}
+              title={expanded ? 'Colapsar' : 'Expandir'}
+            >
+              <Chevron expanded={expanded} label={expanded ? 'Colapsar' : 'Expandir'} />
+            </button>
+          )}
+          {eye}
           <span
             className={styles.groupName}
             title={node.group.name}
-            onClick={() => toggleGroupExpanded(node.group.id)}
+            onClick={() => collapsible && toggleGroupExpanded(node.group.id)}
           >
-            {node.number}. {node.group.name}
+            {showNumber ? `${node.number}. ${node.group.name}` : node.group.name}
           </span>
         </div>
 
-        {expanded && (
+        {open && (
           <div className={styles.groupChildren}>
-            {node.children.map((child) => renderNode(child))}
+            {showLayerRows &&
+              node.children.map((child) =>
+                child.kind === 'layer' ? renderNode(child) : null,
+              )}
+            {node.children.map((child) =>
+              child.kind === 'group' ? renderNode(child) : null,
+            )}
+            {node.legends.map((item) => (
+              <StaticRow key={item.id} item={item} />
+            ))}
           </div>
         )}
       </div>
@@ -227,13 +247,13 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
         <div className={styles.body}>
           {menuTitle !== undefined && <h2 className={styles.menuTitle}>{menuTitle}</h2>}
 
-          {hasLayers && tree.map((node) => renderNode(node))}
+          {hasLayers && tree.roots.map((node) => renderNode(node))}
 
           {hasLegends && (
             <div className={styles.legendSection}>
               {showLegendHeader && <div className={styles.legendSectionTitle}>Leyenda</div>}
-              {legendGroups.map(([groupName, items]) => (
-                <div key={groupName ?? '__ungrouped__'} className={styles.legendGroup}>
+              {legendGroups.map(([groupName, items], i) => (
+                <div key={`${groupName ?? '__ungrouped__'}-${i}`} className={styles.legendGroup}>
                   {groupName && <div className={styles.legendGroupName}>{groupName}</div>}
                   {items.map((item) => (
                     <LegendRow key={item.id} item={item} />
@@ -272,6 +292,30 @@ function LegendRow({ item }: { item: LegendItem }) {
   )
 }
 
+/** Fila estática v17 anidada en grupos: con insignia por defecto, icono
+ *  plano si `bare` (un-rio-cauca). Sin ojo: el ojo del grupo alterna. */
+function StaticRow({ item }: { item: LegendItem }) {
+  const icon = item.icon ? (
+    item.bare === true ? (
+      <img src={item.icon} alt="" className={styles.staticIcon} />
+    ) : (
+      <span className={styles.legendIcon}>
+        <img src={item.icon} alt="" className={styles.legendIconImg} />
+      </span>
+    )
+  ) : (
+    <span className={styles.swatch} style={{ backgroundColor: item.swatch }} />
+  )
+  return (
+    <div className={styles.staticRow}>
+      {icon}
+      <span className={styles.staticName} title={item.description}>
+        {item.name}
+      </span>
+    </div>
+  )
+}
+
 function LayerRow({
   layer,
   number,
@@ -290,8 +334,14 @@ function LayerRow({
         label={visible ? `Ocultar ${layer.name}` : `Mostrar ${layer.name}`}
         onToggle={onToggle}
       />
-      {layer.legend?.swatch && (
-        <span className={styles.swatch} style={{ backgroundColor: layer.legend.swatch }} />
+      {layer.legend?.icon ? (
+        <span className={styles.legendIcon}>
+          <img src={layer.legend.icon} alt="" className={styles.legendIconImg} />
+        </span>
+      ) : (
+        layer.legend?.swatch && (
+          <span className={styles.swatch} style={{ backgroundColor: layer.legend.swatch }} />
+        )
       )}
       <span className={styles.layerName} title={layer.legend?.description}>
         {number !== null ? `${number}. ${layer.name}` : layer.name}

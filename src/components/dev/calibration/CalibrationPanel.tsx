@@ -52,6 +52,8 @@ type CalibrationTarget =
   | { kind: 'pois' }
   | { kind: 'subcuencas' }
   | { kind: 'geolayers' }
+  | { kind: 'franjas' }
+  | { kind: 'etiquetas' }
 
 /** Paso de flechas en px de pantalla (fino 1px). Válido con cualquier bearing. */
 const ENC_PX_STEP = 5
@@ -154,6 +156,64 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
   const [, setEncTick] = useState(0)
   const encOffsetsRef = useRef(new Map<string, { dlng: number; dlat: number }>())
   const encOriginalsRef = useRef(new Map<string, EncuadreOriginal>())
+
+  /* ── Franjas + etiquetas (cap 3): estado temprano para el efecto de
+   * drag; los nudges viven abajo junto a copyEnc (usan pxDeltaToGeo). */
+  const [frIdx, setFrIdx] = useState(0)
+  const [frFine, setFrFine] = useState(false)
+  const [frBulk, setFrBulk] = useState(false)
+  const frOffsetsRef = useRef(new Map<string, { dlng: number; dlat: number }>())
+  const [labIdx, setLabIdx] = useState(0)
+  const [labFine, setLabFine] = useState(false)
+  const [labBulk, setLabBulk] = useState(false)
+  const labOffsetsRef = useRef(new Map<string, { dlng: number; dlat: number }>())
+
+  const applyLineShift = useCallback((enc: Encuadre, off: { dlng: number; dlat: number }) => {
+    const map = controllerRef.current?.map
+    if (!map) return
+    const orig = encOriginalsRef.current.get(enc.id)
+    if (!orig || orig.polygon === null) return
+    try {
+      liveGeoJSONSource(map, encuadrePolygonSourceId(enc.id))?.setData(
+        shiftFeatureCollection(orig.polygon, off.dlng, off.dlat),
+      )
+    } catch { /* source aún no lista */ }
+  }, [controllerRef])
+
+  const addLineOffset = useCallback((enc: Encuadre, dLng: number, dLat: number) => {
+    const cur = frOffsetsRef.current.get(enc.id) ?? { dlng: 0, dlat: 0 }
+    const next = { dlng: cur.dlng + dLng, dlat: cur.dlat + dLat }
+    frOffsetsRef.current.set(enc.id, next)
+    applyLineShift(enc, next)
+    setEncTick((t) => t + 1)
+  }, [applyLineShift])
+
+  function applyLabelShift(id: string, off: { dlng: number; dlat: number }): void {
+    const map = controllerRef.current?.map
+    if (!map) return
+    const enc = encList.find((e) => e.id === id)
+    if (!enc) return
+    try {
+      const [lng, lat] = shiftLngLat([enc.labelCoords[0], enc.labelCoords[1]], off.dlng, off.dlat)
+      liveGeoJSONSource(map, encuadreLabelSourceId(id))?.setData({
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'Point', coordinates: [lng, lat] },
+          },
+        ],
+      })
+    } catch { /* source aún no lista */ }
+  }
+
+  function addLabelOffset(id: string, dLng: number, dLat: number): void {
+    const cur = labOffsetsRef.current.get(id) ?? { dlng: 0, dlat: 0 }
+    labOffsetsRef.current.set(id, { dlng: cur.dlng + dLng, dlat: cur.dlat + dLat })
+    applyLabelShift(id, labOffsetsRef.current.get(id)!)
+    setEncTick((t) => t + 1)
+  }
 
   /* ── Target POIs: mismo patrón que encuadres (offsets GEO + bulk).
    * Los originales son los coords del content (sin fetch). Al mover se
@@ -451,6 +511,24 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
         return
       }
 
+      if (target.kind === 'franjas') {
+        const list = getMapContent(mapId)?.encuadres ?? []
+        const one = list[frIdx]
+        const targets = frBulk ? list : one === undefined ? [] : [one]
+        for (const enc of targets) addLineOffset(enc, dLng, dLat)
+        dragRef.current.startGeo = { lng: geo.lng, lat: geo.lat }
+        return
+      }
+
+      if (target.kind === 'etiquetas') {
+        const list = getMapContent(mapId)?.encuadres ?? []
+        const one = list[labIdx]
+        const targets = labBulk ? list : one === undefined ? [] : [one]
+        for (const enc of targets) addLabelOffset(enc.id, dLng, dLat)
+        dragRef.current.startGeo = { lng: geo.lng, lat: geo.lat }
+        return
+      }
+
       if (target.kind === 'layers' && target.layerIds.length > 0) {
         const activeId = target.layerIds[activeLayerIdx]
         if (!activeId) return
@@ -512,7 +590,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       try { map.dragPan.enable() } catch { /* noop */ }
       dragRef.current = null
     }
-  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, encBulk, poiIdx, poiBulk, subIdx, subBulk, geoIdx, geoBulk, mapId, addEncOffset, addPoiOffset, addSubOffset])
+  }, [moveMode, controllerRef, target, activeLayerIdx, encIdx, encBulk, frIdx, frBulk, labIdx, labBulk, poiIdx, poiBulk, subIdx, subBulk, geoIdx, geoBulk, mapId, addEncOffset, addLineOffset, addLabelOffset, addPoiOffset, addSubOffset])
 
   const nudge = useCallback((key: FieldKey, sign: 1 | -1, fine: boolean) => {
     setState((prev) => {
@@ -758,7 +836,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
 
   /* Foto de originales al entrar al target (polígono fresco + labelCoords). */
   useEffect(() => {
-    if (target.kind !== 'encuadres') return
+    if (target.kind !== 'encuadres' && target.kind !== 'franjas' && target.kind !== 'etiquetas') return
     let cancelled = false
     void (async () => {
       const list = getMapContent(mapId)?.encuadres ?? []
@@ -788,6 +866,8 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
       }
       if (!cancelled) {
         setEncIdx(0)
+        setFrIdx(0)
+        setLabIdx(0)
         setEncTick((t) => t + 1)
       }
     })()
@@ -883,11 +963,100 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
     } catch { /* portapapeles no disponible */ }
   }, [mapId])
 
+  /* ── Franjas + etiquetas (cap 3, kind 'line'): el target 'encuadres'
+   * mueve línea y etiqueta juntas; aquí se separan en dos targets con
+   * stores propios. 'franjas' toca solo la source del polígono/línea
+   * (copia → comando shift-geojson); 'etiquetas' toca solo la source
+   * del label (copia → labelCoords). En mapas de líneas el botón
+   * 'Encuadres' se reemplaza por estos dos. El estado vive arriba
+   * (antes del efecto de drag); aquí solo nudges, selects, resets y copys. */
+  const nudgeFr = useCallback((dirX: -1 | 0 | 1, dirY: -1 | 0 | 1) => {
+    const list = getMapContent(mapId)?.encuadres ?? []
+    const one = list[frIdx]
+    const targets = frBulk ? list : one === undefined ? [] : [one]
+    if (targets.length === 0) return
+    const step = frFine ? ENC_PX_STEP_FINE : ENC_PX_STEP
+    const delta = pxDeltaToGeo(dirX * step, dirY * step)
+    if (!delta) return
+    for (const enc of targets) addLineOffset(enc, delta.dlng, delta.dlat)
+  }, [mapId, frIdx, frFine, frBulk, addLineOffset, pxDeltaToGeo])
+
+  const nudgeLabel = useCallback((dirX: -1 | 0 | 1, dirY: -1 | 0 | 1) => {
+    const list = getMapContent(mapId)?.encuadres ?? []
+    const one = list[labIdx]
+    const targets = labBulk ? list : one === undefined ? [] : [one]
+    if (targets.length === 0) return
+    const step = labFine ? ENC_PX_STEP_FINE : ENC_PX_STEP
+    const delta = pxDeltaToGeo(dirX * step, dirY * step)
+    if (!delta) return
+    for (const enc of targets) addLabelOffset(enc.id, delta.dlng, delta.dlat)
+  }, [mapId, labIdx, labFine, labBulk, pxDeltaToGeo])
+
+  function selectFranja(idx: number) {
+    if (encList.length === 0) return
+    setFrIdx(idx < 0 ? encList.length - 1 : idx >= encList.length ? 0 : idx)
+  }
+
+  function selectLabel(idx: number) {
+    if (encList.length === 0) return
+    setLabIdx(idx < 0 ? encList.length - 1 : idx >= encList.length ? 0 : idx)
+  }
+
+  const frReset = useCallback(() => {
+    const list = getMapContent(mapId)?.encuadres ?? []
+    for (const enc of list) {
+      const zero = { dlng: 0, dlat: 0 }
+      frOffsetsRef.current.set(enc.id, zero)
+      applyLineShift(enc, zero)
+    }
+    setEncTick((t) => t + 1)
+  }, [mapId, applyLineShift])
+
+  function labReset(): void {
+    labOffsetsRef.current.clear()
+    for (const enc of encList) applyLabelShift(enc.id, { dlng: 0, dlat: 0 })
+    setEncTick((t) => t + 1)
+  }
+
+  const copyFr = useCallback(() => {
+    const list = getMapContent(mapId)?.encuadres ?? []
+    const r6 = (n: number): number => Math.round(n * 1e6) / 1e6
+    const lines: string[] = []
+    for (const enc of list) {
+      const off = frOffsetsRef.current.get(enc.id)
+      if (!off || (off.dlng === 0 && off.dlat === 0)) continue
+      const orig = encOriginalsRef.current.get(enc.id)
+      if (!orig?.file) continue
+      lines.push(`node scripts/shift-geojson.mjs --lng ${r6(off.dlng)} --lat ${r6(off.dlat)} ${orig.file}`)
+    }
+    if (lines.length === 0) return
+    try {
+      void navigator.clipboard.writeText(lines.join('\n')).catch(() => { /* noop */ })
+    } catch { /* portapapeles no disponible */ }
+  }, [mapId])
+
+  const copyLabel = useCallback(() => {
+    const list = getMapContent(mapId)?.encuadres ?? []
+    const r6 = (n: number): number => Math.round(n * 1e6) / 1e6
+    const lines: string[] = []
+    for (const enc of list) {
+      const off = labOffsetsRef.current.get(enc.id)
+      if (!off || (off.dlng === 0 && off.dlat === 0)) continue
+      const [lng, lat] = shiftLngLat([enc.labelCoords[0], enc.labelCoords[1]], off.dlng, off.dlat)
+      lines.push(`labelCoords: [${r6(lng)}, ${r6(lat)}],  // ${enc.id} (su encuadres/map.ts)`)
+    }
+    if (lines.length === 0) return
+    try {
+      void navigator.clipboard.writeText(lines.join('\n')).catch(() => { /* noop */ })
+    } catch { /* portapapeles no disponible */ }
+  }, [mapId])
+
   const poiList: Poi[] = getMapContent(mapId)?.pois ?? []
   const subList = getMapContent(mapId)?.subcuencas ?? []
   const geoList: GeojsonLayer[] = (getMapContent(mapId)?.layers ?? []).filter(
     (l): l is GeojsonLayer => l.type === 'geojson',
   )
+  const isLineMap = encList.some((e) => e.kind === 'line')
 
   /** Estado vivo (offset + tamaño); sin tocar = valores del content. */
   function getSubState(slug: string): { dlng: number; dlat: number; width: number; height: number } {
@@ -1226,7 +1395,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
             </button>
           </div>
         )}
-          {ENABLE_DEV_TOOLS && encList.length > 0 && (
+          {ENABLE_DEV_TOOLS && encList.length > 0 && !isLineMap && (
             <div className={styles.overridesSection}>
               <button
                 className={`${styles.headerBtn} ${target.kind === 'encuadres' ? styles.targetActive : ''}`}
@@ -1236,6 +1405,28 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
                 }}
               >
                 ⬚ Encuadres: {encList.length}
+              </button>
+            </div>
+          )}
+          {ENABLE_DEV_TOOLS && encList.length > 0 && isLineMap && (
+            <div className={styles.overridesSection}>
+              <button
+                className={`${styles.headerBtn} ${target.kind === 'franjas' ? styles.targetActive : ''}`}
+                onClick={() => {
+                  setTarget({ kind: 'franjas' })
+                  setFrIdx(0)
+                }}
+              >
+                〰 Franjas: {encList.length}
+              </button>
+              <button
+                className={`${styles.headerBtn} ${target.kind === 'etiquetas' ? styles.targetActive : ''}`}
+                onClick={() => {
+                  setTarget({ kind: 'etiquetas' })
+                  setLabIdx(0)
+                }}
+              >
+                🏷 Etiquetas: {encList.length}
               </button>
             </div>
           )}
@@ -1300,6 +1491,8 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
             title="Reset a valores originales de geo.js"
             onClick={() => {
               if (target.kind === 'encuadres') encReset()
+              else if (target.kind === 'franjas') frReset()
+              else if (target.kind === 'etiquetas') labReset()
               else if (target.kind === 'pois') poiReset()
               else if (target.kind === 'subcuencas') subReset()
               else if (target.kind === 'geolayers') geoReset()
@@ -1310,12 +1503,16 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
           </button>
           <button
             className={styles.headerBtn}
-            title={target.kind === 'encuadres'
-              ? 'Los encuadres se persisten con Copiar (comando + labelCoords)'
+            title={target.kind === 'encuadres' || target.kind === 'franjas' || target.kind === 'etiquetas'
+              ? 'Las franjas/etiquetas se persisten con Copiar (comando + labelCoords)'
               : 'Guardar valores en geo.js y reconstruir mapa'}
             onClick={() => {
               if (target.kind === 'encuadres') {
                 setSaveError('Encuadres: usa 📋 Copiar y corre el comando en terminal + pega labelCoords (no vive en geo.js).')
+              } else if (target.kind === 'franjas') {
+                setSaveError('Franjas: usa 📋 Copiar y corre el comando en terminal (mueve solo la línea).')
+              } else if (target.kind === 'etiquetas') {
+                setSaveError('Etiquetas: usa 📋 Copiar y pega labelCoords en su encuadres.ts (mueve solo la etiqueta).')
               } else if (target.kind === 'pois') {
                 setSaveError('POIs: usa 📋 Copiar y pega coords en su pois.ts (no vive en geo.js).')
               } else if (target.kind === 'subcuencas') {
@@ -1334,6 +1531,8 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
             title="Copiar a portapapeles (formato geo.js)"
             onClick={() => {
               if (target.kind === 'encuadres') copyEnc()
+              else if (target.kind === 'franjas') copyFr()
+              else if (target.kind === 'etiquetas') copyLabel()
               else if (target.kind === 'pois') copyPoi()
               else if (target.kind === 'subcuencas') copySub()
               else if (target.kind === 'geolayers') copyGeo()
@@ -1417,6 +1616,112 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
                 <div className={styles.readoutRow}>
                   <span>Nota:</span>
                   <span>la etiqueta se mueve junto al polígono</span>
+                </div>
+              </div>
+              <div className={styles.separator} />
+            </>
+          ) : target.kind === 'franjas' ? (
+            <>
+              <div className={styles.overridesSection}>
+                <button className={styles.headerBtn} onClick={() => selectFranja(frIdx - 1)} title="Franja anterior">◀</button>
+                <span className={styles.layerNavLabel}>
+                  {frBulk
+                    ? `Todas (${encList.length})`
+                    : encList.length === 0 ? '—' : `${frIdx + 1}/${encList.length} ${encList[frIdx]?.name ?? ''}`}
+                </span>
+                <button className={styles.headerBtn} onClick={() => selectFranja(frIdx + 1)} title="Franja siguiente">▶</button>
+                <button
+                  className={`${styles.headerBtn} ${frBulk ? styles.targetActive : ''}`}
+                  title="Mover todas a la vez"
+                  onClick={() => setFrBulk((b) => !b)}
+                >
+                  {frBulk ? 'Todas ✓' : 'Una'}
+                </button>
+              </div>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Mover (px pantalla)</label>
+                <div className={styles.stepper}>
+                  <button className={styles.stepBtn} title="izquierda" onClick={() => nudgeFr(-1, 0)}>←</button>
+                  <button className={styles.stepBtn} title="arriba" onClick={() => nudgeFr(0, -1)}>↑</button>
+                  <button className={styles.stepBtn} title="abajo" onClick={() => nudgeFr(0, 1)}>↓</button>
+                  <button className={styles.stepBtn} title="derecha" onClick={() => nudgeFr(1, 0)}>→</button>
+                  <button
+                    className={styles.headerBtn}
+                    title="paso fino 1px / normal 5px"
+                    onClick={() => setFrFine((f) => !f)}
+                  >
+                    {frFine ? '1px ✓' : '5px'}
+                  </button>
+                </div>
+              </div>
+              <div className={styles.readout}>
+                <div className={styles.readoutTitle}>Offset franja (vivo)</div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lng:</span>
+                  <span>{fmtNum(frOffsetsRef.current.get(encList[frIdx]?.id ?? '')?.dlng ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lat:</span>
+                  <span>{fmtNum(frOffsetsRef.current.get(encList[frIdx]?.id ?? '')?.dlat ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Archivo:</span>
+                  <span>{encOriginalsRef.current.get(encList[frIdx]?.id ?? '')?.file ?? '—'}</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Nota:</span>
+                  <span>solo se mueve la línea (la etiqueta queda quieta)</span>
+                </div>
+              </div>
+              <div className={styles.separator} />
+            </>
+          ) : target.kind === 'etiquetas' ? (
+            <>
+              <div className={styles.overridesSection}>
+                <button className={styles.headerBtn} onClick={() => selectLabel(labIdx - 1)} title="Etiqueta anterior">◀</button>
+                <span className={styles.layerNavLabel}>
+                  {labBulk
+                    ? `Todas (${encList.length})`
+                    : encList.length === 0 ? '—' : `${labIdx + 1}/${encList.length} ${encList[labIdx]?.name ?? ''}`}
+                </span>
+                <button className={styles.headerBtn} onClick={() => selectLabel(labIdx + 1)} title="Etiqueta siguiente">▶</button>
+                <button
+                  className={`${styles.headerBtn} ${labBulk ? styles.targetActive : ''}`}
+                  title="Mover todas a la vez"
+                  onClick={() => setLabBulk((b) => !b)}
+                >
+                  {labBulk ? 'Todas ✓' : 'Una'}
+                </button>
+              </div>
+              <div className={styles.paramRow}>
+                <label className={styles.paramLabel}>Mover (px pantalla)</label>
+                <div className={styles.stepper}>
+                  <button className={styles.stepBtn} title="izquierda" onClick={() => nudgeLabel(-1, 0)}>←</button>
+                  <button className={styles.stepBtn} title="arriba" onClick={() => nudgeLabel(0, -1)}>↑</button>
+                  <button className={styles.stepBtn} title="abajo" onClick={() => nudgeLabel(0, 1)}>↓</button>
+                  <button className={styles.stepBtn} title="derecha" onClick={() => nudgeLabel(1, 0)}>→</button>
+                  <button
+                    className={styles.headerBtn}
+                    title="paso fino 1px / normal 5px"
+                    onClick={() => setLabFine((f) => !f)}
+                  >
+                    {labFine ? '1px ✓' : '5px'}
+                  </button>
+                </div>
+              </div>
+              <div className={styles.readout}>
+                <div className={styles.readoutTitle}>Offset etiqueta (vivo)</div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lng:</span>
+                  <span>{fmtNum(labOffsetsRef.current.get(encList[labIdx]?.id ?? '')?.dlng ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Δ lat:</span>
+                  <span>{fmtNum(labOffsetsRef.current.get(encList[labIdx]?.id ?? '')?.dlat ?? 0, 6)}°</span>
+                </div>
+                <div className={styles.readoutRow}>
+                  <span>Nota:</span>
+                  <span>solo se mueve la etiqueta (la línea queda quieta)</span>
                 </div>
               </div>
               <div className={styles.separator} />

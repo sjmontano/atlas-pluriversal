@@ -1,55 +1,31 @@
 import type { LegendItem } from '../../../types/layer'
-import { SWATCH } from '@content/theme'
 import { TEXTO_MONOCULTIVO } from '../shared'
 
+// Leyenda v17 (sección monocultivo): 8 filas con insignia, sin ojos.
+const VALLE = '/assets/legends/cap2-valle'
+const CAP3 = '/assets/legends/cap3'
+
+const legenda = (
+  id: string,
+  name: string,
+  icon: string,
+  order: number,
+  extra?: Partial<LegendItem>,
+): LegendItem => ({ id, name, icon, order, ...extra })
+
 export const LEGENDS: LegendItem[] = [
-  {
-    id: 'monocultivo-leyenda-rios-principales',
-    name: 'Ríos principales',
-    swatch: SWATCH.rio,
-    order: 10,
-  },
-  {
-    id: 'monocultivo-leyenda-rios-tributarios',
-    name: 'Ríos tributarios',
-    swatch: SWATCH.quebrada,
-    order: 20,
-  },
-  {
-    id: 'monocultivo-leyenda-represas',
-    name: 'Represas',
-    swatch: SWATCH.represa,
-    order: 30,
-  },
-  {
-    id: 'monocultivo-leyenda-zonas-urbanas',
-    name: 'Zonas urbanas',
-    swatch: SWATCH.zonaUrbana,
-    order: 40,
-  },
-  {
-    id: 'monocultivo-leyenda-red-vial',
-    name: 'Red vial',
-    swatch: SWATCH.via,
-    order: 50,
-  },
-  {
-    id: 'monocultivo-leyenda-fincas-tradicionales',
-    name: 'Fincas tradicionales y cultivos diversos',
-    swatch: SWATCH.finca,
-    order: 60,
-  },
-  {
-    id: 'monocultivo-leyenda-bosques',
-    name: 'Bosques',
-    swatch: SWATCH.bosque,
-    order: 70,
-  },
-  {
-    id: 'monocultivo-leyenda-monocultivos',
-    name: 'Monocultivos (caña de azúcar)',
-    swatch: SWATCH.monocultivo,
-    order: 80,
-    longText: TEXTO_MONOCULTIVO,
-  },
+  legenda('monocultivo-leyenda-rios-principales', 'Ríos principales', `${VALLE}/riosPrincipales.svg`, 10),
+  legenda('monocultivo-leyenda-rios-tributarios', 'Ríos tributarios', `${VALLE}/riosTributarios.svg`, 20),
+  legenda('monocultivo-leyenda-represas', 'Represas', `${VALLE}/represas.svg`, 30),
+  legenda('monocultivo-leyenda-zonas-urbanas', 'Zonas urbanas', `${CAP3}/zonaUrbana.svg`, 40),
+  legenda('monocultivo-leyenda-red-vial', 'Red víal', `${VALLE}/redVial.svg`, 50),
+  legenda('monocultivo-leyenda-fincas-tradicionales', 'Fincas tradicionales y cultivos diversos.', `${CAP3}/fincaTra.svg`, 60),
+  legenda('monocultivo-leyenda-bosques', 'Bosques', `${CAP3}/zonaVerde.svg`, 70),
+  legenda(
+    'monocultivo-leyenda-monocultivos',
+    'Monocultivos (caña de azúcar)',
+    `${CAP3}/cañaAzucar.svg`,
+    80,
+    { longText: TEXTO_MONOCULTIVO },
+  ),
 ]

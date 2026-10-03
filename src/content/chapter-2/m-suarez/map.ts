@@ -1,5 +1,6 @@
 import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
+import { LEGENDS } from './legends'
 
 const base = '/assets/maps/cap2/modelo-territorial-suarez.png'
 
@@ -23,5 +24,5 @@ export default makeMap({
   full: base,
   zoomMax: 12,
   bearing: 180,
-  extras: { layers: LAYERS },
+  extras: { layers: LAYERS, legends: LEGENDS },
 })

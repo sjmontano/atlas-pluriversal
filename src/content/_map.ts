@@ -26,7 +26,7 @@ export interface MakeMapOptions {
   zoomMax?: number
   /** Default: -90. Mapas atípicos (ej. problematicas -30, bosque-comestible 0). */
   bearing?: number
-  extras?: Pick<MapContent, 'layers' | 'groups' | 'legends' | 'pois' | 'encuadres' | 'subcuencas'>
+  extras?: Pick<MapContent, 'layers' | 'groups' | 'legends' | 'pois' | 'encuadres' | 'subcuencas' | 'oceanLabels'>
 }
 
 export function makeMap(opts: MakeMapOptions): MapContent {

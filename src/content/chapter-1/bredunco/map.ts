@@ -23,5 +23,12 @@ export default makeMap({
   base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752360535/geoImages/kv5mawmj8cefhcqho8np.webp',
   full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752360577/geoImages/zvluewqlzmf9hw9fua6x.avif',
   zoomMax: 9,
-  extras: { layers: LAYERS, groups: GROUPS, pois: POIS },
+  extras: {
+    layers: LAYERS, groups: GROUPS, pois: POIS,
+    /* Port v17 (MapComponent.jsx): océanos, solo vistas Colombia completa. */
+    oceanLabels: [
+      { id: 'oceano-pacifico', name: 'OCÉANO PACÍFICO', coords: [-78.45, 6.3] as [number, number] },
+      { id: 'mar-caribe', name: 'MAR CARIBE', coords: [-76.5319, 11.85] as [number, number] },
+    ],
+  },
 })

@@ -16,7 +16,7 @@ export const LAYERS: RasterPgwLayer[] = [
     8822,
     SWATCH.rio,
     10,
-    { group: 'cali-1937' },
+    { group: 'cali-1937', icon: '/assets/legends/cap3/cuerpoAgua.svg' },
   ),
   rasterLayer(
     'cali1937-area-urbana',
@@ -27,6 +27,6 @@ export const LAYERS: RasterPgwLayer[] = [
     8822,
     SWATCH.zonaUrbana,
     20,
-    { group: 'cali-1937' },
+    { group: 'cali-1937', icon: '/assets/legends/cap3/urbanA.svg' },
   ),
 ]

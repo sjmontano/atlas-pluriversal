@@ -1,5 +1,6 @@
 import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
+import { GROUPS } from './groups'
 import { LEGENDS } from './legends'
 
 const base =
@@ -24,5 +25,5 @@ export default makeMap({
   base,
   full: base,
   zoomMax: 11,
-  extras: { layers: LAYERS, legends: LEGENDS },
+  extras: { layers: LAYERS, groups: GROUPS, legends: LEGENDS },
 })

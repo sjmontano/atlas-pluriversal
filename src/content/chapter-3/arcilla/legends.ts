@@ -1,31 +1,19 @@
 import type { LegendItem } from '../../../types/layer'
-import { SWATCH } from '@content/theme'
-import { LEG_RIO_CAUCA } from '../shared'
+
+const ICONS = '/assets/legends/cap3'
+
+// Filas estáticas v17 (sección arcilla): cuelgan del grupo 'arcilla-lagos
+// (group = id) y se renderizan tras las 3 capas con ojo.
+const legenda = (
+  id: string,
+  name: string,
+  icon: string,
+  order: number,
+): LegendItem => ({ id, name, icon: `${ICONS}/${icon}`, order, group: 'arcilla-lagos' })
 
 export const LEGENDS: LegendItem[] = [
-  LEG_RIO_CAUCA('arcilla-leyenda-rio-cauca', 10),
-  {
-    id: 'arcilla-leyenda-fincas-tradicionales',
-    name: 'Fincas tradicionales, cultivos diversos y bosques',
-    swatch: SWATCH.finca,
-    order: 20,
-  },
-  {
-    id: 'arcilla-leyenda-titulo-minero',
-    name: 'Título minero vigente',
-    swatch: SWATCH.tituloMinero,
-    order: 30,
-  },
-  {
-    id: 'arcilla-leyenda-veredas',
-    name: 'Veredas',
-    swatch: SWATCH.zonaUrbana,
-    order: 40,
-  },
-  {
-    id: 'arcilla-leyenda-rios-quebradas',
-    name: 'Ríos y quebradas',
-    swatch: SWATCH.quebrada,
-    order: 50,
-  },
+  legenda('arcilla-leyenda-fincas-tradicionales', 'Fincas tradicionales, cultivos diversos y bosques.', 'fincaTradi.svg', 40),
+  legenda('arcilla-leyenda-titulo-minero', 'Título minero vigente', 'tituloMinero.svg', 50),
+  legenda('arcilla-leyenda-veredas', 'Veredas', 'veredas.svg', 60),
+  legenda('arcilla-leyenda-rios-quebradas', 'Ríos y quebradas', 'quebradas.svg', 70),
 ]

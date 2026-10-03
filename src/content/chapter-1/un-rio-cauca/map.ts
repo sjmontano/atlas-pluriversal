@@ -1,6 +1,7 @@
 import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 import { GROUPS } from './groups'
+import { LEGENDS } from './legends'
 
 const base =
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1752360349/geoImages/icivkz04s6s4ka6onht8.webp'
@@ -24,5 +25,12 @@ export default makeMap({
   base,
   full: base,
   zoomMax: 8,
-  extras: { layers: LAYERS, groups: GROUPS },
+  extras: {
+    layers: LAYERS, groups: GROUPS, legends: LEGENDS,
+    /* Port v17 (MapComponent.jsx): océanos, solo vistas Colombia completa. */
+    oceanLabels: [
+      { id: 'oceano-pacifico', name: 'OCÉANO PACÍFICO', coords: [-78.45, 6.3] as [number, number] },
+      { id: 'mar-caribe', name: 'MAR CARIBE', coords: [-76.5319, 11.85] as [number, number] },
+    ],
+  },
 })

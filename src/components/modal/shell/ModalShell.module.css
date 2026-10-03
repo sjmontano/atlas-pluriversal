@@ -127,8 +127,7 @@
   display: flex;
   align-items: flex-end;
   gap: var(--header-gap);
-  /* 44px X + 12px gap + 12px aire: el título envuelto no se pega a la X */
-  max-width: calc(100% - 68px);
+  max-width: calc(100% - 48px);
   margin-bottom: 12px;
 }
 
@@ -185,7 +184,7 @@
 }
 
 .title {
-  margin: 2px 0 0;
+  margin: 2px 6vw 0 0;
   font-size: clamp(1.1rem, 2.5vw, 1.5rem);
   line-height: 1.2;
   color: var(--modal-title-color, var(--dark-green, #046c81));
