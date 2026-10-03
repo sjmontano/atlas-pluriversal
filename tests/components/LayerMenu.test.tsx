@@ -49,6 +49,28 @@ vi.mock('@content', () => ({
         ],
       }
     }
+    if (mapId === 'mixed') {
+      return {
+        layers: [
+          {
+            id: 'layer-1',
+            name: 'Layer One',
+            type: 'raster-pgw',
+            category: 'ecosystems',
+            order: 1,
+            opacity: 0.8,
+            legend: { swatch: '#ff0000' },
+            image: '',
+            pgw: [0, 1, 1, 0, 0, 0],
+            width: 1,
+            height: 1,
+          },
+        ],
+        legends: [
+          { id: 'leg-1', name: 'Río Cauca', swatch: '#2b83ba', order: 1 },
+        ],
+      }
+    }
     return null
   }),
 }))
@@ -112,13 +134,20 @@ describe('LayerMenu', () => {
     expect(after.visibleLayers.has('layer-2')).toBe(true)
   })
 
-  it('renders legends without eyes for a map with only legends', () => {
+  it('renders legends without eyes nor header for a map with only legends', () => {
     const { container } = render(<LayerMenu mapId="legend-only" />)
-    expect(screen.getByText('Leyenda')).toBeDefined()
+    expect(screen.queryByText('Leyenda')).toBeNull()
     expect(screen.getByText('Río Cauca')).toBeDefined()
     expect(screen.getByText('Represas')).toBeDefined()
     expect(screen.getByText('2022')).toBeDefined()
     expect(container.querySelectorAll('.eye').length).toBe(0)
+  })
+
+  it('renders the Leyenda header when legends accompany layers', () => {
+    render(<LayerMenu mapId="mixed" />)
+    expect(screen.getByText('Leyenda')).toBeDefined()
+    expect(screen.getByText(/Layer One/)).toBeDefined()
+    expect(screen.getByText('Río Cauca')).toBeDefined()
   })
 
   it('does not render a master eye when there are no activable layers', () => {

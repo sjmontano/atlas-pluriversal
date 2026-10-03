@@ -206,20 +206,22 @@
   }
 }
 
+/* El contenido vive corrido a la derecha, dentro del cuerpo oliva de la
+ * mancha: el borde rasgado pálido ocupa ~17% del panel y las insignias no
+ * deben pisarlo. Derecha con aire del filo del viewport. */
 .body {
-  padding: 7vh 24px 7vh 90px;
+  padding: 7vh 32px 7vh 116px;
 }
 
-/* Ventanas angostas (pero no móvil): el panel de 25vw deja ~30px al texto.
- * Se ensancha a 32vw y se recorta cromo (paddings/sangrías) para que los
- * nombres quepan en 2 líneas legibles en vez de picarse por letra. */
+/* Ventanas angostas (pero no móvil): paddings proporcionales (~20% izq)
+ * para el mismo despeje del borde pálido + texto en 2 líneas legibles. */
 @media (max-width: 1100px) {
   .panel {
     width: 36vw;
   }
 
   .body {
-    padding: 7vh 16px 7vh 20px;
+    padding: 7vh 20px 7vh 64px;
   }
 
   .groupChildren {
@@ -400,6 +402,14 @@
   border-top: 1px solid rgba(255, 254, 238, 0.25);
 }
 
+/* Leyenda como menú completo (v17 informativo): sin título ni divisor,
+   arranca directo con las filas. */
+.legendSection:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
 .legendSectionTitle {
   color: #fffeee;
   font-size: 12px;
@@ -417,41 +427,46 @@
   color: #fffeee;
   font-size: 12px;
   font-weight: 700;
-  padding: 2px 0 2px 24px;
+  padding: 2px 0;
 }
 
+/* Fila informativa v17: insignia circular + texto (no clickeable,
+ * sin highlight de hover para no sugerir interacción). */
 .legendRow {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 3px 0 3px 24px;
-  font-size: 12px;
-}
-
-.legendRow:hover {
-  background: rgba(255, 255, 255, 0.08);
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 15px;
 }
 
 .legendName {
   color: #fffeee;
   flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  font-size: 15px;
+  line-height: 1.4;
+  text-wrap: pretty;
 }
 
 .legendIcon {
-  width: 14px;
-  height: 14px;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(2px);
+  overflow: hidden;
 }
 
 .legendIconImg {
-  width: 14px;
-  height: 14px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
 }
 
@@ -524,6 +539,10 @@
 
   .panel {
     width: 78vw;
+  }
+
+  .body {
+    padding: 7vh 20px 7vh 56px;
   }
 
   /* El toggle vive abajo-derecha: en móvil lo pisan los ChapterTabs

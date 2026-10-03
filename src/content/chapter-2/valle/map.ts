@@ -1,5 +1,6 @@
 import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
+import { LEGENDS } from './legends'
 import { POIS } from './pois'
 
 export default makeMap({
@@ -21,5 +22,5 @@ export default makeMap({
   base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759285334/geoImages/kbg62bjm983wn9p6xexl.webp',
   full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1759285229/geoImages/nhbnbpekarmsu7ernhcj.webp',
   zoomMax: 10,
-  extras: { layers: LAYERS, pois: POIS },
+  extras: { layers: LAYERS, legends: LEGENDS, pois: POIS },
 })

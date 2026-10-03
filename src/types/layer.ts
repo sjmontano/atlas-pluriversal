@@ -22,6 +22,9 @@ export interface LayerBase {
   visibleByDefault?: boolean
   opacity?: number
   order: number
+  /** Oculta la capa del menú (sigue renderizándose en el mapa).
+   *  Para menús puramente informativos estilo v17. Default: false. */
+  hideInMenu?: boolean
   /** Si está presente, el click sobre la capa abre este modal del sistema
    *  (mismo patrón que Poi.modalId). Ej: cuencas Tejidos del Agua. */
   modalId?: string
@@ -69,6 +72,12 @@ export interface LayerGroup {
   order: number
   /** Desplegado al abrir el menú. Default: true. */
   expandedByDefault?: boolean
+  /** Muestra encabezado (chevron+ojo+nombre). false = render plano:
+   *  solo ojo + filas (estilo v17 un-rio-cauca). Default: true. */
+  header?: boolean
+  /** Prefija el número de sección (1., 2.3.). Años y títulos como
+   *  '1970' no se numeran. Default: true. */
+  numbered?: boolean
 }
 
 export interface LegendItem {

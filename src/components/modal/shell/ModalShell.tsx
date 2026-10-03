@@ -77,6 +77,16 @@ export function ModalShell({
   const dialogRef = useRef<HTMLDivElement>(null)
   const bodyScrollRef = useRef<HTMLDivElement>(null)
 
+  // Rueda sobre zonas muertas (márgenes fuera del bodyInner): reenvía el
+  // scroll al contenido para que el modal desplace en cualquier punto.
+  // Sobre el propio bodyInner el scroll nativo basta (aquí no intervenimos).
+  const handleBodyWheel = (e: React.WheelEvent) => {
+    const el = bodyScrollRef.current
+    if (!el || el.contains(e.target as Node)) return
+    const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY
+    if (dy !== 0) el.scrollTop += dy
+  }
+
   useEffect(() => {
     if (!open) return
 
@@ -216,7 +226,7 @@ export function ModalShell({
         )}
 
         {/* Body scrollable + scrollbar + scrim (si fullImage) */}
-        <div className={styles.bodyOuter}>
+        <div className={styles.bodyOuter} onWheel={handleBodyWheel}>
           {fullImage && <div className={styles.scrim} aria-hidden="true" />}
           <CustomScrollbar
             scrollRef={bodyScrollRef}

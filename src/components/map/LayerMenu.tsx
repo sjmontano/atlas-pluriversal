@@ -97,10 +97,10 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
   const setLayerGroupVisible = store.setLayerGroupVisible
   const toggleGroupExpanded = store.toggleGroupExpanded
 
-  const tree = useMemo(
-    () => buildLayerTree(groups ?? [], layers ?? []),
-    [groups, layers],
-  )
+  const tree = useMemo(() => {
+    const inMenu = (layers ?? []).filter((l) => l.hideInMenu !== true)
+    return buildLayerTree(groups ?? [], inMenu)
+  }, [groups, layers])
 
   /** Click abre/cierra el panel; el hover solo previsualiza. */
   const [pinned, setPinned] = useState(false)
@@ -125,8 +125,11 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
     }
   }, [pinned])
 
-  const hasLayers = layers !== null && layers.length > 0
+  const hasLayers = tree.length > 0
   const hasLegends = legends !== null && legends.length > 0
+  /* El encabezado "Leyenda" solo cuando acompaña a capas; si la leyenda
+     ES el menú (v17 informativo), arranca directo como en el original. */
+  const showLegendHeader = hasLayers && hasLegends
 
   if (!hasLayers && !hasLegends) return null
 
@@ -228,7 +231,7 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
 
           {hasLegends && (
             <div className={styles.legendSection}>
-              <div className={styles.legendSectionTitle}>Leyenda</div>
+              {showLegendHeader && <div className={styles.legendSectionTitle}>Leyenda</div>}
               {legendGroups.map(([groupName, items]) => (
                 <div key={groupName ?? '__ungrouped__'} className={styles.legendGroup}>
                   {groupName && <div className={styles.legendGroupName}>{groupName}</div>}

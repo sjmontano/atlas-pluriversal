@@ -11,6 +11,9 @@ const nodeLayer = (id: string, name: string, url: string, color: string): Geojso
   order: 10,
   opacity: 0.4,
   visibleByDefault: true,
+  /* Menú v17 puramente informativo: los nodos van siempre visibles,
+     la leyenda describe el mapa sin ojos. */
+  hideInMenu: true,
   legend: { swatch: color, description: name },
 })
 

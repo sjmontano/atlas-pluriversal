@@ -2,17 +2,22 @@
  * 🌳 LAYER TREE — Árbol genérico del menú de capas (port v17 layerMenu.jsx)
  * ==========================================================================
  * Convierte `groups` (con `parent` opcional) + `layers` (con `group` opcional)
- * en un árbol con numeración automática:
+ * + `legends` en un árbol con numeración automática:
  *
  * - Grupos sin `parent` + capas sin `group` = secciones top-level, numeradas
- *   en secuencia (1., 2., 3. — el ítem 3 de v17 es una capa suelta).
+ *   en secuencia (1., 2., 3. — el ítem 3 de v17 es una capa suelta). Grupos
+ *   con `numbered: false` (años como '1970') o `header: false` no consumen
+ *   número.
  * - Subgrupos = `1.1.`, `2.3.` etc. recursivos (cualquier profundidad).
  * - Capas anidadas no se numeran; solo las top-level llevan número.
+ * - Leyendas cuyo `group` coincide con un ID de grupo se anidan como filas
+ *   informativas de ese grupo (v17 un-rio-cauca, años 1970/2022); el resto
+ *   forma secciones libres con su texto como encabezado.
  *
  * Genérico: menús planos (sin `parent`, sin título) siguen funcionando igual.
  */
 
-import type { Layer, LayerGroup } from '../../types/layer'
+import type { Layer, LayerGroup, LegendItem } from '../../types/layer'
 
 export type TriState = boolean | 'mixed'
 
@@ -22,6 +27,8 @@ export interface GroupNode {
   depth: number
   number: string
   children: TreeNode[]
+  /** Leyendas informativas anidadas (sin ojo) */
+  legends: LegendItem[]
   /** Ids de TODAS las capas descendientes (para toggle en cascada). */
   layerIds: string[]
 }
@@ -48,21 +55,51 @@ function buildGroupNode(
   number: string,
   childrenOf: Map<string, LayerGroup[]>,
   layersByGroup: Map<string, Layer[]>,
+  legendsByGroup: Map<string, LegendItem[]>,
 ): GroupNode {
   const children: TreeNode[] = []
   const subs = (childrenOf.get(group.id) ?? []).slice().sort(byOrder)
-  subs.forEach((sub, i) => {
-    children.push(buildGroupNode(sub, depth + 1, `${number}.${i + 1}`, childrenOf, layersByGroup))
+  subs.forEach((sub) => {
+    children.push(buildGroupNode(sub, depth + 1, '', childrenOf, layersByGroup, legendsByGroup))
   })
   const direct = (layersByGroup.get(group.id) ?? []).slice().sort(byOrder)
   for (const layer of direct) children.push({ kind: 'layer', layer, number: null })
 
-  const node: GroupNode = { kind: 'group', group, depth, number, children, layerIds: [] }
+  const node: GroupNode = {
+    kind: 'group',
+    group,
+    depth,
+    number,
+    children,
+    legends: (legendsByGroup.get(group.id) ?? []).slice().sort(byOrder),
+    layerIds: [],
+  }
   node.layerIds = children.flatMap(collectLayerIds)
   return node
 }
 
-export function buildLayerTree(groups: LayerGroup[], layers: Layer[]): TreeNode[] {
+/** Un grupo es colapsable si tiene subgrupos o más de una capa directa. */
+export function isCollapsible(node: GroupNode): boolean {
+  let subgroups = 0
+  let layers = 0
+  for (const child of node.children) {
+    if (child.kind === 'group') subgroups += 1
+    else layers += 1
+  }
+  return subgroups > 0 || layers > 1
+}
+
+export interface LayerTree {
+  roots: TreeNode[]
+  /** Leyendas libres (su `group` no es un id de grupo): secciones con texto. */
+  freeLegends: Array<[string | null, LegendItem[]]>
+}
+
+export function buildLayerTree(
+  groups: LayerGroup[],
+  layers: Layer[],
+  legends: LegendItem[],
+): LayerTree {
   const byId = new Map(groups.map((g) => [g.id, g]))
   const childrenOf = new Map<string, LayerGroup[]>()
   const roots: LayerGroup[] = []
@@ -90,6 +127,19 @@ export function buildLayerTree(groups: LayerGroup[], layers: Layer[]): TreeNode[
     }
   }
   loose.sort(byOrder)
+
+  // Leyendas anidadas (group = id de grupo) vs libres (texto de sección).
+  const legendsByGroup = new Map<string, LegendItem[]>()
+  const free: LegendItem[] = []
+  for (const item of legends) {
+    if (item.group !== undefined && byId.has(item.group)) {
+      const list = legendsByGroup.get(item.group) ?? []
+      list.push(item)
+      legendsByGroup.set(item.group, list)
+    } else {
+      free.push(item)
+    }
+  }
 
   // Secciones top-level: grupos y capas sueltas entremezclados por `order`,
   // numerados en secuencia visual final (1., 2., 3.).
