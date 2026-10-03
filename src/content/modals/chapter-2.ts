@@ -94,8 +94,8 @@ const SINTESIS_SUAREZ: Modal = {
 
 const AT_ASOYOGE: Modal = fichaPerfil(
   'cap2-at-asoyoge',
-  'Asoyoge',
   'Asociación de agroindustrial de productos agropecuarios y mineros afrodescendientes de Yolombó y Gelima - Asoyogé',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761185904/geoImages/jx2ox2ihls7j9pv15kbg.webp',
   'Monte Redondo. Suárez, Cauca.',
   'Veredas Yolombó y Gelima.',
@@ -108,8 +108,8 @@ const AT_ASOYOGE: Modal = fichaPerfil(
 
 const AT_GUARDIA_CIMARRONA: Modal = fichaPerfil(
   'cap2-at-guardia-cimarrona',
-  'Guardia Cimarrona',
   'Alternativa Transformadora Guardia Cimarrona Suárez, Cauca',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761185272/geoImages/reblala1pv2puebswzmc.webp',
   'Monte Redondo. Suárez, Cauca.',
   'Consejo Comunitario Río Ovejas. Suárez, Cauca.',
@@ -122,8 +122,8 @@ const AT_GUARDIA_CIMARRONA: Modal = fichaPerfil(
 
 const AT_ASOCOMS: Modal = fichaPerfil(
   'cap2-at-asocoms',
-  'ASOCOMS',
   'Alternativa Transformadora ASOCOMS - Asociación de Consejos Comunitarios de Suárez',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761186221/geoImages/dh5af9kzy1tdno0awcxo.webp',
   'Suárez, Cauca, Barrio Las Brisas',
   'Consejos comunitarios de La Toma, Asnazú, Benavista, Meseta, Pureto, Mindala, Brisas, Portugal y Cuenca Río Ovejas',
@@ -136,8 +136,8 @@ const AT_ASOCOMS: Modal = fichaPerfil(
 
 const AT_ASOMUAFROYO: Modal = fichaPerfil(
   'cap2-at-asomuafroyo',
-  'ASOMUAFROYO',
   'Alternativa Transformadora Asociación de Mujeres afrodescendientes de la vereda Yolombó',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761186008/geoImages/i44mm4ct4uxhaga8zlnj.webp',
   'Vereda Yolombó. Suárez, Cauca.',
   'Vereda Yolombó. Suárez, Cauca.',
@@ -150,8 +150,8 @@ const AT_ASOMUAFROYO: Modal = fichaPerfil(
 
 const AT_CONSEJO_OVEJAS: Modal = fichaPerfil(
   'cap2-at-consejo-ovejas',
-  'Consejo Comunitario de Comunidades Negras Cuenca Río Ovejas',
   'Alternativa Transformadora Consejo comunitario de comunidades negras cuenca río Ovejas',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761186036/geoImages/mbyeccjbklrgzx4c3824.webp',
   'Corregimiento de La Toma, Suárez, Cauca',
   'Veredas de Yolombó, Gelima y Dos Aguas',
@@ -164,8 +164,8 @@ const AT_CONSEJO_OVEJAS: Modal = fichaPerfil(
 
 const AT_CMJ: Modal = fichaPerfil(
   'cap2-at-cmj',
-  'Consejo Municipal de Juventud',
   'Alternativa Transformadora Consejo Municipal de Juventudes Suárez, Cauca',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761186247/geoImages/ul3u7hmi5jzvmwgars7z.webp',
   'Corregimiento de La Toma, Suárez, Cauca',
   'Veredas de Yolombó, Gelima y Dos Aguas',
@@ -178,8 +178,8 @@ const AT_CMJ: Modal = fichaPerfil(
 
 const AT_PLATAFORMA_JUVENTUDES: Modal = fichaPerfil(
   'cap2-at-plataforma-juventudes',
-  'Plataforma de Juventudes Suarez',
   'Plataforma de Juventudes Suárez, Cauca',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761186274/geoImages/nlbvtqpoldaecg2ym9ls.webp',
   'Barrio Los Almendros. Suárez, Cauca.',
   'Zona urbana Suárez, Cauca.',
@@ -192,8 +192,8 @@ const AT_PLATAFORMA_JUVENTUDES: Modal = fichaPerfil(
 
 const AT_CASA_NINO: Modal = fichaPerfil(
   'cap2-at-casa-nino',
-  'Casa del Niño y de la Niña',
   'Alternativa Transformadora Asociación cultural Casa del Niño y de la Niña',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761186701/geoImages/pyhbpjnlbhiezwueuzxb.webp',
   'Villa Rica, vía Puerto Tejada. Vereda Agua Azul',
   'Centro, norte Tejada y Guachené',
@@ -206,8 +206,8 @@ const AT_CASA_NINO: Modal = fichaPerfil(
 
 const AT_UOAFROC: Modal = fichaPerfil(
   'cap2-at-uoafroc',
-  'UOAFROC',
   'Alternativa Transformadora UOAFROC-Unidad de organizaciones afrocaucanas',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761187126/geoImages/ki5sktr8jnwo2oowkpqt.webp',
   'Cra. 26 #9-18, Puerto Tejada, Barrio Santa Elena',
   'Departamento del Cauca',
@@ -220,8 +220,8 @@ const AT_UOAFROC: Modal = fichaPerfil(
 
 const AT_TERRITORIO_Y_PAZ: Modal = fichaPerfil(
   'cap2-at-territorio-paz',
-  'Territorio y Paz',
   'Alternativa Transformadora Consejo comunitario Territorio y Paz',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761187204/geoImages/to8dj0cmmtlzlztkvqr7.webp',
   'Vereda Chalo, Villa Rica',
   'Vereda Chalo, Villa Rica',
@@ -234,8 +234,8 @@ const AT_TERRITORIO_Y_PAZ: Modal = fichaPerfil(
 
 const AT_ESCUELA_ITINERANTE: Modal = fichaPerfil(
   'cap2-at-escuela-itinerante',
-  'Escuela Itinerante Casilda Cundumi',
   'Alternativa Transformadora Escuela Itinerante Casilda Cundumi',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761186657/geoImages/wwd81a1kiqgrxi4fra4v.webp',
   'Villa Rica, Puerto Tejada, Padilla, Miranda, Guachené y Santander de Quilichao',
   'Zona plana del norte del Cauca',
@@ -248,8 +248,8 @@ const AT_ESCUELA_ITINERANTE: Modal = fichaPerfil(
 
 const AT_PALENQUES_JUVENILES: Modal = fichaPerfil(
   'cap2-at-palenques-juveniles',
-  'Palenques Juveniles',
   'Alternativa transformadora Palenques juveniles (Colectivo socio-juvenil huellas)',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761187057/geoImages/dtarbfe6sduopq1q4xca.webp',
   'Villa Rica, Cauca, Barrio San Fernando',
   'Villa Rica y Puerto Tejada',
@@ -262,8 +262,8 @@ const AT_PALENQUES_JUVENILES: Modal = fichaPerfil(
 
 const AT_RED_NATIVOS: Modal = fichaPerfil(
   'cap2-at-red-nativos',
-  'Red Nativos',
   'Alternativa Transformadora Red Nativos - Huerta Madre La Laguna',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761792935/geoImages/lnyyorgnj7zmdzzi93p1.webp',
   'Dg. 26g 4, Barrio Marroquín III',
   'Oriente de Cali',
@@ -276,8 +276,8 @@ const AT_RED_NATIVOS: Modal = fichaPerfil(
 
 const AT_RED_MUJERES: Modal = fichaPerfil(
   'cap2-at-red-mujeres',
-  'Red de Mujeres y Organizaciones del Oriente',
   'Alternativa Transformadora Red de Mujeres y Organizaciones del Oriente',
+  undefined,
   '/assets/modal/chapter-2/mujeresDelOriente.webp',
   'Diferentes casas',
   'Oriente de Cali',
@@ -290,8 +290,8 @@ const AT_RED_MUJERES: Modal = fichaPerfil(
 
 const AT_CHICAS_COMUNICATIVAS: Modal = fichaPerfil(
   'cap2-at-chicas-comunicativas',
-  'Chicas Comunicativas',
   'Alternativa Transformadora Chicas Comunicativas',
+  undefined,
   '/assets/modal/chapter-2/chicasComunicativas.webp',
   'Biblioteca Rigoberta Menchú',
   'Comuna 15',
@@ -304,8 +304,8 @@ const AT_CHICAS_COMUNICATIVAS: Modal = fichaPerfil(
 
 const AT_MATAMBA: Modal = fichaPerfil(
   'cap2-at-matamba',
-  'Matamba Fundacion',
   'Alternativa Transformadora Matamba fundación',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761794790/geoImages/mecisufjjucxdzzalslg.webp',
   'Comuna 3',
   'Barrio San Cayetano',
@@ -318,8 +318,8 @@ const AT_MATAMBA: Modal = fichaPerfil(
 
 const AT_CASA_CULTURAL: Modal = fichaPerfil(
   'cap2-at-casa-cultural',
-  'Casa Cultural El Chontaduro',
   'Asociación Casa cultural El Chontaduro',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761794279/geoImages/gqy5xtw09p0qfta46jr6.webp',
   'Barrio Marroquín III Dg. 26g 9 #72s 32',
   'Oriente de Cali',
@@ -332,8 +332,8 @@ const AT_CASA_CULTURAL: Modal = fichaPerfil(
 
 const AT_AFRO_YOGA: Modal = fichaPerfil(
   'cap2-at-afro-yoga',
-  'Afro Yoga',
   'Alternativa Transformadora Afro Yoga',
+  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761791824/geoImages/gk60hbzfh98apd8uuekk.webp',
   'Encuentros en diferentes lugares',
   'Santiago de Cali',

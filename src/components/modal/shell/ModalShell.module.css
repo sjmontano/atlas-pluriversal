@@ -127,7 +127,8 @@
   display: flex;
   align-items: flex-end;
   gap: var(--header-gap);
-  max-width: calc(100% - 48px);
+  /* 44px X + 12px gap + 12px aire: el título envuelto no se pega a la X */
+  max-width: calc(100% - 68px);
   margin-bottom: 12px;
 }
 
@@ -189,7 +190,8 @@
   line-height: 1.2;
   color: var(--modal-title-color, var(--dark-green, #046c81));
   overflow-wrap: break-word;
-  white-space: nowrap;
+  /* Los títulos largos (fichas AT cap2) envuelven; los cortos siguen en 1 línea */
+  white-space: normal;
 }
 
 .decor {

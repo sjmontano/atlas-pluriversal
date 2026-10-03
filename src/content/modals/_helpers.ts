@@ -40,7 +40,7 @@ export interface PresentacionEntry {
 export function fichaPerfil(
   id: string,
   title: string,
-  highlight: string,
+  highlight: string | undefined,
   image: string,
   localizacion: string,
   incidencia: string,
