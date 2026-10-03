@@ -207,15 +207,20 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     })
     if (content?.ui?.layerTooltips === true) bindLayerTooltips(map, layers)
   }, [mapRef, mapBuilt, layers, content])
-  /* Encuadres navegables (polígono + etiqueta → otro mapa, URL-first) */  useEffect(() => {
+  /* Encuadres navegables (polígono + etiqueta → otro mapa, URL-first) */
+  useEffect(() => {
     const map = mapRef.current
     if (!map || !mapBuilt || !encuadres) return
     let cancelled = false
+    const openModal = (modalId: string) => {
+      const modal = getModalById(modalId)
+      if (modal) useModalStore.getState().openModal(modal)
+    }
     void addEncuadres(map, encuadres, (targetMapId) => {
       if (cancelled) return
       const route = routeForMap(targetMapId)
       if (route !== null) navigate(route)
-    })
+    }, openModal)
     return () => {
       cancelled = true
       removeEncuadres(map)

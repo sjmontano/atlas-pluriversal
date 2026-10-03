@@ -124,7 +124,7 @@ const CAP3_TRAMO_1: Modal = diagrama(
   'mapa-arbol',
   '1',
   '/assets/modal/chapter-3/tramo1humedales.webp',
-  'chapter3-encharcaron',
+  'chapter3-humedales',
   'Tramo 1',
 )
 
@@ -135,7 +135,7 @@ const CAP3_TRAMO_2: Modal = diagrama(
   'mapa-arbol',
   '1',
   '/assets/modal/chapter-3/tramo2humedales.webp',
-  'chapter3-encharcaron',
+  'chapter3-humedales',
   'Tramo 2',
 )
 
@@ -146,7 +146,7 @@ const CAP3_TRAMO_3: Modal = diagrama(
   'mapa-arbol',
   '1',
   '/assets/modal/chapter-3/tramo3humedales.webp',
-  'chapter3-encharcaron',
+  'chapter3-humedales',
   'Tramo 3',
 )
 
@@ -157,7 +157,7 @@ const CAP3_TRAMO_4: Modal = diagrama(
   'mapa-arbol',
   '1',
   '/assets/modal/chapter-3/tramo4humedales.webp',
-  'chapter3-encharcaron',
+  'chapter3-humedales',
   'Tramo 4',
 )
 
