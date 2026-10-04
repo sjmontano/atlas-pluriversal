@@ -13,6 +13,7 @@ const f = (
   capa,
   coords,
   size,
+  clickable: false,
   popup: { title: name },
 })
 

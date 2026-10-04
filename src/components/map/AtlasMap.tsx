@@ -79,6 +79,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
   const [rebuildKey] = useState(1)
 
   const handlePoiClick = useCallback((poi: Poi) => {
+    if (poi.clickable === false) return
     if (poi.modalId) {
       const modal = getModalById(poi.modalId)
       if (modal) {

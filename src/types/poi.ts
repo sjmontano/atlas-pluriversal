@@ -25,4 +25,6 @@ export interface Poi {
   variant?: PoiVariant
   /** Color de la flecha (variante arrow). Default: #03103a */
   arrowColor?: string
+  /** Si false, el clic no hace nada (solo tooltip en hover). Default: true. */
+  clickable?: boolean
 }
