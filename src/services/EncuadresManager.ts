@@ -61,6 +61,8 @@ interface LabelBox {
   id: string
   /** Sin destino la etiqueta es estática: hover sí, click no navega. */
   targetMapId?: string
+  /** ID de modal a abrir al click. Tiene prioridad sobre targetMapId. */
+  modalId?: string
   coords: [number, number]
   halfW: number
   halfH: number
@@ -106,6 +108,7 @@ export async function addEncuadres(
   map: maplibregl.Map,
   encuadres: Encuadre[],
   onNavigate: (targetMapId: string) => void,
+  onOpenModal?: (modalId: string) => void,
 ): Promise<void> {
   /* Idempotente (PoiManager.addPois hace lo mismo): evita duplicar capas
    * si el efecto se re-ejecuta sobre el mismo mapa. */
@@ -241,6 +244,7 @@ export async function addEncuadres(
         t.labels.push({
           id: encuadre.id,
           targetMapId: encuadre.targetMapId,
+          modalId: encuadre.modalId,
           coords: encuadre.labelCoords,
           halfW: (normal.width * LABEL_ICON_SIZE) / 2,
           halfH: (normal.height * LABEL_ICON_SIZE) / 2,
@@ -302,7 +306,11 @@ export async function addEncuadres(
   }
   const onClick = (e: maplibregl.MapMouseEvent) => {
     const hit = pick(e.point)
-    if (hit?.targetMapId !== undefined) onNavigate(hit.targetMapId)
+    if (hit?.modalId !== undefined && onOpenModal !== undefined) {
+      onOpenModal(hit.modalId)
+    } else if (hit?.targetMapId !== undefined) {
+      onNavigate(hit.targetMapId)
+    }
   }
   const onLeave = () => applyHover(null)
   map.on('mousemove', onMove)

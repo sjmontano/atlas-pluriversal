@@ -158,6 +158,9 @@ export interface Encuadre {
    *  Opcional: sin él la etiqueta es estática no navegable
    *  (p. ej. los tramos de chapter3-humedales, port de v17 namesTramos). */
   targetMapId?: string
+  /** ID del modal a abrir al click (p. ej. tramos cap3-humedales).
+   *  Tiene prioridad sobre `targetMapId` si ambos están presentes. */
+  modalId?: string
   /** Posición de la etiqueta [lng, lat]. */
   labelCoords: [number, number]
   /** GeoJSON del polígono (archivo estático en /assets/geojson). */

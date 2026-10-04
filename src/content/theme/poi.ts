@@ -12,6 +12,10 @@ export const POI_THEME: PoiTheme = {
     url: '/assets/pois/markers/location.svg',
     height: 21,
   },
+  audio: {
+    url: '/assets/pois/markers/audio.svg',
+    height: 18,
+  },
   tooltipBg: '/assets/ui/tooltips/fondo-tooltip.webp',
   minZoom: 6,
   maxZoom: 14,

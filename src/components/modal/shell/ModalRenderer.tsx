@@ -53,6 +53,7 @@ export function ModalRenderer() {
       theme={modal.theme}
       hideHeader={modal.hideHeader}
       closeLeft={modal.closeLeft}
+      panMobile={modal.panMobile}
       dialogStyle={dialogStyle}
       icon={modal.icon}
       iconImage={modal.iconImage}

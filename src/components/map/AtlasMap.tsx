@@ -35,6 +35,7 @@ import { processBounds } from '@services/BoundsCalculator'
 import type { Poi } from '../../types/poi.ts'
 import { LayerMenu } from './LayerMenu'
 import { PoiModal } from './PoiModal'
+import { AudioPlayer } from './AudioPlayer'
 import { OfflineBanner } from './OfflineBanner'
 import styles from './AtlasMap.module.css'
 
@@ -207,15 +208,20 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     })
     if (content?.ui?.layerTooltips === true) bindLayerTooltips(map, layers)
   }, [mapRef, mapBuilt, layers, content])
-  /* Encuadres navegables (polígono + etiqueta → otro mapa, URL-first) */  useEffect(() => {
+  /* Encuadres navegables (polígono + etiqueta → otro mapa, URL-first) */
+  useEffect(() => {
     const map = mapRef.current
     if (!map || !mapBuilt || !encuadres) return
     let cancelled = false
+    const openModal = (modalId: string) => {
+      const modal = getModalById(modalId)
+      if (modal) useModalStore.getState().openModal(modal)
+    }
     void addEncuadres(map, encuadres, (targetMapId) => {
       if (cancelled) return
       const route = routeForMap(targetMapId)
       if (route !== null) navigate(route)
-    })
+    }, openModal)
     return () => {
       cancelled = true
       removeEncuadres(map)
@@ -244,9 +250,15 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
 
       {!loading && !error && !hideLayerMenu && (content?.ui?.layerMenu ?? true) && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} offsetTop={layerMenuOffsetTop} />}
 
-      {activePoi && (
+      {activePoi && activePoi.popup.audio ? (
+        <AudioPlayer
+          src={activePoi.popup.audio}
+          title={activePoi.popup.title}
+          onClose={() => setActivePoi(null)}
+        />
+      ) : activePoi ? (
         <PoiModal poi={activePoi} onClose={() => setActivePoi(null)} />
-      )}
+      ) : null}
 
       {(loading || tilesStatus === 'loading') && (
         <div className={styles.overlay}>

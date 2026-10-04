@@ -2,6 +2,7 @@ import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 import { GROUPS } from './groups'
 import { LEGENDS } from './legends'
+import { POIS } from './pois'
 
 export default makeMap({
   mapId: 'chapter3-cali-deseca',
@@ -22,5 +23,5 @@ export default makeMap({
   base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1763852352/geoImages/maiachqmczyrhmph1rql.webp',
   full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1763852262/geoImages/llovghvucpft64ea6zad.webp',
   zoomMax: 13,
-  extras: { layers: LAYERS, groups: GROUPS, legends: LEGENDS },
+  extras: { layers: LAYERS, groups: GROUPS, legends: LEGENDS, pois: POIS },
 })

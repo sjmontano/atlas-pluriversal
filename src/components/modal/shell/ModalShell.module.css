@@ -405,6 +405,15 @@
     border-radius: 0;
   }
 
+  /* PanViewport: en móvil el diálogo vuelve a tamaño large responsive para
+     explorar la imagen con pan (pisa el size inline del camino A) */
+  .panDialog {
+    width: 95vw !important;
+    height: 88dvh !important;
+    max-width: 95vw !important;
+    max-height: 88dvh !important;
+  }
+
   /* Body: maxWidth 100%, contenido con margen simple (sin align-header) */
   .bodyInner {
     max-width: 100% !important;

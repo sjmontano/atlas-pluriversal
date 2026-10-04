@@ -1,8 +1,8 @@
+import { POI_THEME } from '@content/theme'
 import type * as maplibregl from 'maplibre-gl'
 import type { ExpressionSpecification } from 'maplibre-gl'
 import type { Poi, PoiVariant } from '../types/poi.ts'
-import { composeArrowIcon, composeGotaIcon, ARROW_COLOR } from './poiIcons'
-import { POI_THEME } from '@content/theme'
+import { ARROW_COLOR, composeArrowIcon, composeGotaIcon } from './poiIcons'
 
 export interface GeoJSONFeature {
   type: 'Feature'
@@ -18,6 +18,7 @@ const POIS_CIRCLE_LAYER_ID = 'atlas-pois-circle-layer'
 const POIS_PULSE_LAYER_ID = 'atlas-pois-pulse-layer'
 const POIS_ICON_LAYER_ID = 'atlas-pois-icon-layer'
 const POIS_ARROW_LAYER_ID = 'atlas-pois-arrow-layer'
+const POIS_AUDIO_LAYER_ID = 'atlas-pois-audio-layer'
 /** Anillo de énfasis en hover (mismo transform que el punto: sin deriva). */
 const POIS_HOVER_LAYER_ID = 'atlas-pois-hover-layer'
 const ALL_POI_LAYER_IDS = [
@@ -26,6 +27,7 @@ const ALL_POI_LAYER_IDS = [
   POIS_CIRCLE_LAYER_ID,
   POIS_ICON_LAYER_ID,
   POIS_ARROW_LAYER_ID,
+  POIS_AUDIO_LAYER_ID,
   POIS_HOVER_LAYER_ID,
 ]
 
@@ -33,6 +35,14 @@ const GOTA_ICON_URL = POI_THEME.gota.url
 const GOTA_ICON_ID = 'atlas-poi-gota'
 // La gota se dibuja al 70% del diámetro del círculo (radio 15 → alto ~21px).
 const GOTA_ICON_HEIGHT = POI_THEME.gota.height
+// Glyph de bocina blanca (variante audio): va sobre el círculo teal, como los
+// botones del rail (fondo + glyph propio). El círculo + pulso los pone MapLibre.
+const AUDIO_ICON_URL = POI_THEME.audio.url
+const AUDIO_ICON_ID = 'atlas-poi-audio'
+const AUDIO_ICON_HEIGHT = POI_THEME.audio.height
+/* El SVG se hornea a 4x (72px) con pixelRatio 4: tamaño lógico 18px pero
+ * nítido al escalar (subir `icon-size` sobre una imagen de 18px la pixela). */
+const AUDIO_BAKED_HEIGHT = AUDIO_ICON_HEIGHT * 4
 
 async function loadImage(
   map: maplibregl.Map,
@@ -73,6 +83,16 @@ function setupImageResolver(map: maplibregl.Map, pois: Poi[]): void {
       const img = await loadSvgImage(GOTA_ICON_URL)
       if (img && !map.hasImage(GOTA_ICON_ID)) {
         map.addImage(GOTA_ICON_ID, composeGotaIcon(img, GOTA_ICON_HEIGHT))
+      }
+      return
+    }
+
+    if (id === AUDIO_ICON_ID) {
+      const img = await loadSvgImage(AUDIO_ICON_URL)
+      if (img && !map.hasImage(AUDIO_ICON_ID)) {
+        map.addImage(AUDIO_ICON_ID, composeGotaIcon(img, AUDIO_BAKED_HEIGHT), {
+          pixelRatio: AUDIO_BAKED_HEIGHT / AUDIO_ICON_HEIGHT,
+        })
       }
       return
     }
@@ -120,11 +140,24 @@ const sizeMatch = (base: number, large: number): ExpressionSpecification => [
   base,
 ] as ExpressionSpecification
 
-// Color del círculo según variante: gota (icon) → cyan; número → azul oscuro.
+/* Los POI de audio son ×1.5 más grandes que el resto (círculo, pulso y anillo
+ * escalan juntos, así el glyph nunca desborda su contenedor). El resto de
+ * variantes queda intacto (factor 1). */
+const AUDIO_DOT_SCALE = 1.5
+const dotRadius = (base: number, large: number): ExpressionSpecification =>
+  [
+    '*',
+    ['match', ['get', 'variant'], 'audio', AUDIO_DOT_SCALE, 1],
+    sizeMatch(base, large),
+  ] as ExpressionSpecification
+
+// Color del círculo según variante: gota/audio (icon) → cyan; número → azul oscuro.
 const circleColor: ExpressionSpecification = [
   'match',
   ['get', 'variant'],
   'icon',
+  POI_ICON_BG,
+  'audio',
   POI_ICON_BG,
   POI_BG,
 ] as ExpressionSpecification
@@ -264,7 +297,7 @@ function startPulse(map: maplibregl.Map, opts?: PulseOptions): void {
   // El rAF tampoco corre en pestaña oculta (el navegador lo pausa solo).
   if (opts?.static === true || prefersReducedMotion()) {
     try {
-      map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-radius', zoomSize(sizeMatch(POI_RADIUS, POI_RADIUS_LARGE), 1.45))
+      map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-radius', zoomSize(dotRadius(POI_RADIUS, POI_RADIUS_LARGE), 1.45))
       map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-opacity', POI_THEME.pulse.opacity * 0.5)
     } catch { /* por si la capa aún no está lista */ }
     return
@@ -302,7 +335,7 @@ function startPulse(map: maplibregl.Map, opts?: PulseOptions): void {
       opacity = Math.min(Math.max(opacity, 0), maxOpacity)
 
       try {
-        map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-radius', zoomSize(sizeMatch(POI_RADIUS, POI_RADIUS_LARGE), scale))
+        map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-radius', zoomSize(dotRadius(POI_RADIUS, POI_RADIUS_LARGE), scale))
         map.setPaintProperty(POIS_PULSE_LAYER_ID, 'circle-opacity', opacity)
       } catch {
         pulseRaf = null
@@ -480,9 +513,10 @@ export function addPois(
   const hasNumber = pois.some((p) => variantOf(p) === 'number')
   const hasIcon = pois.some((p) => variantOf(p) === 'icon')
   const hasArrow = pois.some((p) => variantOf(p) === 'arrow')
-  const hasDot = hasNumber || hasIcon
+  const hasAudio = pois.some((p) => variantOf(p) === 'audio')
+  const hasDot = hasNumber || hasIcon || hasAudio
 
-  // Círculo y pulso: variantes number e icon (la flecha lleva su propio círculo).
+  // Círculo y pulso: variantes number, icon y audio (la flecha lleva su propio círculo).
   if (hasDot) {
     map.addLayer({
       id: POIS_PULSE_LAYER_ID,
@@ -490,7 +524,7 @@ export function addPois(
       source: POIS_SOURCE_ID,
       filter: notArrowFilter,
       paint: {
-        'circle-radius': zoomSize(sizeMatch(POI_RADIUS, POI_RADIUS_LARGE)),
+        'circle-radius': zoomSize(dotRadius(POI_RADIUS, POI_RADIUS_LARGE)),
         'circle-color': circleColor,
         'circle-opacity': POI_THEME.pulse.opacity,
       },
@@ -502,7 +536,7 @@ export function addPois(
       source: POIS_SOURCE_ID,
       filter: notArrowFilter,
       paint: {
-        'circle-radius': zoomSize(sizeMatch(POI_RADIUS, POI_RADIUS_LARGE)),
+        'circle-radius': zoomSize(dotRadius(POI_RADIUS, POI_RADIUS_LARGE)),
         'circle-color': circleColor,
       },
     })
@@ -515,7 +549,7 @@ export function addPois(
       source: POIS_SOURCE_ID,
       filter: notArrowFilter,
       paint: {
-        'circle-radius': zoomSize(sizeMatch(POI_RADIUS, POI_RADIUS_LARGE), 1.6),
+        'circle-radius': zoomSize(dotRadius(POI_RADIUS, POI_RADIUS_LARGE), 1.6),
         'circle-color': 'rgba(0,0,0,0)',
         'circle-opacity': ['case', hoveredExpr(), 0.95, 0] as ExpressionSpecification,
         'circle-stroke-color': '#ffffff',
@@ -551,6 +585,23 @@ export function addPois(
       layout: {
         'icon-image': 'atlas-poi-gota',
         'icon-size': zoomSize(1),
+        'icon-allow-overlap': true,
+      },
+    })
+  }
+
+  if (hasAudio) {
+    map.addLayer({
+      id: POIS_AUDIO_LAYER_ID,
+      type: 'symbol',
+      source: POIS_SOURCE_ID,
+      filter: variantFilter('audio'),
+      layout: {
+        'icon-image': AUDIO_ICON_ID,
+        /* Glyph proporcional al círculo agrandado (×1.5): misma ocupación
+         * visual que antes, pero dentro de su contenedor y nítido
+         * (la imagen se hornea a 4x, ver AUDIO_BAKED_HEIGHT). */
+        'icon-size': zoomSize(sizeMatch(1.5, 2.55)),
         'icon-allow-overlap': true,
       },
     })
