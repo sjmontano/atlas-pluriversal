@@ -101,4 +101,6 @@ export interface LegendItem {
   order: number
   description?: string
   longText?: string
+  /** Tamaño del icono. Default: 'normal'. 'large' = 50% más grande. */
+  iconSize?: 'normal' | 'large'
 }

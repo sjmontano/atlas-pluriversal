@@ -11,7 +11,8 @@ const legenda = (
   icon: string,
   order: number,
   group: string,
-): LegendItem => ({ id, name, icon, order, group })
+  iconSize?: 'normal' | 'large',
+): LegendItem => ({ id, name, icon, order, group, iconSize })
 
 const G = {
   estructural: 'Lo estructural',
@@ -26,7 +27,7 @@ export const LEGENDS: LegendItem[] = [
   legenda('msuarez-cabecera', 'Cabecera de Suárez', `${V}/fincaTradicional.svg`, 20, G.estructural),
   legenda('msuarez-lugares', 'Lugares emblemáticos', `${V}/lugaresEmblematicos.svg`, 30, G.emblematico),
   legenda('msuarez-mineria', 'Minería', `${V}/haciendas.svg`, 40, G.problematico),
-  legenda('msuarez-coca', 'Cultivos de Coca (ha)', `${S}/coca.svg`, 50, G.problematico),
+  legenda('msuarez-coca', 'Cultivos de Coca (ha)', `${S}/coca.svg`, 50, G.problematico, 'large'),
   legenda('msuarez-area-influencia', 'Área de influencia de Consejos Comunitarios', `${S}/zonaInfluencia.svg`, 60, G.transformador),
   legenda('msuarez-trayectorias', 'Trayectorias de paz', `${S}/trayectorias.svg`, 70, G.transformador),
   legenda('msuarez-red-hidrica', 'Red hídrica', `${V2}/riosPrincipales.svg`, 80, G.convenciones),

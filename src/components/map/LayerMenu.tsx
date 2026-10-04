@@ -267,7 +267,7 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
 
 function LegendRow({ item }: { item: LegendItem }) {
   return (
-    <div className={styles.legendRow}>
+    <div className={`${styles.legendRow}${item.iconSize === 'large' ? ` ${styles.large}` : ''}`}>
       {item.icon ? (
         <span className={styles.legendIcon}>
           <img src={item.icon} alt="" className={styles.legendIconImg} />

@@ -506,6 +506,27 @@
   font-size: 15px;
 }
 
+.legendRow.large .legendIcon {
+  width: 3vw;
+  height: 3vw;
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.legendRow.large .legendIconImg {
+  width: 2.5vw;
+  height: 2.5vw;
+  min-width: 38px;
+  min-height: 38px;
+}
+
+.legendRow.large .swatch {
+  width: 3.8vw;
+  height: 1.8vw;
+  min-width: 38px;
+  min-height: 18px;
+}
+
 .legendName {
   color: #fffeee;
   flex: 1;
@@ -518,8 +539,8 @@
 }
 
 .legendIcon {
-  width: 40px;
-  height: 40px;
+  width: 1.63vw;
+  height: 1.63vw;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
