@@ -9,6 +9,7 @@ export interface PoiTheme {
   iconBg: string
   pulse: { durationMs: number; maxScale: number; opacity: number }
   gota: { url: string; height: number }
+  audio: { url: string; height: number }
   tooltipBg: string
   minZoom: number
   maxZoom: number

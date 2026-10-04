@@ -1,4 +1,4 @@
-export type PoiVariant = 'number' | 'icon' | 'arrow'
+export type PoiVariant = 'number' | 'icon' | 'arrow' | 'audio'
 
 export interface Poi {
   id: string

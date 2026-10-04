@@ -2,6 +2,7 @@ import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 import { GROUPS } from './groups'
 import { LEGENDS } from './legends'
+import { POIS } from './pois'
 
 export default makeMap({
   mapId: 'chapter3-encharcaron',
@@ -22,5 +23,5 @@ export default makeMap({
   base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762998575/geoImages/ladieazp24oyoyqszzlo.webp',
   full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762997781/geoImages/b8zivpviw5iz5yz6cgbz.webp',
   zoomMax: 14,
-  extras: { layers: LAYERS, groups: GROUPS, legends: LEGENDS },
+  extras: { layers: LAYERS, groups: GROUPS, legends: LEGENDS, pois: POIS },
 })

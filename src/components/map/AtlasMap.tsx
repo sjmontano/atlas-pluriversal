@@ -35,6 +35,7 @@ import { processBounds } from '@services/BoundsCalculator'
 import type { Poi } from '../../types/poi.ts'
 import { LayerMenu } from './LayerMenu'
 import { PoiModal } from './PoiModal'
+import { AudioPlayer } from './AudioPlayer'
 import { OfflineBanner } from './OfflineBanner'
 import styles from './AtlasMap.module.css'
 
@@ -249,9 +250,15 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
 
       {!loading && !error && !hideLayerMenu && (content?.ui?.layerMenu ?? true) && (hasLayers || hasLegends) && <LayerMenu mapId={mapId} offsetTop={layerMenuOffsetTop} />}
 
-      {activePoi && (
+      {activePoi && activePoi.popup.audio ? (
+        <AudioPlayer
+          src={activePoi.popup.audio}
+          title={activePoi.popup.title}
+          onClose={() => setActivePoi(null)}
+        />
+      ) : activePoi ? (
         <PoiModal poi={activePoi} onClose={() => setActivePoi(null)} />
-      )}
+      ) : null}
 
       {(loading || tilesStatus === 'loading') && (
         <div className={styles.overlay}>

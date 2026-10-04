@@ -55,6 +55,17 @@ const ARROW_POIS: Poi[] = [
   },
 ]
 
+const AUDIO_POIS: Poi[] = [
+  {
+    id: 'p-4',
+    name: 'Erley Ibarra',
+    coords: [-76.692, 2.955],
+    capa: 'Suárez, Cauca',
+    variant: 'audio',
+    popup: { title: 'Erley Ibarra. Suárez, Cauca', audio: '/assets/audios/chapter3/Salvajina_47SNA.mp3' },
+  },
+]
+
 describe('PoiManager variants', () => {
   beforeEach(() => {
     stubRaf()
@@ -85,6 +96,40 @@ describe('PoiManager variants', () => {
     expect(map.addLayer).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'atlas-pois-arrow-layer', type: 'symbol' }),
     )
+  })
+
+  it('audio variant: crea círculo teal + pulso + symbol de bocina', () => {
+    const map = makeMap()
+    addPois(map, 'test', AUDIO_POIS, vi.fn())
+    expect(map.addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'atlas-pois-circle-layer', type: 'circle' }),
+    )
+    expect(map.addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'atlas-pois-pulse-layer', type: 'circle' }),
+    )
+    expect(map.addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'atlas-pois-audio-layer', type: 'symbol' }),
+    )
+  })
+
+  it('audio variant: icon-size escala con el zoom', () => {
+    const map = makeMap()
+    addPois(map, 'test', AUDIO_POIS, vi.fn())
+    const audio = map._layers.get('atlas-pois-audio-layer')
+    expect(audio.layout['icon-size'][0]).toBe('interpolate')
+  })
+
+  it('audio variant large: el glyph crece con el tamaño del POI', () => {
+    const map = makeMap()
+    addPois(map, 'test', [{ ...AUDIO_POIS[0], id: 'p-5', size: 'large' }], vi.fn())
+    const audio = map._layers.get('atlas-pois-audio-layer')
+    // icon-size es data-driven sobre la prop `size` (normal → large)
+    expect(JSON.stringify(audio.layout['icon-size'])).toContain('"size"')
+    const sourceDef = map._sources.get('atlas-pois-source')
+    expect(sourceDef.data.features[0].properties.size).toBe('large')
+    // el círculo escala ×1.5 solo para audio (el glyph no desborda)
+    const circle = map._layers.get('atlas-pois-circle-layer')
+    expect(JSON.stringify(circle.paint['circle-radius'])).toContain('"audio"')
   })
 
   it('registra el resolver de imágenes faltantes (gota y flechas)', () => {
@@ -154,17 +199,19 @@ describe('PoiManager variants', () => {
     expect(symbol.layout['text-size'][0]).toBe('interpolate')
   })
 
-  it('removePois elimina las capas de las 3 variantes', () => {
+  it('removePois elimina las capas de las 4 variantes', () => {
     const map = makeMap()
     map._layers.set('atlas-pois-layer', { id: 'atlas-pois-layer' })
     map._layers.set('atlas-pois-circle-layer', { id: 'atlas-pois-circle-layer' })
     map._layers.set('atlas-pois-pulse-layer', { id: 'atlas-pois-pulse-layer' })
     map._layers.set('atlas-pois-icon-layer', { id: 'atlas-pois-icon-layer' })
     map._layers.set('atlas-pois-arrow-layer', { id: 'atlas-pois-arrow-layer' })
+    map._layers.set('atlas-pois-audio-layer', { id: 'atlas-pois-audio-layer' })
     map._sources.set('atlas-pois-source', { type: 'geojson' })
     removePois(map)
     expect(map.removeLayer).toHaveBeenCalledWith('atlas-pois-arrow-layer')
     expect(map.removeLayer).toHaveBeenCalledWith('atlas-pois-icon-layer')
+    expect(map.removeLayer).toHaveBeenCalledWith('atlas-pois-audio-layer')
     expect(map.removeSource).toHaveBeenCalledWith('atlas-pois-source')
   })
 })
