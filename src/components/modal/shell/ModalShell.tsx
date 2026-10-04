@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom'
 import type { ModalVariant, ModalTheme } from '../../../types/modal.ts'
 import { Glyph } from '../primitives/Glyph'
 import { CustomScrollbar } from './CustomScrollbar'
+import { PanViewport } from './PanViewport'
 import styles from './ModalShell.module.css'
 import { ScrollIndicators } from './ScrollIndicators'
 
@@ -47,6 +48,8 @@ export interface ModalShellProps {
   hideHeader?: boolean
   /** X espejada a la izquierda. Default: derecha. */
   closeLeft?: boolean
+  /** Imagen de fondo explorable con pan en móvil (ver PanViewport). */
+  panMobile?: boolean
   /** Estilos opcionales en línea para dimensionar el diálogo. */
   dialogStyle?: CSSProperties
 }
@@ -72,6 +75,7 @@ export function ModalShell({
   bodyFullBleed = false,
   hideHeader = false,
   closeLeft = false,
+  panMobile = false,
   dialogStyle,
 }: ModalShellProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -150,18 +154,22 @@ export function ModalShell({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`${styles.dialog} ${styles[variant]}`}
+        className={`${styles.dialog} ${styles[variant]}${panMobile ? ` ${styles.panDialog}` : ''}`}
         style={{ ...themeVars, ...dialogStyle }}
       >
         {/* Imagen de fondo full-bleed (fullImage) */}
-        {bgImage && (
-          <img
-            className={styles.dialogBg}
-            src={bgImage}
-            alt=""
-            aria-hidden="true"
-            style={theme?.bgFit ? { objectFit: theme.bgFit } : undefined}
-          />
+        {bgImage !== undefined && panMobile ? (
+          <PanViewport src={bgImage} bg={theme?.bgColor} />
+        ) : (
+          bgImage !== undefined && (
+            <img
+              className={styles.dialogBg}
+              src={bgImage}
+              alt=""
+              aria-hidden="true"
+              style={theme?.bgFit ? { objectFit: theme.bgFit } : undefined}
+            />
+          )
         )}
 
         {/* Header: unificado, o desnudo (solo imagen + X flotante) */}

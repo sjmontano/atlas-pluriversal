@@ -28,7 +28,11 @@ function diagrama(
     fullImage: true,
     hideHeader: true,
     closeLeft: false,
-    theme: { bgFit: 'contain', bgColor: '#ffffff', size: { width: '90vw', height: '90vh' } },
+    panMobile: true,
+    /* Caja calzada al aspecto 1.57 de la imagen (contain): en desktop manda
+     * el ancho (67vw), en móvil manda el alto (sin hueco vertical).
+     * 141dvh = 90×1.57 · 42.6vw = 67÷1.57. Camino A (ver plan B: aspectRatio). */
+    theme: { bgFit: 'contain', bgColor: '#ffffff', size: { width: 'min(67vw, 141dvh)', height: 'min(90dvh, 42.6vw)' } },
     body: [],
     trigger: { type: 'button', icon, frame, label, mapId },
   }

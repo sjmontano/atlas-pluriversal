@@ -117,6 +117,9 @@ export interface Modal {
   /** Carrusel inmersivo full-bleed (se renderiza con CarouselFondo).
    *  Requiere hideHeader:true y body con un único bloque 'carousel'. */
   fullBleed?: boolean
+  /** En móvil la imagen de fondo se amplía y se explora con pan (deslizar);
+   *  muestra hint animado que se oculta al primer gesto. Solo fullImage. */
+  panMobile?: boolean
   /** X espejada a la izquierda (v17: left). Default: derecha. */
   closeLeft?: boolean
   /** Tema (CSS variables) — colores y tamaño personalizado */
