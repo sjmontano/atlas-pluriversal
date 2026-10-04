@@ -566,7 +566,7 @@ export function addPois(
       source: POIS_SOURCE_ID,
       filter: variantFilter('number'),
       layout: {
-        'text-field': ['to-string', ['get', 'numero']],
+        'text-field': ['case', ['has', 'numero'], ['to-string', ['get', 'numero']], ''],
         'text-size': zoomSize(sizeMatch(POI_TEXT_SIZE, POI_TEXT_SIZE_LARGE)),
         'text-font': ['Noto Sans Bold'],
       },
