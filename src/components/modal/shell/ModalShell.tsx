@@ -227,7 +227,7 @@ export function ModalShell({
 
         {/* Body scrollable + scrollbar + scrim (si fullImage) */}
         <div className={styles.bodyOuter} onWheel={handleBodyWheel}>
-          {fullImage && <div className={styles.scrim} aria-hidden="true" />}
+          {fullImage && !theme?.noScrim && <div className={styles.scrim} aria-hidden="true" />}
           <CustomScrollbar
             scrollRef={bodyScrollRef}
             className={styles.bodyScrollbar}

@@ -1,6 +1,7 @@
 import { makeMap } from '../../_map.ts'
 import { LAYERS } from './layers'
 import { LEGENDS } from './legends'
+import { POIS } from './pois'
 
 export default makeMap({
   mapId: 'chapter2-m-oriente-cali',
@@ -21,5 +22,5 @@ export default makeMap({
   base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762486120/geoImages/jnqo25dhvenvrseezvlt.webp',
   full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1762485986/geoImages/xa15iigitokhfyvek9s5.webp',
   zoomMax: 10,
-  extras: { layers: LAYERS, legends: LEGENDS },
+  extras: { layers: LAYERS, legends: LEGENDS, pois: POIS },
 })

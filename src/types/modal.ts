@@ -42,8 +42,11 @@ export interface ModalTheme {
   /** Tamaño personalizado (sobrescribe el token de la variante) */
   size?: { width: string; height: string }
   /** Ajuste de la imagen de fondo full-bleed (default: 'cover').
-   *  'contain' para diagramas con texto que no deben recortarse. */
-  bgFit?: 'cover' | 'contain'
+   *  'contain' para diagramas con texto que no deben recortarse.
+   *  'initial' para imagen sin escalar (tamaño natural). */
+  bgFit?: 'cover' | 'contain' | 'initial'
+  /** Desactiva el scrim blanco sobre la imagen (default: false). */
+  noScrim?: boolean
 
   /* ── Estilos inyectables por modal ─────────────────────────────────── */
   /** maxWidth del .bodyInner (default: '90%'). El riel queda fijo al diálogo. */

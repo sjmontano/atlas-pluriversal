@@ -332,8 +332,8 @@ const AT_CASA_CULTURAL: Modal = fichaPerfil(
 
 const AT_AFRO_YOGA: Modal = fichaPerfil(
   'cap2-at-afro-yoga',
+  'Afro Yoga',
   'Alternativa Transformadora Afro Yoga',
-  undefined,
   'https://res.cloudinary.com/dvluvxfvn/image/upload/v1761791824/geoImages/gk60hbzfh98apd8uuekk.webp',
   'Encuentros en diferentes lugares',
   'Santiago de Cali',
@@ -343,6 +343,26 @@ const AT_AFRO_YOGA: Modal = fichaPerfil(
   ['Proceso Repalpitar del útero donde propiciamos espacios de sanación de la violencia sexual con mujeres negras.', 'Trabajo con niñas y jóvenes para sanar y reconocer la violencia de género y cómo se vive.', 'Escuelas afro feministas y antirracistas.', 'Encuentros de bienestar, sanación, yoga, autocuidado y espacios de escucha.'],
   'chapter2-cali',
 )
+
+/* ── Imagen de síntesis Cali (solo imagen full-bleed) ───────────────────── */
+
+const SINTESIS_CALI_IMAGEN: Modal = {
+  id: 'cap2-sintesis-cali-imagen',
+  section: 'capitulo-2',
+  variant: 'full',
+  title: 'Síntesis territorial Oriente de Cali',
+  icon: 'gallery',
+  image: '/assets/maps/cap2/sintesisCali.webp',
+  fullImage: true,
+  hideHeader: true,
+  closeLeft: true,
+  theme: {
+    bgFit: 'initial',
+    noScrim: true,
+  },
+  body: [],
+  trigger: { type: 'poi', icon: 'gallery', mapId: 'chapter2-m-oriente-cali' },
+}
 
 /* ── Galerías de imágenes (portadas de v17 galeriasChapter2) ───────────── */
 
@@ -458,4 +478,5 @@ export const CHAPTER2_MODALS: Modal[] = [
   AT_MATAMBA,
   AT_CASA_CULTURAL,
   AT_AFRO_YOGA,
+  SINTESIS_CALI_IMAGEN,
 ]
