@@ -307,6 +307,7 @@ function diagrama(
   label: string,
   bgColor = '#ffffff',
 ): Modal {
+  const isPerfil = icon === 'perfil'
   return {
     id,
     section: 'capitulo-4',
@@ -321,7 +322,7 @@ function diagrama(
     image: src,
     fullImage: true,
     hideHeader: true,
-    theme: { bgFit: 'contain', bgColor, noScrim: true },
+    theme: { bgFit: isPerfil ? 'initial' : 'contain', bgColor, noScrim: true },
     body: [],
     trigger: { type: 'button', icon, frame, label, mapId },
   }
