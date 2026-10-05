@@ -434,7 +434,10 @@ function bindPoiEvents(
 
   const onClick = (e: maplibregl.MapMouseEvent): void => {
     const poi = hitAt(e.point)
-    if (poi) onPoiClick(poi)
+    if (poi) {
+      hideTooltip()
+      onPoiClick(poi)
+    }
   }
   /* Anillo de énfasis: feature-state por id (las capas lo leen en paint).
    * Closure por mapa: al remover capas el estado muere con ellas. */
