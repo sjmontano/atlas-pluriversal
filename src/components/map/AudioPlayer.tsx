@@ -20,6 +20,19 @@ export function AudioPlayer({ src, title, onClose, autoPlay = true }: Props) {
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
+  // Abre desplegado al clickar el POI (pinned inicial, como el menú
+  // de capítulos al entrar). El hover abre con rebote, al salir se esconde
+  // salvo fijado; el click en la cápsula fija/suelta.
+  const [open, setOpen] = useState(false)
+  const [pinned, setPinned] = useState(true)
+  const shown = open || pinned
+
+  // Click en la cápsula (fuera de botones/inputs) fija o suelta el player.
+  // El hover sólo previsualiza; fijado queda abierto sin esconderse.
+  const togglePin = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button, input, a')) return
+    setPinned((p) => !p)
+  }
 
   useEffect(() => {
     const el = audioRef.current
@@ -72,7 +85,35 @@ export function AudioPlayer({ src, title, onClose, autoPlay = true }: Props) {
   }
 
   return (
-    <div className={styles.container} role="region" aria-label={`Reproductor: ${title}`}>
+    <div
+      className={styles.container}
+      data-state={shown ? 'open' : 'hidden'}
+      role="region"
+      aria-label={`Reproductor: ${title}`}
+      aria-expanded={shown}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onClick={togglePin}
+    >
+      {!shown && (
+        <div
+          className={styles.hoverStrip}
+          aria-hidden="true"
+          onMouseEnter={() => setOpen(true)}
+        />
+      )}
+      <img
+        className={styles.fondo}
+        src="/assets/ui/sidebar/tab-default-bg-h.webp"
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+      />
+      <div className={styles.shade} aria-hidden="true" />
+      <div className={styles.glyph} aria-hidden="true">
+        <img src="/assets/pois/markers/audio.svg" alt="" draggable={false} />
+      </div>
+      <div className={styles.body}>
       <audio
         ref={audioRef}
         onTimeUpdate={handleTimeUpdate}
@@ -80,7 +121,7 @@ export function AudioPlayer({ src, title, onClose, autoPlay = true }: Props) {
         onEnded={() => setIsPlaying(false)}
       />
 
-      <div className={styles.header}>
+      <div className={`${styles.header} ${styles.detail}`}>
         <div className={styles.marquee}>
           <div className={styles.marqueeContent}>
             <span>{title}</span>
@@ -95,14 +136,14 @@ export function AudioPlayer({ src, title, onClose, autoPlay = true }: Props) {
 
       <div className={styles.controls}>
         <div className={styles.buttons}>
-          <button onClick={() => skipTime(-10)} className={styles.skipBtn} title="Retroceder 10 segundos">
+          <button onClick={() => skipTime(-10)} className={`${styles.skipBtn} ${styles.detail}`} title="Retroceder 10 segundos">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" />
             </svg>
             <span className={styles.skipText}>-10</span>
           </button>
 
-          <button onClick={togglePlay} className={styles.playBtn} aria-label={isPlaying ? 'Pausar' : 'Reproducir'}>
+          <button onClick={togglePlay} className={`${styles.playBtn} ${styles.detail}`} aria-label={isPlaying ? 'Pausar' : 'Reproducir'}>
             {isPlaying ? (
               <svg className={styles.playerIcon} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <rect x="6" y="4" width="4" height="16" rx="1" />
@@ -115,7 +156,7 @@ export function AudioPlayer({ src, title, onClose, autoPlay = true }: Props) {
             )}
           </button>
 
-          <button onClick={() => skipTime(10)} className={styles.skipBtn} title="Adelantar 10 segundos">
+          <button onClick={() => skipTime(10)} className={`${styles.skipBtn} ${styles.detail}`} title="Adelantar 10 segundos">
             <span className={styles.skipText}>+10</span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M13 17l5-5-5-5M6 17l5-5-5-5" />
@@ -123,13 +164,14 @@ export function AudioPlayer({ src, title, onClose, autoPlay = true }: Props) {
           </button>
         </div>
 
-        <div className={styles.progress}>
+        <div className={`${styles.progress} ${styles.detail}`}>
           <span className={styles.time}>{formatTime(currentTime)}</span>
           <input
             type="range"
             min="0"
             max={duration || 0}
             value={currentTime}
+            style={{ '--p': `${duration > 0 ? (currentTime / duration) * 100 : 0}%` } as React.CSSProperties}
             onChange={(e) => handleSeek(e.target.value)}
             onMouseDown={() => setIsDragging(true)}
             onMouseUp={(e) => {
@@ -146,6 +188,7 @@ export function AudioPlayer({ src, title, onClose, autoPlay = true }: Props) {
           />
           <span className={styles.time}>{formatTime(duration)}</span>
         </div>
+      </div>
       </div>
     </div>
   )
