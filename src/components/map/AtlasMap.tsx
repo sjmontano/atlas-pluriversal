@@ -253,6 +253,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
 
       {activePoi && activePoi.popup.audio ? (
         <AudioPlayer
+          key={activePoi.popup.audio}
           src={activePoi.popup.audio}
           title={activePoi.popup.title}
           onClose={() => setActivePoi(null)}
