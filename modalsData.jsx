@@ -632,7 +632,7 @@ const modalsData = [
       </div>
     ),
     texto:
-      "Colaboratorio de diseño para la innovación social,  Grupo de investigación Diseño & Sociedad,  Universidad del Cauca. Coordinación: Andrea Melenje y Rafael Enrique Sarmiento López. Ilustración: Mauricio Castro, Diagramación: Neider Yesid Tiafi, Recursos gráficos: Yeri Benavente y Eduar Yondapiz. Desarrolladores: Camilo Sotelo, Jerson Stiv Rojas, Jorge David Echeverry y Santiago José Montaño. Institución Universitaria Colegio Mayor del Cauca.",
+      "Colaboratorio de diseño para la innovación social,  Grupo de investigación Diseño & Sociedad,  Universidad del Cauca. Coordinación: Andrea Melenje y Rafael Enrique Sarmiento López. Ilustración: Mauricio Castro, Desarrollo de maqueta UI: Neider Yesid Tiafi, Recursos gráficos: Yeri Benavente y Eduar Yondapiz. Desarrolladores: Camilo Sotelo, Jerson Stiv Rojas, Jorge David Echeverry y Santiago José Montaño. Institución Universitaria Colegio Mayor del Cauca.",
     boton: false,
     link: "",
     image: "",

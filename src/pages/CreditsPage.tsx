@@ -79,7 +79,6 @@ export function CreditsPage() {
         style={{
           background: `linear-gradient(rgba(4, 69, 82, 0.52), rgba(4, 72, 86, 0.6)), url('${BASE}/fondo.webp')`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
         }}
       >
