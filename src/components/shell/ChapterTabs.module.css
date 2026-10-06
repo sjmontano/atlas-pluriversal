@@ -315,7 +315,7 @@
 }
 
 /* ── 11. Auto-hide (solo mapas de contenido) ─────────────────────────
- * peek: franja de 14px visible · hidden: 88% oculto · open: completo con
+ * peek: franja de 14px visible · hidden: 70% oculto · open: completo con
  * rebote elástico sutil (sube de más y asienta en dos tiempos). La zona
  * invisible de 48px al borde inferior activa la apertura; se desactiva al
  * abrir para no bloquear el mapa ni impedir el re-ocultado. */
@@ -342,7 +342,7 @@
 }
 
 .tabs[data-autohide='true'][data-state='hidden'] {
-  transform: translateX(-50%) translateY(88%);
+  transform: translateX(-50%) translateY(70%);
 }
 
 .tabs[data-autohide='true'][data-state='open'] {
@@ -352,7 +352,7 @@
 
 @keyframes tabs-pop {
   0% {
-    transform: translateX(-50%) translateY(88%);
+    transform: translateX(-50%) translateY(70%);
   }
 
   55% {
