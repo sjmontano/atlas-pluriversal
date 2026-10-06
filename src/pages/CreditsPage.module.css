@@ -113,7 +113,7 @@
   position: relative;
   padding-left: calc(3vw + 36px);
   /* Despeja el header de capítulos (flecha + decorador + título) */
-  padding-top: 7.5vh;
+  padding-top: 15.5vh;
   display: flex;
   flex-direction: column;
   padding-bottom: 2vh;
