@@ -192,6 +192,28 @@ describe('PoiManager variants', () => {
     expect(arrow.layout['icon-rotation-alignment']).toBe('viewport')
   })
 
+  it('flecha: la punta es el ancla (icon-offset data-driven desde tipOffset)', () => {
+    const map = makeMap()
+    addPois(map, 'test', ARROW_POIS, vi.fn())
+    const arrow = map._layers.get('atlas-pois-arrow-layer')
+    expect(arrow.layout['icon-offset']).toEqual(['get', 'tipOffset'])
+    const sourceDef = map._sources.get('atlas-pois-source')
+    const feat = sourceDef.data.features[0]
+    // angle 330: punta al borde en dirección (cos330, sin330) → offset negado
+    const rad = (330 * Math.PI) / 180
+    const R = (128.906 - 53.95) * 1.7
+    const [ox, oy] = feat.properties.tipOffset
+    expect(ox).toBeCloseTo(-R * Math.cos(rad), 3)
+    expect(oy).toBeCloseTo(-R * Math.sin(rad), 3)
+  })
+
+  it('no-flecha: no lleva tipOffset', () => {
+    const map = makeMap()
+    addPois(map, 'test', NUMBER_POIS, vi.fn())
+    const sourceDef = map._sources.get('atlas-pois-source')
+    expect(sourceDef.data.features[0].properties.tipOffset).toBeUndefined()
+  })
+
   it('escala text-size del número con el zoom', () => {
     const map = makeMap()
     addPois(map, 'test', NUMBER_POIS, vi.fn())

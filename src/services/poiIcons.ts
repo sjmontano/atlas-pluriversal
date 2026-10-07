@@ -10,6 +10,12 @@ export const ARROW_COLOR = '#03103a'
 const CIRCLE_CX = 53.95
 const CIRCLE_CY = 53.95
 
+/* Distancia centro→punta en px de imagen horneada: la punta del path
+ * (lineTo 128.906, 53.9529) menos el centro del círculo, por la escala.
+ * La punta queda en el borde del canvas a este radio, en dirección `angle`.
+ * PoiManager lo usa (negado) como icon-offset para anclar la punta. */
+export const ARROW_TIP_R_PX = (128.906 - CIRCLE_CX) * ARROW_SCALE
+
 export function traceArrow(ctx: CanvasRenderingContext2D): void {
   ctx.beginPath()
   ctx.moveTo(91.4298, 91.4296)

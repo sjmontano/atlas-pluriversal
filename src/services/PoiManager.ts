@@ -2,7 +2,7 @@ import { POI_THEME } from '@content/theme'
 import type * as maplibregl from 'maplibre-gl'
 import type { ExpressionSpecification } from 'maplibre-gl'
 import type { Poi, PoiVariant } from '../types/poi.ts'
-import { ARROW_COLOR, composeArrowIcon, composeGotaIcon } from './poiIcons'
+import { ARROW_COLOR, ARROW_TIP_R_PX, composeArrowIcon, composeGotaIcon } from './poiIcons'
 
 export interface GeoJSONFeature {
   type: 'Feature'
@@ -19,6 +19,9 @@ const POIS_PULSE_LAYER_ID = 'atlas-pois-pulse-layer'
 const POIS_ICON_LAYER_ID = 'atlas-pois-icon-layer'
 const POIS_ARROW_LAYER_ID = 'atlas-pois-arrow-layer'
 const POIS_AUDIO_LAYER_ID = 'atlas-pois-audio-layer'
+/* Tamaño base del icono flecha (icon-size a zoom máx). El hit-test lo
+ * espeja para ubicar el centro del cuerpo a cada zoom. */
+const ARROW_ICON_SIZE = 0.24
 /** Anillo de énfasis en hover (mismo transform que el punto: sin deriva). */
 const POIS_HOVER_LAYER_ID = 'atlas-pois-hover-layer'
 const ALL_POI_LAYER_IDS = [
@@ -380,9 +383,22 @@ export function poiToFeature(poi: Poi): GeoJSONFeature {
       variant,
       angle: poi.angle ?? 0,
       markerIcon: poi.id,
+      /* Solo flechas: offset (px de imagen, negado) que lleva la punta al
+       * ancla. La capa lo lee como icon-offset data-driven. */
+      ...(variant === 'arrow' ? { tipOffset: arrowTipOffset(poi.angle ?? 0) } : null),
     },
     geometry: { type: 'Point', coordinates: poi.coords },
   }
+}
+
+/* Offset punta→ancla en px de imagen horneada. `icon-offset` se multiplica
+ * por `icon-size`, así la punta queda clavada en coords a todo zoom aunque
+ * el cuerpo crezca (adiós "movimiento" aparente al zoom). Convención canvas:
+ * ángulo horario, y hacia abajo = igual que pantalla con viewport-align. */
+function arrowTipOffset(angleDeg: number): [number, number] {
+  const rad = (angleDeg * Math.PI) / 180
+  const r3 = (n: number): number => Math.round(n * 1000) / 1000
+  return [r3(-ARROW_TIP_R_PX * Math.cos(rad)), r3(-ARROW_TIP_R_PX * Math.sin(rad))]
 }
 
 // Filtros por variante: cada capa sólo renderiza los features de su tipo.
@@ -418,13 +434,45 @@ function bindPoiEvents(
    * sin capa + proyección manual no se toca ese path y el clic/hover
    * funcionan igual. */
   const HIT_RADIUS_PX = 24
+  /* Hit de flechas por segmento punta→centro del cuerpo: el icono ya no
+   * está centrado en coords (la punta es el ancla y el cuerpo cuelga en
+   * dirección `angle`). Radio 26px sobre el segmento. */
+  const ARROW_HIT_PAD_PX = 26
+  function arrowScaleAtZoom(zoom: number): number {
+    if (zoom <= POI_MIN_ZOOM) return ARROW_ICON_SIZE * POI_MIN_SCALE
+    if (zoom >= POI_MAX_ZOOM) return ARROW_ICON_SIZE
+    const t = (zoom - POI_MIN_ZOOM) / (POI_MAX_ZOOM - POI_MIN_ZOOM)
+    return ARROW_ICON_SIZE * (POI_MIN_SCALE + (1 - POI_MIN_SCALE) * t)
+  }
+  function arrowHitDist(poi: Poi, point: { x: number; y: number }): number {
+    const rad = ((poi.angle ?? 0) * Math.PI) / 180
+    const tip = map.project(poi.coords)
+    const zoom = map.getZoom()
+    const s = Number.isFinite(zoom) ? arrowScaleAtZoom(zoom) : ARROW_ICON_SIZE
+    const cx = tip.x + ARROW_TIP_R_PX * s * Math.cos(rad)
+    const cy = tip.y + ARROW_TIP_R_PX * s * Math.sin(rad)
+    const dx = cx - tip.x
+    const dy = cy - tip.y
+    const len2 = dx * dx + dy * dy
+    const t = len2 > 0 ? ((point.x - tip.x) * dx + (point.y - tip.y) * dy) / len2 : 0
+    const c = Math.max(0, Math.min(1, t))
+    return Math.hypot(tip.x + c * dx - point.x, tip.y + c * dy - point.y)
+  }
   const hitAt = (point: { x: number; y: number }): Poi | null => {
     let best: Poi | null = null
-    let bestDist = HIT_RADIUS_PX
+    let bestDist = Infinity
     for (const poi of pois) {
+      if (variantOf(poi) === 'arrow') {
+        const d = arrowHitDist(poi, point)
+        if (d <= ARROW_HIT_PAD_PX && d < bestDist) {
+          best = poi
+          bestDist = d
+        }
+        continue
+      }
       const p = map.project(poi.coords)
       const dist = Math.hypot(p.x - point.x, p.y - point.y)
-      if (dist <= bestDist) {
+      if (dist <= HIT_RADIUS_PX && dist < bestDist) {
         best = poi
         bestDist = dist
       }
@@ -618,8 +666,11 @@ export function addPois(
       filter: variantFilter('arrow'),
       layout: {
         'icon-image': ['get', 'markerIcon'],
-        'icon-size': zoomSize(0.24),
+        'icon-size': zoomSize(ARROW_ICON_SIZE),
         'icon-allow-overlap': true,
+        /* La punta (no el centro) es el ancla: el offset vive en la
+         * feature (tipOffset) porque la punta rota con `angle`. */
+        'icon-offset': ['get', 'tipOffset'],
         'icon-rotation-alignment': 'viewport',
       },
     })
