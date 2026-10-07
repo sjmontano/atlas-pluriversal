@@ -23,6 +23,21 @@
   will-change: transform;
 }
 
+/* Capa de markers: replica la geometría del lienzo (misma caja y transform
+ * para que los % de HomeMarkers calcen con la imagen) pero pinta POR ENCIMA
+ * del HomePanel (títulos z-10): así las etiquetas ya no quedan detrás del
+ * título/subtítulo/descriptor. El lienzo con el fondo queda debajo del
+ * panel (los títulos siguen visibles). pointer-events:none para no tapar
+ * los botones del panel (cada marker conserva pointer-events:auto). */
+.markersLayer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 11;
+  pointer-events: none;
+  will-change: transform;
+}
+
 .background {
   position: absolute;
   inset: 0;

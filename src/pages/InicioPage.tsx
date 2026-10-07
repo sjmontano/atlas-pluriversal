@@ -109,17 +109,28 @@ export function InicioPage() {
         onClickCapture={onClickCapture}
       >
         {viewport.x > 0 && (
-          <div
-            className={styles.canvas}
-            style={{
-              width: canvasW,
-              height: canvasH,
-              transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
-            }}
-          >
-            <img className={styles.background} src={HOME_BACKGROUND} alt="" draggable={false} />
-            <HomeMarkers />
-          </div>
+          <>
+            <div
+              className={styles.canvas}
+              style={{
+                width: canvasW,
+                height: canvasH,
+                transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
+              }}
+            >
+              <img className={styles.background} src={HOME_BACKGROUND} alt="" draggable={false} />
+            </div>
+            <div
+              className={styles.markersLayer}
+              style={{
+                width: canvasW,
+                height: canvasH,
+                transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
+              }}
+            >
+              <HomeMarkers />
+            </div>
+          </>
         )}
         <HomePanel />
       </div>
