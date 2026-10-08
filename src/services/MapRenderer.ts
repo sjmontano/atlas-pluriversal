@@ -18,7 +18,9 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { DEV_TOOLS } from '@config'
 import { processBounds, expandBoundsPerAxis, type PGWData, type BoundsResult, type ImageCoordinates, type GeographicBounds } from './BoundsCalculator'
 import { createBearingAwareConstrain } from './TransformConstrain'
-import { constrainMinZoom } from '@utils/tileZoom'
+import { constrainMinZoom, computeTileRange, screenCeilingZoom } from '@utils/tileZoom'
+import { resolveBaseLevel, BASE_TRANSFORMS, baseRangeForEntry, matchesGeoAspect, pickBaseSource, type BaseLevel } from '@utils/baseZoom'
+import { MAP_TILE_MODES } from '@data/tiles'
 import { logger } from './MapLogger'
 import { useMapStore } from '@stores/mapStore'
 import type { MapContent, TileDeliveryProfile } from '../types/content'
@@ -36,6 +38,135 @@ export function cloudinaryVariant(url: string, transform: string): string {
   if (!url.includes('/upload/')) return url
   return url.replace('/upload/', `/upload/${transform}/`)
 }
+
+/** URL de la base Cloudinary para un nivel base/medium/high.
+ *  URLs locales (sin /upload/): no-op, devuelve la misma URL. */
+export function baseUrlForLevel(base: string, level: BaseLevel): string {
+  return cloudinaryVariant(base, BASE_TRANSFORMS[level])
+}
+
+/**
+ * Fallback piramidal de la imagen base según zoom (base → medium → high).
+ *
+ * Un solo ImageSource con preload + updateImage: nunca deja la pantalla en
+ * negro (si el preload falla, conserva el nivel actual). Con
+ * `tilesEnabled === false` (demo) sube directo a high. Devuelve detach para
+ * limpiar listeners en destroy(). Ver spec 2026-10-07-fallback-cloudinary-zoom.
+ */
+export function attachBaseZoomFallback(
+  map: maplibregl.Map,
+  mapId: string,
+  entry: MapContent,
+  coordinates: ImageCoordinates,
+  opts?: BuildOptions,
+): () => void {
+  const tilesEnabled = opts?.tilesEnabled !== false
+  const mode = MAP_TILE_MODES[mapId] ?? 'detail'
+  const range = entry.tiles
+    ? baseRangeForEntry(entry.tiles, 0, 0)
+    : (() => {
+        const r = computeTileRange(entry.geo, mode, 1920, 1080, entry.config.initialBearing)
+        if (r) return r
+        const min = Math.floor(constrainMinZoom(entry.geo, 1920, 1080, entry.config.initialBearing))
+        return { minZoom: min, maxZoom: Math.max(min, screenCeilingZoom(entry.geo, 1920)) }
+      })()
+  let current: BaseLevel | null = null
+  let raf = 0
+  let disposed = false
+
+  const setLevel = (target: BaseLevel) => {
+    if (disposed || target === current) return
+    // Niveles derivados del original (full) cuando existe: el base suele ser
+    // un thumbnail de ~564px sin detalle que rescatar.
+    const source = pickBaseSource(entry.images)
+    const url = baseUrlForLevel(source, target)
+    if (!map.getSource(IMAGE_SOURCE_ID)) return
+    if (url === (entry.tiles?.preview ?? entry.images.placeholder)) {
+      current = target
+      return
+    }
+    preloadImage(url)
+      .then(() => {
+        if (disposed || current === target) return
+        // Guarda de aspecto: si la fuente local está rotada 90° respecto al
+        // geo (el generador la rota con sourceRotate, el runtime no puede),
+        // subirla deformaría el mapa → se conserva el preview.
+        const size = preloadedImages.get(url)
+        if (
+          size &&
+          !matchesGeoAspect(size.naturalWidth, size.naturalHeight, entry.geo.width, entry.geo.height)
+        ) {
+          logger.warn(CATEGORY, `Base ${target} con aspecto invertido, conserva preview: ${mapId}`, {
+            img: `${size.naturalWidth}x${size.naturalHeight}`,
+            geo: `${entry.geo.width}x${entry.geo.height}`,
+          })
+          current = target
+          return
+        }
+        const src = map.getSource(IMAGE_SOURCE_ID) as maplibregl.ImageSource | undefined
+        if (src) {
+          src.updateImage({ url, coordinates })
+          current = target
+          logger.info(CATEGORY, `Base ${target}: ${mapId}`)
+        }
+      })
+      .catch(() => {
+        logger.warn(CATEGORY, `Sin base ${target} (conserva actual): ${mapId}`)
+      })
+    const next: BaseLevel | null = target === 'base' ? 'medium' : target === 'medium' ? 'high' : null
+    if (next) {
+      preloadImage(baseUrlForLevel(source, next)).catch(() => {})
+    }
+  }
+
+  const applyZoom = (zoom: number) => {
+    const level = resolveBaseLevel(zoom, range.minZoom, range.maxZoom, mode)
+    setLevel(tilesEnabled ? level : 'high')
+  }
+
+  /** Escalada a high cuando los tiles entran en degraded (la invoca la
+   *  telemetría vía degradedEscalators). */
+  const escalateToHigh = () => {
+    setLevel('high')
+  }
+  degradedEscalators.set(map, escalateToHigh)
+
+  const onZoom = () => {
+    cancelAnimationFrame(raf)
+    raf = requestAnimationFrame(() => {
+      try {
+        applyZoom(map.getZoom())
+      } catch {
+        /* noop */
+      }
+    })
+  }
+  try {
+    applyZoom(map.getZoom())
+  } catch {
+    /* noop */
+  }
+  map.on('zoom', onZoom)
+  map.on('zoomend', onZoom)
+  return () => {
+    disposed = true
+    cancelAnimationFrame(raf)
+    degradedEscalators.delete(map)
+    try {
+      map.off('zoom', onZoom)
+    } catch {
+      /* noop */
+    }
+    try {
+      map.off('zoomend', onZoom)
+    } catch {
+      /* noop */
+    }
+  }
+}
+
+/** Escaladores a high por mapa (los registra attachBaseZoomFallback). */
+const degradedEscalators = new Map<maplibregl.Map, () => void>()
 
 /** Estilo en blanco: fondo oscuro del tema, sin fuentes externas */
 const BLANK_STYLE: maplibregl.StyleSpecification = {
@@ -338,32 +469,16 @@ export async function buildGeoreferencedMap(
   // en conexiones lentas (Slow 4G / 2G rural).
   addTilesLayer(map, mapId, entry, bounds, opts)
 
-  // ── 5b. Base intermedia según contexto ─────────────────────────────────────
-  // Conexión débil: los tiles standard tardan o fallan; el preview de 512px
-  // quedaría borroso como único respaldo. Sin tiles (demo): la base es TODA
-  // la calidad disponible → w_2048. Mismo public ID Cloudinary con transform,
-  // sin assets nuevos. URLs locales (sin /upload/): cloudinaryVariant no-op.
-  // Perfil hd con tiles: sin cambios (los tiles hd aportan la nitidez).
-  const wantMidBase = opts?.tileProfile === 'standard' || opts?.tilesEnabled === false
-  if (wantMidBase && (config.useImageBase !== false || needsPreviewFallback)) {
-    const transform = opts?.tilesEnabled === false ? 'w_2048,q_auto,f_webp' : 'w_1280,q_auto,f_webp'
-    const midUrl = cloudinaryVariant(images.base, transform)
-    const currentUrl = entry.tiles?.preview ?? images.placeholder
-    // Locales (sin /upload/): variant() no-op → sube a la base local, igual
-    // de válido como respaldo mejorado sin descargar nada nuevo.
-    if (midUrl !== currentUrl) {
-      preloadImage(midUrl)
-        .then(() => {
-          if (map.getSource(IMAGE_SOURCE_ID)) {
-            const source = map.getSource(IMAGE_SOURCE_ID) as maplibregl.ImageSource
-            source.updateImage({ url: midUrl, coordinates })
-            logger.info(CATEGORY, `Base intermedia cargada: ${mapId}`)
-          }
-        })
-        .catch((err) => {
-          logger.warn(CATEGORY, `Sin base intermedia (sigue preview): ${mapId}`, err)
-        })
-    }
+  // ── 5b. Base piramidal según zoom (fallback sin tiles) ──────────────────────
+  // low (w_512) en vista lejana → medium (w_1600) en intermedia → high
+  // (w_2048) al acercar. Mismo public ID Cloudinary con transform, sin assets
+  // nuevos. URLs locales (sin /upload/): cloudinaryVariant no-op, sin swaps.
+  // Con tiles, la base aporta el fondo y los tiles la nitidez; sin tiles o en
+  // degraded, la base escala sola hasta high. Reemplaza al antiguo bloque de
+  // "base intermedia" por conexión (ver spec 2026-10-07-fallback-cloudinary-zoom).
+  let detachBaseFallback: (() => void) | null = null
+  if (config.useImageBase !== false || needsPreviewFallback) {
+    detachBaseFallback = attachBaseZoomFallback(map, mapId, entry, coordinates, opts)
   }
 
   // ── 6. Imagen full opcional (solo debug/fallback) ─────────────────────────
@@ -438,6 +553,10 @@ export async function buildGeoreferencedMap(
     controller,
     destroy: () => {
       logger.trace(CATEGORY, 'map:destroy', { mapId })
+      try {
+        detachBaseFallback?.()
+      } catch { /* noop */ }
+      detachBaseFallback = null
       try {
         const style = map.getStyle()
         if (style?.layers) {
@@ -574,6 +693,11 @@ function attachTileTelemetry(map: maplibregl.Map, mapId: string): void {
         tilesTimedOut = true
         useMapStore.getState().setTilesStatus('degraded')
         logger.warn(CATEGORY, `Tiles no cargaron en 15s: ${mapId} — mapa básico sin tiles`)
+        // La base escala sola a high (mejor Cloudinary disponible) para que el
+        // mapa siga usable sin tiles. Si no hay fallback registrado, no-op.
+        try {
+          degradedEscalators.get(map)?.()
+        } catch { /* noop */ }
       }
     }, 15000)
   }
