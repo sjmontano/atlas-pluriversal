@@ -102,6 +102,7 @@
    (bottom:0) quede pegado a la pared inferior */
 .top {
   background-size: cover;
+  background-position: center center;
   height: 100%;
   position: relative;
 }
@@ -373,6 +374,8 @@
 
   /* Sección superior: fluye en columna (despeja el header de capítulos) */
   .top {
+    background-size: cover;
+    background-position: center center;
     height: auto;
     min-height: 100%;
     display: flex;
@@ -537,6 +540,8 @@
   }
 
   .top {
+    background-size: cover;
+    background-position: center center;
     height: auto;
     min-height: 96vh;
   }

@@ -80,6 +80,7 @@ export function CreditsPage() {
           background: `linear-gradient(rgba(4, 69, 82, 0.52), rgba(4, 72, 86, 0.6)), url('${BASE}/fondo.webp')`,
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center center',
         }}
       >
         <div className={styles.container}>
