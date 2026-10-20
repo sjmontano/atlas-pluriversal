@@ -1,0 +1,61 @@
+/* SOURCE TOGGLES — aislamiento de fuentes para calibrar */
+
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.compact {
+  gap: 3px;
+}
+
+.btn {
+  padding: 3px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  font-size: 10px;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: all 0.12s;
+}
+
+.btn:hover {
+  background: rgba(5, 153, 183, 0.18);
+  color: #fff;
+  border-color: rgba(5, 153, 183, 0.32);
+}
+
+/* Activo = la fuente está encendida */
+.on {
+  background: rgba(5, 153, 183, 0.2);
+  color: #eaf6f9;
+  border-color: rgba(5, 153, 183, 0.4);
+}
+
+/* Cloudinary activo: ámbar (es la fuente descalibrada) */
+.cloud {
+  background: rgba(214, 158, 46, 0.2);
+  color: #f4e2b8;
+  border-color: rgba(214, 158, 46, 0.42);
+}
+
+.select {
+  padding: 3px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 10px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.select:focus-visible {
+  outline: 1px solid var(--primary-blue, #0599b7);
+  outline-offset: 1px;
+}

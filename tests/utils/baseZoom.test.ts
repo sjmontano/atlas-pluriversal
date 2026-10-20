@@ -16,10 +16,11 @@ describe('resolveBaseLevel', () => {
     expect(resolveBaseLevel(9, 9, 9, 'initial-only')).toBe('medium')
     expect(resolveBaseLevel(12, 9, 9, 'initial-only')).toBe('medium')
   })
-  it('transforms: base w_1600, medium w_2560, high original sin límite', () => {
+  it('transforms: base w_1600, medium w_2560, high limitado a 4096', () => {
     expect(BASE_TRANSFORMS.base).toContain('w_1600')
     expect(BASE_TRANSFORMS.medium).toContain('w_2560')
-    expect(BASE_TRANSFORMS.high).not.toContain('w_')
+    expect(BASE_TRANSFORMS.medium).toContain('h_4096')
+    expect(BASE_TRANSFORMS.high).toContain('c_limit,w_4096,h_4096')
     expect(BASE_TRANSFORMS.high).toContain('q_auto,f_webp')
   })
   it('baseRangeForEntry prefiere tiles y cae a fallback', () => {

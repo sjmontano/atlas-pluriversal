@@ -20,9 +20,12 @@ import { processBounds, expandBoundsPerAxis, type PGWData, type BoundsResult, ty
 import { createBearingAwareConstrain } from './TransformConstrain'
 import { constrainMinZoom, computeTileRange, screenCeilingZoom } from '@utils/tileZoom'
 import { resolveBaseLevel, BASE_TRANSFORMS, baseRangeForEntry, matchesGeoAspect, pickBaseSource, type BaseLevel } from '@utils/baseZoom'
+import { clampTransform } from '@utils/textureLimit'
+import { maxTextureEdge } from './TextureLimiter'
 import { MAP_TILE_MODES } from '@data/tiles'
 import { logger } from './MapLogger'
 import { useMapStore } from '@stores/mapStore'
+import { useMapUIStore } from '@stores/mapUIStore'
 import type { MapContent, TileDeliveryProfile } from '../types/content'
 
 maplibregl.setWorkerUrl('/vendor/maplibre/maplibre-gl-worker.mjs')
@@ -41,8 +44,8 @@ export function cloudinaryVariant(url: string, transform: string): string {
 
 /** URL de la base Cloudinary para un nivel base/medium/high.
  *  URLs locales (sin /upload/): no-op, devuelve la misma URL. */
-export function baseUrlForLevel(base: string, level: BaseLevel): string {
-  return cloudinaryVariant(base, BASE_TRANSFORMS[level])
+export function baseUrlForLevel(base: string, level: BaseLevel, edge?: number): string {
+  return cloudinaryVariant(base, clampTransform(BASE_TRANSFORMS[level], edge))
 }
 
 /**
@@ -73,15 +76,18 @@ export function attachBaseZoomFallback(
   let current: BaseLevel | null = null
   let raf = 0
   let disposed = false
+  const edge = maxTextureEdge(map)
+  /** URL local de referencia (preview de tiles o placeholder). */
+  const localUrl = entry.tiles?.preview ?? entry.images.placeholder
 
   const setLevel = (target: BaseLevel) => {
     if (disposed || target === current) return
     // Niveles derivados del original (full) cuando existe: el base suele ser
     // un thumbnail de ~564px sin detalle que rescatar.
     const source = pickBaseSource(entry.images)
-    const url = baseUrlForLevel(source, target)
+    const url = baseUrlForLevel(source, target, edge)
     if (!map.getSource(IMAGE_SOURCE_ID)) return
-    if (url === (entry.tiles?.preview ?? entry.images.placeholder)) {
+    if (url === localUrl) {
       current = target
       return
     }
@@ -115,13 +121,32 @@ export function attachBaseZoomFallback(
       })
     const next: BaseLevel | null = target === 'base' ? 'medium' : target === 'medium' ? 'high' : null
     if (next) {
-      preloadImage(baseUrlForLevel(source, next)).catch(() => {})
+      preloadImage(baseUrlForLevel(source, next, edge)).catch(() => {})
+    }
+  }
+
+  /** Vuelve a la imagen local de referencia (preview/placeholder). */
+  const restoreLocal = (): void => {
+    if (disposed) return
+    const src = map.getSource(IMAGE_SOURCE_ID) as maplibregl.ImageSource | undefined
+    if (!src) return
+    current = null
+    try {
+      src.updateImage({ url: localUrl, coordinates })
+      logger.info(CATEGORY, `Base restaurada a la referencia local: ${mapId}`)
+    } catch {
+      /* noop */
     }
   }
 
   const applyZoom = (zoom: number) => {
-    const level = resolveBaseLevel(zoom, range.minZoom, range.maxZoom, mode)
-    setLevel(tilesEnabled ? level : 'high')
+    /* Aislamiento dev: con Cloudinary OFF se conserva la referencia local
+       (ya aplicada al construir el mapa) y no se sube de nivel. Con un
+       nivel fijado, ese manda sobre el que tocaría por zoom. */
+    const { cloudinaryEnabled, baseLevelPin } = useMapUIStore.getState()
+    if (!cloudinaryEnabled) return
+    const level = baseLevelPin ?? resolveBaseLevel(zoom, range.minZoom, range.maxZoom, mode)
+    setLevel(tilesEnabled || baseLevelPin !== null ? level : 'high')
   }
 
   /** Escalada a high cuando los tiles entran en degraded (la invoca la
@@ -130,6 +155,30 @@ export function attachBaseZoomFallback(
     setLevel('high')
   }
   degradedEscalators.set(map, escalateToHigh)
+
+  /* Reacciona a los toggles dev sin reconstruir el mapa: Cloudinary ON/OFF
+     y el nivel fijado se aplican al instante. */
+  let prevCloudinary = useMapUIStore.getState().cloudinaryEnabled
+  let prevPin = useMapUIStore.getState().baseLevelPin
+  const unsubStore = useMapUIStore.subscribe((state) => {
+    if (state.cloudinaryEnabled === prevCloudinary && state.baseLevelPin === prevPin) return
+    const wasCloudinary = prevCloudinary
+    prevCloudinary = state.cloudinaryEnabled
+    prevPin = state.baseLevelPin
+    if (!state.cloudinaryEnabled) {
+      restoreLocal()
+      return
+    }
+    if (!wasCloudinary) {
+      /* Vuelve a Cloudinary: fuerza la recarga del nivel vigente. */
+      current = null
+    }
+    try {
+      applyZoom(map.getZoom())
+    } catch {
+      /* noop */
+    }
+  })
 
   const onZoom = () => {
     cancelAnimationFrame(raf)
@@ -152,6 +201,7 @@ export function attachBaseZoomFallback(
     disposed = true
     cancelAnimationFrame(raf)
     degradedEscalators.delete(map)
+    unsubStore()
     try {
       map.off('zoom', onZoom)
     } catch {

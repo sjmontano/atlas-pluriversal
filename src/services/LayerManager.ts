@@ -16,6 +16,11 @@ interface StoreSnapshot {
   opacities: Record<string, number>
 }
 
+interface LayerOpts {
+  hitArea?: boolean
+  images?: Record<string, string>
+}
+
 function sourceId(layerId: string): string {
   return `${SOURCE_PREFIX}${layerId}`
 }
@@ -134,7 +139,7 @@ export function addLayer(
   layer: Layer,
   store: StoreSnapshot,
   allLayers?: Layer[],
-  opts?: { hitArea?: boolean },
+  opts?: LayerOpts,
 ): void {
   const sid = sourceId(layer.id)
 
@@ -156,7 +161,7 @@ export function addLayer(
 
     map.addSource(sid, {
       type: 'image',
-      url: layer.image,
+      url: opts?.images?.[layer.id] ?? layer.image,
       coordinates,
     })
 
@@ -329,7 +334,7 @@ export function sync(
   layers: Layer[],
   _groups: unknown,
   store: StoreSnapshot,
-  opts?: { hitArea?: boolean },
+  opts?: LayerOpts,
 ): void {
   const currentIds = new Set<string>()
   const style = map.getStyle()

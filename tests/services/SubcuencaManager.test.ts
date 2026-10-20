@@ -32,9 +32,9 @@ function makeMap() {
 }
 
 describe('SubcuencaManager', () => {
-  it('registra image sources + capas raster ocultas con el footprint de agua', () => {
+  it('registra image sources + capas raster ocultas con el footprint de agua', async () => {
     const map = makeMap()
-    addSubcuencas(map, DEFS)
+    await addSubcuencas(map, DEFS)
     expect(map.addSource).toHaveBeenCalledWith(
       'atlas-subcuenca-src-piendamo',
       expect.objectContaining({ type: 'image', url: DEFS[0]?.image }),
@@ -48,9 +48,9 @@ describe('SubcuencaManager', () => {
     )
   })
 
-  it('highlight muestra una y oculta la anterior; null apaga', () => {
+  it('highlight muestra una y oculta la anterior; null apaga', async () => {
     const map = makeMap()
-    addSubcuencas(map, DEFS)
+    await addSubcuencas(map, DEFS)
     highlightSubcuenca(map, 'piendamo')
     expect(map.setLayoutProperty).toHaveBeenCalledWith('atlas-subcuenca-piendamo', 'visibility', 'visible')
     highlightSubcuenca(map, 'cali')
@@ -60,9 +60,9 @@ describe('SubcuencaManager', () => {
     expect(map.setLayoutProperty).toHaveBeenCalledWith('atlas-subcuenca-cali', 'visibility', 'none')
   })
 
-  it('slug desconocido no hace nada y remove limpia todo', () => {
+  it('slug desconocido no hace nada y remove limpia todo', async () => {
     const map = makeMap()
-    addSubcuencas(map, DEFS)
+    await addSubcuencas(map, DEFS)
     highlightSubcuenca(map, 'inexistente')
     expect(map.setLayoutProperty).not.toHaveBeenCalled()
     removeSubcuencas(map)
