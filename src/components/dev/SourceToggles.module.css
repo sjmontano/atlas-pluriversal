@@ -55,6 +55,48 @@
   cursor: pointer;
 }
 
+/* Nivel Cloudinary fijo: ámbar (fuente descalibrada) */
+.cloud {
+  background: rgba(214, 158, 46, 0.22);
+  color: #f4e2b8;
+  border-color: rgba(214, 158, 46, 0.45);
+}
+
+/* Fuente activa para el slider de opacidad (anillo azul) */
+.active {
+  box-shadow: inset 0 0 0 1px var(--primary-blue, #0599b7);
+}
+
+/* ── Opacidad dinámica: sigue a la fuente seleccionada ───────────────── */
+.opacity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 100%;
+  min-width: 180px;
+}
+
+.opacityLabel {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.opacitySlider {
+  flex: 1;
+  min-width: 70px;
+  accent-color: var(--primary-blue, #0599b7);
+  cursor: pointer;
+}
+
+.opacityValue {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  min-width: 30px;
+  text-align: right;
+}
+
 .select:focus-visible {
   outline: 1px solid var(--primary-blue, #0599b7);
   outline-offset: 1px;

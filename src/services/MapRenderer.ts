@@ -140,13 +140,21 @@ export function attachBaseZoomFallback(
   }
 
   const applyZoom = (zoom: number) => {
-    /* Aislamiento dev: con Cloudinary OFF se conserva la referencia local
-       (ya aplicada al construir el mapa) y no se sube de nivel. Con un
-       nivel fijado, ese manda sobre el que tocaría por zoom. */
-    const { cloudinaryEnabled, baseLevelPin } = useMapUIStore.getState()
-    if (!cloudinaryEnabled) return
-    const level = baseLevelPin ?? resolveBaseLevel(zoom, range.minZoom, range.maxZoom, mode)
-    setLevel(tilesEnabled || baseLevelPin !== null ? level : 'high')
+    /* Aislamiento dev: la fuente de la imagen base es elegible.
+       - 'auto'  → piramidal por zoom (producción).
+       - 'local' → referencia local calibrada (nunca se sube a Cloudinary).
+       - nivel   → UNA sola imagen de Cloudinary, fija (para calibrarla). */
+    const { backgroundSource } = useMapUIStore.getState()
+    if (backgroundSource === 'local') {
+      restoreLocal()
+      return
+    }
+    if (backgroundSource !== 'auto') {
+      setLevel(backgroundSource)
+      return
+    }
+    const level = resolveBaseLevel(zoom, range.minZoom, range.maxZoom, mode)
+    setLevel(tilesEnabled ? level : 'high')
   }
 
   /** Escalada a high cuando los tiles entran en degraded (la invoca la
@@ -156,23 +164,15 @@ export function attachBaseZoomFallback(
   }
   degradedEscalators.set(map, escalateToHigh)
 
-  /* Reacciona a los toggles dev sin reconstruir el mapa: Cloudinary ON/OFF
-     y el nivel fijado se aplican al instante. */
-  let prevCloudinary = useMapUIStore.getState().cloudinaryEnabled
-  let prevPin = useMapUIStore.getState().baseLevelPin
+  /* Reacciona a los toggles dev sin reconstruir el mapa: cambiar la fuente
+     de la imagen base (local ↔ nivel Cloudinary) se aplica al instante. */
+  let prevSource = useMapUIStore.getState().backgroundSource
   const unsubStore = useMapUIStore.subscribe((state) => {
-    if (state.cloudinaryEnabled === prevCloudinary && state.baseLevelPin === prevPin) return
-    const wasCloudinary = prevCloudinary
-    prevCloudinary = state.cloudinaryEnabled
-    prevPin = state.baseLevelPin
-    if (!state.cloudinaryEnabled) {
-      restoreLocal()
-      return
-    }
-    if (!wasCloudinary) {
-      /* Vuelve a Cloudinary: fuerza la recarga del nivel vigente. */
-      current = null
-    }
+    if (state.backgroundSource === prevSource) return
+    prevSource = state.backgroundSource
+    /* Fuerza la recarga del nivel: la URL nueva puede coincidir con la
+       cacheada, pero el source debe re-aplicarse. */
+    current = null
     try {
       applyZoom(map.getZoom())
     } catch {

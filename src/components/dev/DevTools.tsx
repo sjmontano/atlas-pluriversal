@@ -18,7 +18,7 @@ interface Props {
 
 export function DevTools({ mapId, controllerRef }: Props) {
   const navigate = useNavigate()
-  const { basemapVisible, basemapStyle, imageOpacity, toggleBasemap, setBasemapStyle, setImageOpacity } = useMapUIStore()
+  const { basemapVisible, basemapStyle, toggleBasemap, setBasemapStyle } = useMapUIStore()
   const { activeMapId, setActiveMap } = useMapStore()
 
   const allMaps = useMemo(() => getAllMaps().map(m => m.mapId), [])
@@ -61,12 +61,11 @@ export function DevTools({ mapId, controllerRef }: Props) {
         )}
         {activeTab === 'basemap' && (
           <BasemapDevControls
+            mapId={mapId}
             visible={basemapVisible}
             style={basemapStyle}
-            opacity={imageOpacity}
             onVisibleChange={toggleBasemap}
             onStyleChange={setBasemapStyle}
-            onOpacityChange={setImageOpacity}
           />
         )}
         {activeTab === 'maps' && (
@@ -91,24 +90,24 @@ export function DevTools({ mapId, controllerRef }: Props) {
 }
 
 interface BasemapDevControlsProps {
+  mapId: string
   visible: boolean
   style: BasemapStyle
-  opacity: number
   onVisibleChange: () => void
   onStyleChange: (s: BasemapStyle) => void
-  onOpacityChange: (o: number) => void
 }
 
-function BasemapDevControls({ visible, style, opacity, onVisibleChange, onStyleChange, onOpacityChange }: BasemapDevControlsProps) {
+function BasemapDevControls({ mapId, visible, style, onVisibleChange, onStyleChange }: BasemapDevControlsProps) {
   const stylesList = ['light', 'streets', 'satellite'] as const
 
   return (
     <div className={styles.basemapPanel}>
       <div className={styles.section}>
         <div className={styles.sectionTitle}>Aislamiento de fuentes (calibración)</div>
-        <SourceToggles />
+        <SourceToggles mapId={mapId} />
         <div className={styles.hint}>
-          Cloudinary está descalibrado: apaga «Base» o «Tiles» para ver solo una fuente.
+          Cloudinary está descalibrado: elige «Fondo: Cloudinary» para ver solo esa imagen, o
+          «referencia local» para calibrar contra la imagen buena.
         </div>
       </div>
 
@@ -141,16 +140,11 @@ function BasemapDevControls({ visible, style, opacity, onVisibleChange, onStyleC
       </div>
 
       <div className={styles.section}>
-        <div className={styles.sectionTitle}>Opacidad base (tiles + imagen): {Math.round(opacity * 100)}%</div>
-        <input
-          type="range"
-          className={styles.opacitySlider}
-          min={0}
-          max={1}
-          step={0.05}
-          value={opacity}
-          onChange={(e) => onOpacityChange(parseFloat(e.target.value))}
-        />
+        <div className={styles.sectionTitle}>Opacidad (dinámica)</div>
+        <div className={styles.hint}>
+          El slider de opacidad está arriba, junto al aislamiento: sigue a la fuente
+          seleccionada (imagen base, Cloudinary o tiles).
+        </div>
       </div>
     </div>
   )

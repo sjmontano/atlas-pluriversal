@@ -7,10 +7,13 @@
  * docs/superpowers/specs/2026-10-07-fallback-cloudinary-zoom-design.md
  */
 
-export type BaseLevel = 'base' | 'medium' | 'high'
+export type BaseLevel = 'low' | 'base' | 'medium' | 'high'
 export type BaseZoomMode = 'detail' | 'initial-only' | 'initial-cover' | 'none'
 
+/** Transform de Cloudinary por nivel. 'low' es el thumbnail w_512 (el mismo
+ *  que `placeholder`): sirve para ver la imagen completa sin detalle. */
 export const BASE_TRANSFORMS: Record<BaseLevel, string> = {
+  low: 'w_512,q_25,f_webp',
   base: 'w_1600,q_auto,f_webp',
   medium: 'c_limit,w_2560,h_4096,q_auto,f_webp',
   high: 'c_limit,w_4096,h_4096,q_auto,f_webp',
@@ -22,9 +25,9 @@ export const BASE_TRANSFORMS: Record<BaseLevel, string> = {
  * Cloudinary son thumbnails de ~564px (de ahí no sale detalle ni con
  * transforms), mientras el `full` es el original a resolución del geo.
  */
-export function pickBaseSource(images: { base: string; full?: string }): string {
+export function pickBaseSource(images: { base?: string; full?: string }): string {
   if (images.full && images.full !== images.base) return images.full
-  return images.base
+  return images.base ?? images.full ?? ''
 }
 
 /**

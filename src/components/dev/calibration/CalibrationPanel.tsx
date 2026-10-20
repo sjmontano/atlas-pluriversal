@@ -1369,7 +1369,7 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
         <span className={styles.headerTitle}>Calibración</span>
         {ENABLE_DEV_TOOLS && (
           <div className={styles.overridesSection} title="Aísla la fuente calibrada de la descalibrada">
-            <SourceToggles compact />
+            <SourceToggles mapId={mapId} compact />
           </div>
         )}
         {ENABLE_DEV_TOOLS && getMapContent(mapId)?.layers && (
