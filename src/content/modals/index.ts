@@ -85,6 +85,37 @@ const FICHA_TECNICA: Modal = {
   },
 }
 
+const AYUDA: Modal = {
+  id: 'ayuda',
+  section: 'legales',
+  variant: 'full',
+  title: 'Ayuda',
+  highlight: 'Sobre el Atlas',
+  icon: 'ayuda',
+  hideHeader: true,
+  bodyFullBleed: true,
+  theme: {
+    bgFit: 'cover',
+    noScrim: true,
+  },
+  body: [
+    {
+      type: 'video',
+      id: 'p1',
+      src: '/assets/video/prueba.mp4',
+      width: 'full',
+      autoPlay: true,
+    },
+  ],
+  trigger: {
+    type: 'button',
+    icon: 'fichatecnica',
+    frame: '3',
+    label: 'Ficha técnica',
+    mapId: 'herramientas',
+  },
+}
+
 /* ── Agregado maestro ──────────────────────────────────────────────── */
 /** Lista plana (exportada para el test de ids duplicados). */
 export const ALL_MODALS: Modal[] = [
@@ -99,6 +130,7 @@ export const ALL_MODALS: Modal[] = [
   ...CREDITOS_EQUIPOS_MODALS,
   GALERIA_EJEMPLO,
   FICHA_TECNICA,
+  AYUDA,
 ]
 
 export const MODALS: Record<string, Modal> = Object.fromEntries(

@@ -58,7 +58,7 @@ export function ModalRenderer() {
       icon={modal.icon}
       iconImage={modal.iconImage}
       showScrollIndicators={modal.showScrollIndicators}
-      bodyFullBleed={modal.fullBleed}
+      bodyFullBleed={modal.bodyFullBleed}
       footer={
         modal.actions !== undefined && modal.actions.length > 0
           ? <ModalActions actions={modal.actions} onClose={closeModal} />

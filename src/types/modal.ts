@@ -29,6 +29,7 @@ export type ModalBlock =
   | { type: 'columns'; id: string; main: ModalBlock[]; aside?: ModalBlock[] }
   | { type: 'meta'; id: string; data: Record<string, string> }
   | { type: 'link'; id: string; href: string; label: string }
+  | { type: 'video'; id: string; src: string; poster?: string; caption?: string; width?: 'small' | 'medium' | 'full'; autoPlay?: boolean }
 
 /* ─── Tema (CSS variables por modal) ──────────────────────────────────── */
 

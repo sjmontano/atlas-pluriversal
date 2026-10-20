@@ -352,6 +352,52 @@
   color: var(--modal-bg, #fffeee);
 }
 
+/* ── Video ──────────────────────────────────────────────────────────────── */
+.videoBlock {
+  text-align: center;
+  margin: 16px 0;
+  height: 100%;
+}
+
+.video {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  min-height: 50vh;
+  border-radius: 8px;
+  outline: none;
+  object-fit: contain;
+}
+
+.videoCaption {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #767575ea);
+  text-align: center;
+}
+
+/* Video width variants */
+.videoWidthSmall .video {
+  width: 40%;
+  max-width: 400px;
+  height: auto;
+  min-height: 30vh;
+}
+
+.videoWidthMedium .video {
+  width: 60%;
+  max-width: 640px;
+  height: auto;
+  min-height: 40vh;
+}
+
+.videoWidthFull .video {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  min-height: 60vh;
+}
+
 /* ── Responsive ────────────────────────────────────────────────────────── */
 
 /* Mobile: carousel full-width, sin flechas, columnas apiladas */

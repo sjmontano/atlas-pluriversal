@@ -110,6 +110,26 @@ function renderBlock(block: ModalBlock): React.ReactNode {
         </div>
       )
 
+    case 'video':
+      return (
+        <div key={block.id} className={`${styles.block} ${styles.videoBlock} ${block.width ? styles[`videoWidth${block.width.charAt(0).toUpperCase() + block.width.slice(1)}`] : ''}`}>
+          <video
+            className={styles.video}
+            controls
+            src={block.src}
+            poster={block.poster}
+            autoPlay={block.autoPlay}
+            muted={block.autoPlay}
+            playsInline
+          >
+            Tu navegador no soporta video HTML5.
+          </video>
+          {block.caption && (
+            <p className={styles.videoCaption}>{block.caption}</p>
+          )}
+        </div>
+      )
+
     case 'paragraph':
     default:
       return (

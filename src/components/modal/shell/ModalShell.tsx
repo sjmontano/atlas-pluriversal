@@ -236,17 +236,19 @@ export function ModalShell({
         {/* Body scrollable + scrollbar + scrim (si fullImage) */}
         <div className={styles.bodyOuter} onWheel={handleBodyWheel}>
           {fullImage && !theme?.noScrim && <div className={styles.scrim} aria-hidden="true" />}
-          <CustomScrollbar
-            scrollRef={bodyScrollRef}
-            className={styles.bodyScrollbar}
-          />
+          {!bodyFullBleed && (
+            <CustomScrollbar
+              scrollRef={bodyScrollRef}
+              className={styles.bodyScrollbar}
+            />
+          )}
           <div
             ref={bodyScrollRef}
             className={`${styles.bodyInner}${bodyFullBleed ? ` ${styles.bodyInnerFullBleed}` : ''}`}
           >
             {children}
           </div>
-          {showScrollIndicators && (
+          {showScrollIndicators && !bodyFullBleed && (
             <ScrollIndicators
               scrollRef={bodyScrollRef}
               showArrow={true}

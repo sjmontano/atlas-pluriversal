@@ -16,6 +16,7 @@ const INICIO_ICONS = {
   play: '/assets/ui/icons/inicio/play.svg',
   metadata: '/assets/ui/icons/inicio/metadata.svg',
   credits: '/assets/ui/icons/inicio/credits.svg',
+  ayuda: '/assets/ui/icons/line/icon-info.svg',
 } as const
 
 export function HomePanel() {
@@ -45,6 +46,17 @@ export function HomePanel() {
       </section>
 
       <div className={styles.buttons}>
+        <button
+          type="button"
+          className={styles.button}
+          aria-label="Ficha técnica"
+          onClick={() => openById('ayuda')}
+        >
+          <img className={styles.fondo} src={SHELL_ASSETS.sidebar.fondoIcon} alt="" />
+          <img className={styles.icon} src={INICIO_ICONS.ayuda} alt="" />
+          <Tooltip label="Ayuda" />
+        </button>
+
         <Link
           to="/entramados"
           className={styles.button}
@@ -54,6 +66,8 @@ export function HomePanel() {
           <img className={styles.icon} src={INICIO_ICONS.credits} alt="" />
           <Tooltip label="Tejidos para el atlas" />
         </Link>
+
+        
 
         <button
           type="button"
