@@ -32,7 +32,7 @@ export interface Cap1Texto {
 export const CAP1_TEXTOS: Record<string, Cap1Texto> = {
   '0': {
     highLight: "Confines del sur del valle alto caucano",
-    texto: "Esta mapa se conforma de dos elementos: una imagen 3D construida a partir del Modelo de Elevación Nacional de Colombia adquirido por el IGAC y procesada en un modelo 3D en el sotware Qgis. Posteriormente fue redibujado con texturas y colores que contrastan los relieves y el agua de esta zona de la geografía de Colombia. El segundo elemento, son las ilustraciones y los textos de 15 lugares, que en las alturas de las cordilleras y la planicie, constituyen el territorio del sur del valle alto del río Cauca. Este fue un proceso creativo realizado con base en el conocimiento geográifco comunitario, institucional y académico de esta parte de la cuenca del río Cauca.",
+    texto: "Este mapa se conforma de dos elementos: una imagen 3D construida a partir del Modelo de Elevación Nacional de Colombia adquirido por el IGAC y procesada en un modelo 3D en el sotware Qgis. Posteriormente fue redibujado con texturas y colores que contrastan los relieves y el agua de esta zona de la geografía de Colombia. El segundo elemento, son las ilustraciones y los textos de 15 lugares, que en las alturas de las cordilleras y la planicie, constituyen el territorio del sur del valle alto del río Cauca. Este fue un proceso creativo realizado con base en el conocimiento geográifco comunitario, institucional y académico de esta parte de la cuenca del río Cauca.",
     link: "",
   },
   '1': {

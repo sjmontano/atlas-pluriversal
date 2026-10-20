@@ -52,7 +52,7 @@ export function HomePanel() {
         >
           <img className={styles.fondo} src={SHELL_ASSETS.sidebar.fondoIcon} alt="" />
           <img className={styles.icon} src={INICIO_ICONS.credits} alt="" />
-          <Tooltip label="Créditos" />
+          <Tooltip label="Tejidos para el atlas" />
         </Link>
 
         <button
@@ -69,7 +69,7 @@ export function HomePanel() {
         <Link to="/intro" className={`${styles.button} ${styles.buttonPlay}`} aria-label="Inicio">
           <img className={styles.fondo} src={SHELL_ASSETS.sidebar.fondoIcon} alt="" />
           <img className={styles.icon} src={INICIO_ICONS.play} alt="" />
-          <Tooltip label="Inicio" />
+          <Tooltip label="Explorar" />
         </Link>
       </div>
     </div>

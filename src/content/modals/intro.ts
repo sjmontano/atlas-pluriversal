@@ -117,7 +117,7 @@ export const CUENCA_CAUCA: Modal = {
     {
       type: 'paragraph',
       id: 'p1',
-      text: 'Esta mapa se conforma de dos elementos: una imagen 3D construida a partir del Modelo de Elevación Nacional de Colombia adquirido por el IGAC y procesada en un modelo 3D en el software Qgis.',
+      text: 'Este mapa se conforma de dos elementos: una imagen 3D construida a partir del Modelo de Elevación Nacional de Colombia adquirido por el IGAC y procesada en un modelo 3D en el software Qgis.',
     },
     {
       type: 'quote',
