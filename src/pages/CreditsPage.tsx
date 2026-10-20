@@ -51,10 +51,10 @@ export function CreditsPage() {
     <div className={styles.page}>
       <SectionHeader title="Equipos de trabajo" backTo="/entramados" />
       <div className={styles.homeBtns}>
-        <Link to="/" className={styles.btnHome} aria-label="Casa">
-          <img src={SHELL_ASSETS.buttons.home} alt="Casa" />
+        <Link to="/" className={styles.btnHome} aria-label="Inicio">
+          <img src={SHELL_ASSETS.buttons.home} alt="Inicio" />
           <span className={styles.tooltip}>
-            <span>Casa</span>
+            <span>Inicio</span>
             <img src={TOOLTIP_BG} alt="" />
           </span>
         </Link>

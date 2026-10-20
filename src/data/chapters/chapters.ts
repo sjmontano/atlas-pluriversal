@@ -19,7 +19,7 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
   {
     id: 2,
     roman: 'II',
-    title: 'II. Tejidos, entramados territoriales y alternativas transformadoras',
+    title: 'II. Tejidos, nodos y alternativas transformadoras en el sur del valle alto del río Cauca',
     description: 'Territorios Específicos',
     territories: ['valle', 'suarez', 'cali', 'villa-rica'],
     hoverImage: '/assets/ui/sidebar/tab-default-bg.webp',

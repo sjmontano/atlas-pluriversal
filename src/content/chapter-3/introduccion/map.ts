@@ -4,7 +4,7 @@ import { ENCUADRES } from './encuadres'
 export default makeMap({
   mapId: 'chapter3-introduccion',
   ui: {
-    title: 'Los caminos y conflictos del río Cauca en el valle alto',
+    title: 'Caminos y conflictos del río Cauca en el valle alto',
     minimap: 'valle',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap3-intro' },
