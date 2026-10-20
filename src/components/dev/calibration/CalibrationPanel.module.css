@@ -31,6 +31,8 @@
 .overridesSection {
   display: flex;
   gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .targetActive {

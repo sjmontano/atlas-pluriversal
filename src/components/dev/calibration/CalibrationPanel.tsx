@@ -1367,6 +1367,11 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
     <div className={styles.panel} role="region" aria-label="Calibración PGW">
       <div className={styles.header}>
         <span className={styles.headerTitle}>Calibración</span>
+        {ENABLE_DEV_TOOLS && (
+          <div className={styles.overridesSection} title="Aísla la fuente calibrada de la descalibrada">
+            <SourceToggles compact />
+          </div>
+        )}
         {ENABLE_DEV_TOOLS && getMapContent(mapId)?.layers && (
           <div className={styles.overridesSection}>
             <button
@@ -1565,12 +1570,6 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
         <div className={styles.body}>
           {saveError && (
             <div className={styles.error}>{saveError}</div>
-          )}
-          {ENABLE_DEV_TOOLS && (
-            <div className={styles.paramRow}>
-              <label className={styles.paramLabel}>Fuentes</label>
-              <SourceToggles compact />
-            </div>
           )}
           {target.kind === 'encuadres' ? (
             <>
