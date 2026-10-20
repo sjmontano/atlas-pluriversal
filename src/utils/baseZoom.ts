@@ -12,8 +12,8 @@ export type BaseZoomMode = 'detail' | 'initial-only' | 'initial-cover' | 'none'
 
 export const BASE_TRANSFORMS: Record<BaseLevel, string> = {
   base: 'w_1600,q_auto,f_webp',
-  medium: 'w_2560,q_auto,f_webp',
-  high: 'q_auto,f_webp',
+  medium: 'c_limit,w_2560,h_4096,q_auto,f_webp',
+  high: 'c_limit,w_4096,h_4096,q_auto,f_webp',
 }
 
 /**

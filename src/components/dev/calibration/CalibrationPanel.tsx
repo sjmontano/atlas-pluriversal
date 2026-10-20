@@ -25,6 +25,7 @@ import { subcuencaSourceId, subcuencaGeo } from '@services/SubcuencaManager'
 import { POIS_SOURCE_ID, poiToFeature } from '@services/PoiManager'
 import { processBounds } from '@services/BoundsCalculator'
 import { useLayerStore } from '@stores/layerStore'
+import { SourceToggles } from '../SourceToggles'
 import type { Layer } from '../../../types/layer.ts'
 import type { Encuadre } from '../../../types/content.ts'
 import type { Poi } from '../../../types/poi.ts'
@@ -1564,6 +1565,12 @@ export function CalibrationPanel({ mapId, controllerRef, onRebuild, onClose }: P
         <div className={styles.body}>
           {saveError && (
             <div className={styles.error}>{saveError}</div>
+          )}
+          {ENABLE_DEV_TOOLS && (
+            <div className={styles.paramRow}>
+              <label className={styles.paramLabel}>Fuentes</label>
+              <SourceToggles compact />
+            </div>
           )}
           {target.kind === 'encuadres' ? (
             <>

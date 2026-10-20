@@ -19,6 +19,8 @@ import {
   WATER_H,
 } from '@content/chapter-1/mosaicos-del-agua/layers'
 import type { SubcuencaDef } from '../types/content.ts'
+import { prepareRasterUrl } from './TextureLimiter'
+import { SUBCUENCA_TEXTURE_EDGE } from '@utils/textureLimit'
 
 const PREFIX = 'atlas-subcuenca'
 const MODAL_PREFIX = 'cap1-cuenca-'
@@ -52,7 +54,7 @@ interface Tracked {
 
 const trackedByMap = new WeakMap<maplibregl.Map, Tracked>()
 
-export function addSubcuencas(map: maplibregl.Map, defs: SubcuencaDef[]): void {
+export async function addSubcuencas(map: maplibregl.Map, defs: SubcuencaDef[]): Promise<void> {
   removeSubcuencas(map)
   const t: Tracked = { layers: [], sources: [], current: null }
   trackedByMap.set(map, t)
@@ -66,8 +68,10 @@ export function addSubcuencas(map: maplibregl.Map, defs: SubcuencaDef[]): void {
     } catch {
       continue
     }
+    const url = await prepareRasterUrl(map, def.image, g.width, g.height, SUBCUENCA_TEXTURE_EDGE)
+    if (trackedByMap.get(map) !== t) return
     try {
-      map.addSource(sid, { type: 'image', url: def.image, coordinates })
+      map.addSource(sid, { type: 'image', url, coordinates })
       map.addLayer({
         id: lid,
         type: 'raster',

@@ -5,6 +5,7 @@ import { useMapUIStore } from '@stores/mapUIStore'
 import { useMapStore } from '@stores/mapStore'
 import { DevLayerMenu } from './DevLayerMenu'
 import { CalibrationPanel } from './calibration/CalibrationPanel'
+import { SourceToggles } from './SourceToggles'
 import { getAllMaps } from '@data/chapters/chapters'
 import type { BasemapStyle } from '@services/BasemapManager'
 import type { MapController } from '@services/MapRenderer'
@@ -103,6 +104,14 @@ function BasemapDevControls({ visible, style, opacity, onVisibleChange, onStyleC
 
   return (
     <div className={styles.basemapPanel}>
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>Aislamiento de fuentes (calibración)</div>
+        <SourceToggles />
+        <div className={styles.hint}>
+          Cloudinary está descalibrado: apaga «Base» o «Tiles» para ver solo una fuente.
+        </div>
+      </div>
+
       <div className={styles.section}>
         <label className={styles.toggleLabel}>
           <input

@@ -18,6 +18,7 @@ import {
   bindLayerTooltips,
 } from '@services/LayerManager'
 import { addPois, removePois } from '@services/PoiManager'
+import { prepareLayerImages } from '@services/TextureLimiter'
 import { addEncuadres, removeEncuadres } from '@services/EncuadresManager'
 import { addOceanLabels, removeOceanLabels } from '@services/OceanLabelsManager'
 import {
@@ -62,6 +63,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
   const basemapStyle = useMapUIStore((s) => s.basemapStyle)
   const imageOpacity = useMapUIStore((s) => s.imageOpacity)
   const tilesVisible = useMapUIStore((s) => s.tilesVisible)
+  const baseImageVisible = useMapUIStore((s) => s.baseImageVisible)
   const lowPowerMode = useMapUIStore((s) => s.lowPowerMode)
 
   const { visibleLayers, opacities } = useLayerStore()
@@ -170,12 +172,34 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     } catch { /* noop */ }
   }, [tilesVisible, tilesStatus, mapRef])
 
+  /* Aislamiento de fuentes (dev): apaga la imagen base entera para
+     calibrar contra los tiles, o al revés. */
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    try {
+      if (map.getLayer('atlas-base-image-layer')) {
+        map.setLayoutProperty(
+          'atlas-base-image-layer',
+          'visibility',
+          baseImageVisible ? 'visible' : 'none',
+        )
+      }
+    } catch { /* noop */ }
+  }, [baseImageVisible, mapRef, mapBuilt])
+
   const layerTooltips = content?.ui?.layerTooltips === true
 
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapBuilt || !layers) return
-    syncLayers(map, mapId, layers, groups, { visibleLayers, opacities }, { hitArea: layerTooltips })
+    let cancelled = false
+    const needed = layers.filter((layer) => layer.visibleByDefault || visibleLayers.has(layer.id))
+    void prepareLayerImages(map, needed).then((images) => {
+      if (cancelled) return
+      syncLayers(map, mapId, layers, groups, { visibleLayers, opacities }, { hitArea: layerTooltips, images })
+    })
+    return () => { cancelled = true }
   }, [mapRef, mapId, layers, groups, visibleLayers, opacities, mapBuilt, layerTooltips])
 
   useEffect(() => {
@@ -185,7 +209,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
      * Las capas viven fuera del menú (SubcuencaManager) y van DEBAJO de los
      * puntos: se agregan antes que addPois. */
     const subcuencas = content?.subcuencas ?? null
-    if (subcuencas) addSubcuencas(map, subcuencas)
+    if (subcuencas) void addSubcuencas(map, subcuencas)
     addPois(map, mapId, pois, handlePoiClick, {
       static: lowPowerMode,
       onHover: subcuencas
