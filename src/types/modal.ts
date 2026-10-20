@@ -137,4 +137,6 @@ export interface Modal {
   /** @deprecated Usar block type 'meta' en body */
   meta?: Record<string, string>
   trigger: ModalTrigger
+
+  bodyFullBleed?: boolean
 }
