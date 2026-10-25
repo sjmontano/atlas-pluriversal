@@ -1,6 +1,6 @@
 # Bitácora completa — Atlas Pluriversal
 
-> **Cobertura:** 2024 → 2026-10-19.
+> **Cobertura:** 2024 → 2026-10-19, con evidencia visual al **2026-10-24** (Parte V).
 > **Método:** documentos históricos + `docs/BITACORA.md` + `git log` del repositorio actual
 > + repositorio espejo `atlas-preview`.
 > **Regla:** las fechas se reproducen como fueron registradas. Donde no hay evidencia se
@@ -580,3 +580,155 @@ pero no representan funcionalidad nueva.
 - Los **detalles técnicos** se amplían en [ARQUITECTURA.md](ARQUITECTURA.md).
 - Las **fuentes exactas** y sus límites están en
   [FUENTES_Y_TRAZABILIDAD.md](FUENTES_Y_TRAZABILIDAD.md).
+
+---
+
+## Parte V — Evidencia visual (2026-10-24)
+
+Capturas tomadas el **2026-10-24** contra el sitio público, GitHub y el panel de Vercel
+autenticado. Escritorio a 1440 × 1200 px; móvil a 390 × 844 px con densidad 3. Son evidencia
+del estado observable ese día, no de fechas anteriores. Los sellos relativos de GitHub y
+Vercel («24m ago», «2 months ago», «5d ago») se conservan como aparecen; las fechas absolutas
+se reconstruyen desde `git log` y desde la propia lista de despliegues.
+
+Archivos en [`evidencias/`](evidencias/):
+
+| Archivo | Qué muestra |
+|---|---|
+| `2026-10-24-github-atlas-pluriversal.png` | Home del repositorio actual, 232 commits en `main` y enlace al despliegue |
+| `2026-10-24-github-commits-main.png` | Historial reciente de `main` |
+| `2026-10-24-github-atlas-preview.png` | Repositorio espejo `atlas-preview`, rama `master`, 1 commit |
+| `2026-10-24-vercel-deployments-produccion.png` | Lista de despliegues de producción |
+| `2026-10-24-vercel-deploy-9a2a3e8-detalle.png` | Detalle del despliegue de documentación |
+| `2026-10-24-vercel-deploy-7981867-video.png` | Detalle del despliegue «error video» |
+| `2026-10-24-vercel-deploy-34fea4c-error.png` | Detalle del merge que falló al compilar |
+| `2026-10-24-vercel-home.png` | Portada publicada en Vercel |
+| `2026-10-24-vercel-mapa-encuadres.png` | `/capitulo/1/chapter1-encuadres` con el mapa renderizado |
+| `2026-10-24-web-intro.png` | Introducción general (`/intro`) |
+| `2026-10-24-web-capitulo-1-entrada.png` | Entrada del capítulo 1 |
+| `2026-10-24-web-capitulo-4-entrada.png` | Entrada del capítulo 4 |
+| `2026-10-24-web-mapa-capitulo-4.png` | Mapa «Bosque Comestible» del capítulo 4 |
+| `2026-10-24-web-modal-presentacion.png` | Modal de presentación del capítulo 1 |
+| `2026-10-24-web-entramados.png` | Directorio de entramados territoriales |
+| `2026-10-24-web-creditos.png` | Créditos y equipos de trabajo |
+| `2026-10-24-movil-mapa-mosaicos.png` | Mapa «Mosaicos del Agua» en vista móvil |
+
+### 5.1 Repositorio actual
+
+![Home de sjmontano/atlas-pluriversal](evidencias/2026-10-24-github-atlas-pluriversal.png)
+
+La portada del repositorio muestra **232 commits** en `main`, el enlace del despliegue en
+Vercel y la estructura de carpetas del proyecto (`src`, `public`, `docs`, `scripts`).
+
+### 5.2 Historial de `main`
+
+![Commits recientes de main](evidencias/2026-10-24-github-commits-main.png)
+
+El historial incluye el commit de documentación de esta entrega y los commits de video
+incorporados por el colaborador (`b2c10b3` «video», `7981867` «error video»).
+
+### 5.3 Repositorio espejo `atlas-preview`
+
+![Repositorio atlas-preview](evidencias/2026-10-24-github-atlas-preview.png)
+
+El espejo histórico conserva una sola rama (`master`) y un solo commit visible (`9b4d127`,
+«Initial commit: Atlas Preview project»). Es la fuente de la Parte I de esta bitácora.
+
+### 5.4 Línea de tiempo de despliegues (producción)
+
+![Lista de despliegues de producción](evidencias/2026-10-24-vercel-deployments-produccion.png)
+
+La lista de producción muestra **12 despliegues**, del **7 al 24 de octubre**. El historial
+anterior ya no aparece porque el proyecto tiene activada la retención de despliegues; el aviso
+al pie lo declara. Por eso Vercel corrobora solo el tramo final: la línea de tiempo completa
+sigue siendo `git log` (Partes II y III).
+
+| Fecha en la UI | Commit | Mensaje | Estado | Duración | Autor |
+|---|---|---|---|---|---|
+| 24m ago | `9a2a3e8` | docs: consolida cronologia, arquitectura y trazabilidad del atlas | Ready | 15s | sjmontano |
+| Oct 19 | `7981867` | error video | Ready | 23s | ReyGaRGoL |
+| Oct 19 | `34fea4c` | Merge branch 'main' of https://github.com/sjmontano/atlas-pluriversal | Error | 19s | ReyGaRGoL |
+| Oct 19 | `52729c9` | fix(mapa): limita texturas raster y base a 4096 px | Ready | 24s | sjmontano |
+| Oct 19 | `f539049` | fix(navegacion): el intro de capitulo vuelve a /intro | Ready | 17s | sjmontano |
+| Oct 19 | `e941223` | flechas carrusel perfil cap1, tooltip casa creditos | Ready | 21s | ReyGaRGoL |
+| Oct 19 | `3604647` | pdf añadidos, tooltip corregidos y errores de tipeo home | Ready | 20s | ReyGaRGoL |
+| Oct 14 | `daee456` | imagen creditos centrada | Ready | 19s | ReyGaRGoL |
+| Oct 14 | `2df126c` | imagen home Curva | Ready | 18s | ReyGaRGoL |
+| Oct 7 | `8c50250` | feat: fallback Cloudinary base/medium/high por zoom sin tiles | Ready | 16s | sjmontano |
+| Oct 7 | `7413ef4` | feat: cambios varios | Ready | 17s | sjmontano |
+| Oct 7 | `3470458` | fix(inicio): etiquetas de markers por encima de títulos | Ready | 16s | sjmontano |
+
+Resultado del tramo: **11 despliegues en Ready y 1 en Error**. El único fallo es el merge
+`34fea4c`; el commit siguiente (`7981867`) volvió a compilar.
+
+### 5.5 Detalle de los despliegues
+
+**Documentación (commit actual de `main`).** Estado Ready, duración 15s, entorno Production
+marcado como *Current*, dominios `atlas-pluriversal.vercel.app` y dos alias de Vercel, origen
+`main` en `9a2a3e8`.
+
+![Detalle del despliegue 9a2a3e8](evidencias/2026-10-24-vercel-deploy-9a2a3e8-detalle.png)
+
+**Video del colaborador.** Estado Ready, 23s, creado el 19 de octubre por `ReyGaRGoL`, origen
+`main` en `7981867` («error video»). Es el despliegue que siguió al merge fallido.
+
+![Detalle del despliegue 7981867](evidencias/2026-10-24-vercel-deploy-7981867-video.png)
+
+**Merge fallido.** El despliegue de `34fea4c` quedó en Error y *Stale*. El mensaje literal es
+`Build Failed` y `Command "pnpm run build" exited with 2`. No hay registro de que ese build
+haya reemplazado a producción: el despliegue marcado *Current* es el posterior.
+
+![Detalle del despliegue 34fea4c con error de build](evidencias/2026-10-24-vercel-deploy-34fea4c-error.png)
+
+### 5.6 Sitio publicado
+
+Portada:
+
+![Portada publicada](evidencias/2026-10-24-vercel-home.png)
+
+Introducción general y entradas de capítulo:
+
+![Introducción](evidencias/2026-10-24-web-intro.png)
+
+![Entrada del capítulo 1](evidencias/2026-10-24-web-capitulo-1-entrada.png)
+
+![Entrada del capítulo 4](evidencias/2026-10-24-web-capitulo-4-entrada.png)
+
+Mapa, modal de contenido y páginas institucionales:
+
+![Mapa Bosque Comestible](evidencias/2026-10-24-web-mapa-capitulo-4.png)
+
+![Modal de presentación del capítulo 1](evidencias/2026-10-24-web-modal-presentacion.png)
+
+![Entramados territoriales](evidencias/2026-10-24-web-entramados.png)
+
+![Créditos](evidencias/2026-10-24-web-creditos.png)
+
+El mapa de `/capitulo/1/chapter1-encuadres` confirma que MapLibre renderiza en producción, no
+solo en desarrollo local:
+
+![Mapa de encuadres del capítulo 1](evidencias/2026-10-24-vercel-mapa-encuadres.png)
+
+### 5.7 Versión móvil
+
+![Mapa Mosaicos del Agua en móvil](evidencias/2026-10-24-movil-mapa-mosaicos.png)
+
+Vista a 390 × 844 px: título, globo de localización, controles de presentación, ficha técnica y
+descarga, marcadores numerados y selector de capas. La barra inferior de capítulos no aparece
+en esta captura porque queda fuera del alto visible.
+
+### 5.8 El repositorio después del corte
+
+El corte de la Parte III cierra el **2026-10-19** con `main` en `bcaf692` y **228 commits** en
+esa rama. Desde entonces:
+
+| Cambio | Commits |
+|---|---|
+| Trabajo del colaborador sobre video | `b2c10b3`, `7981867` y el merge `34fea4c` |
+| Documentación consolidada de esta entrega | `9a2a3e8` |
+
+Eso explica los **232 commits** que muestra GitHub: 228 del corte + 3 del colaborador + 1 de
+documentación. El conteo de **238** citado en la Parte III es de `git rev-list --all` (todas
+las ramas) al 2026-10-19, por lo que no es comparable con el número de `main`. La
+reconstrucción diaria de esta bitácora se detiene en el corte; la Parte V solo documenta el
+estado posterior con evidencia visual.

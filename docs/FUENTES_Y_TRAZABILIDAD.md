@@ -103,6 +103,23 @@ Se usan para contexto y visión, no para fechas exactas de commits.
 
 Otros planes sin fecha exacta en el nombre se citan por su contenido, no por fecha.
 
+### 2.6 Evidencia visual (2026-10-24)
+
+Carpeta [`evidencias/`](evidencias/), con 17 capturas fechadas:
+
+- **GitHub:** repositorio actual (232 commits en `main`), historial reciente y espejo
+  `atlas-preview`.
+- **Vercel:** lista de 12 despliegues de producción (7 → 24 de octubre), detalle del despliegue
+  de documentación (`9a2a3e8`, Ready, 15s), detalle de «error video» (`7981867`, Ready, 23s) y
+  del merge fallido (`34fea4c`, Error, `Command "pnpm run build" exited with 2`).
+- **Sitio publicado:** portada, introducción, entradas de capítulos 1 y 4, un mapa del capítulo
+  4, un modal de presentación, entramados, créditos y una vista móvil.
+
+**Límites:** la retención de despliegues de Vercel borró el historial anterior al 7 de octubre,
+así que las capturas no cubren agosto ni septiembre. Los sellos relativos («24m ago», «5d ago»)
+dependen del momento de captura. La evidencia visual corrobora estado; la actividad se sigue
+reconstruyendo desde `git log`.
+
 ---
 
 ## 3. Método de reconstrucción
@@ -177,7 +194,10 @@ Estos días se documentan como **«sin registro de commits»**, no como inactivi
 - `--all`: **238**.
 - `main`: **228**.
 - La diferencia son ramas no integradas y commits de respaldo.
+- Al **2026-10-24** la UI de GitHub muestra **232** en `main`: 228 del corte + 3 del
+  colaborador (video y merge) + 1 de documentación.
 - **Resolución:** se usa 238 para «historia total» y 228 para «historia de la rama principal».
+  El corte del 2026-10-19 no se recalcula; el estado posterior se documenta aparte.
 
 ### 5.4 Versiones y tags
 

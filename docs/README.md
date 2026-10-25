@@ -27,7 +27,7 @@ recorrido completo y el estado actual.
 
 | Documento | Qué responde | Cuándo leerlo |
 |---|---|---|
-| [BITACORA_COMPLETA.md](BITACORA_COMPLETA.md) | Historia día por día, 2024 → 2026-10-19 | Para reconstruir por qué algo es como es |
+| [BITACORA_COMPLETA.md](BITACORA_COMPLETA.md) | Historia día por día, 2024 → 2026-10-19, con evidencia visual al 2026-10-24 | Para reconstruir por qué algo es como es |
 | [CRONOLOGIA_VERSIONES.md](CRONOLOGIA_VERSIONES.md) | Eras, versiones y hitos del producto | Para ubicar una etapa o comparar versiones |
 | [ARQUITECTURA.md](ARQUITECTURA.md) | Cómo está construido el sistema actual | Antes de tocar mapa, capas, tiles o estado |
 | [GUIA_TECNICA.md](GUIA_TECNICA.md) | Instalar, ejecutar, calibrar, generar tiles, desplegar | Para trabajar en el repositorio |
@@ -51,6 +51,8 @@ registro de trabajo:
 - `MODALES.md`, `FACETA_2_TILES_PLAN.md`, `GUIDE.md`, `GUIA_GENERAR_TILES_LOCALES.md`,
   `reunion290926730.md`.
 - `superpowers/plans/` y `superpowers/specs/` — planes y especificaciones por fecha.
+- `evidencias/` — capturas fechadas de GitHub, Vercel y sitio publicado (ver Parte V de
+  [BITACORA_COMPLETA.md](BITACORA_COMPLETA.md)).
 
 En la raíz del repositorio se conservan además `README.md`, `ARCHITECTURE.md` y `DEPLOY.md`.
 El nuevo conjunto **no los duplica**: los cita y, cuando hay divergencia, la señala en
@@ -104,6 +106,10 @@ Las fechas se reproducen tal como fueron registradas. Un día sin evidencia se m
   (`1.5.0`) son documentales, no etiquetas de git.
 - `docs/BITACORA.md` termina el **2026-09-06**. Desde **2026-09-07** hasta **2026-10-19** la
   historia se reconstruyó a partir de los commits del repositorio (238 en total).
+- El **2026-10-24** se añadió evidencia visual en `docs/evidencias/`. Ese día GitHub mostraba
+  **232 commits** en `main`: 228 del corte + 3 del colaborador + 1 de documentación. La
+  cobertura diaria no se extendió; el estado posterior se documenta en la Parte V de la
+  bitácora.
 - `ARCHITECTURE.md` (raíz) describe `map.ts`; el código actual usa
   `src/content/chapter-*/<mapa>/index.ts`. Ver la nota de reconciliación en
   [FUENTES_Y_TRAZABILIDAD.md](FUENTES_Y_TRAZABILIDAD.md).
