@@ -7,7 +7,7 @@ export default makeMap({
     title: 'Entramado territorial Oriente de Cali con sus alternativas transformadoras',
     minimap: 'cali',
     sidebar: [
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1cDppV8K6vz00NcfmmbNmpl2Eb7RCdHq9/view?usp=sharing' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_II/Metada_2_cap_Modelo_territorial_Cali_y_Pac%C3%ADfico.pdf' },
       { id: 'galeria', type: 'modal', icon: 'gallery', label: 'Galería de imágenes', frame: '2', target: 'cap2-galeria-cali' },
       { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1y97OfUXrTP9R8mo2FZKOhBI_po8SFUoH/view' },
       { id: 'sintesis', type: 'goto', icon: 'sintesis', label: 'Síntesis', frame: '2', to: '/capitulo/2/chapter2-m-oriente-cali' },

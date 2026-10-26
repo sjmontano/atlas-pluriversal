@@ -11,7 +11,7 @@ export default makeMap({
     minimap: 'suarez',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap3-presentacion-encharcaron' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1Hj4e_Mlq5JzRbv_Ns38Wlo_IWLwsEEyX/view' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_III/Metadata_3_Cap_Nos_encharcaron_el_r%C3%ADo.pdf' },
       { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1serO1G5GM5kWplw8Ax4UhGOce0t6o-29/view' },
     ],
   },

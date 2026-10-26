@@ -10,7 +10,7 @@ export default makeMap({
     minimap: 'cali',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap2-sintesis-cali' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/1T5Q5cW324L6SKpVvUx9KkePi5CZns6gR/view?usp=sharing' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_II/Metadata_2_Cap_.xlsx_-_Red-nodo_entramado_territorial_Distrito_de_Aguablanca_(Cali)_con_sus_alternativas_transformadoras.pdf' },
       { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/118xtXBCisNiXLEXiWVNYAsRAZFYbMzmC/view' },
     ],
   },

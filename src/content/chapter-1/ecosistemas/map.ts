@@ -31,7 +31,7 @@ export default {
     minimap: 'valle',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap1-presentacion-ecosistemas' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: 'https://drive.google.com/file/d/13Fd5C8St_BArPKEgTQC8ZefT0gI_LXpE/view' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_I/Exist_transf_ecosist_Cap1.pdf' },
       { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/13mmmAcE0odjgSLI2-u00DtReF13ZFy5p/view?usp=drivesdk' },
     ],
   },
