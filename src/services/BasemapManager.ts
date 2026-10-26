@@ -180,18 +180,23 @@ export function removeBasemap(map: maplibregl.Map): void {
 const IMAGE_LAYER_ID = 'atlas-base-image-layer'
 const TILES_LAYER_ID = 'atlas-tiles-layer'
 
-/** Opacidad de la base visible: tiles XYZ + imagen base.
- *  Solo la imagen no sirve — los tiles opacos la tapan por completo. */
+/** Opacidad de la imagen base (sin tocar los tiles). */
 export function setImageOpacity(map: maplibregl.Map, opacity: number): void {
+  setLayerOpacity(map, IMAGE_LAYER_ID, opacity)
+}
+
+/** Opacidad de los tiles XYZ (sin tocar la imagen base). */
+export function setTilesOpacity(map: maplibregl.Map, opacity: number): void {
+  setLayerOpacity(map, TILES_LAYER_ID, opacity)
+}
+
+function setLayerOpacity(map: maplibregl.Map, layerId: string, opacity: number): void {
   const clamped = Math.max(0, Math.min(1, opacity))
   try {
-    if (map.getLayer(TILES_LAYER_ID)) {
-      map.setPaintProperty(TILES_LAYER_ID, 'raster-opacity', clamped)
-    }
-    if (map.getLayer(IMAGE_LAYER_ID)) {
-      map.setPaintProperty(IMAGE_LAYER_ID, 'raster-opacity', clamped)
+    if (map.getLayer(layerId)) {
+      map.setPaintProperty(layerId, 'raster-opacity', clamped)
     }
   } catch (e) {
-    logger.warn(CATEGORY, 'Error setting image opacity', e)
+    logger.warn(CATEGORY, 'Error setting layer opacity', e)
   }
 }

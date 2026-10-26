@@ -10,7 +10,7 @@ import { useModalStore } from '@stores/modalStore'
 import { useMapUIStore } from '@stores/mapUIStore'
 import { useConnectionStore } from '@stores/connectionStore'
 import { useLayerStore } from '@stores/layerStore'
-import { addBasemap, removeBasemap, setImageOpacity } from '@services/BasemapManager'
+import { addBasemap, removeBasemap, setImageOpacity, setTilesOpacity } from '@services/BasemapManager'
 import {
   sync as syncLayers,
   removeAll as removeAllLayers,
@@ -62,6 +62,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
   const basemapVisible = useMapUIStore((s) => s.basemapVisible)
   const basemapStyle = useMapUIStore((s) => s.basemapStyle)
   const imageOpacity = useMapUIStore((s) => s.imageOpacity)
+  const tilesOpacity = useMapUIStore((s) => s.tilesOpacity)
   const tilesVisible = useMapUIStore((s) => s.tilesVisible)
   const baseImageVisible = useMapUIStore((s) => s.baseImageVisible)
   const lowPowerMode = useMapUIStore((s) => s.lowPowerMode)
@@ -145,6 +146,12 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     if (!map) return
     setImageOpacity(map, imageOpacity)
   }, [imageOpacity, mapRef])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    setTilesOpacity(map, tilesOpacity)
+  }, [tilesOpacity, mapRef])
 
   /* Rescate en degraded: si el mapa no tiene imagen base (useImageBase:false),
      se agrega el preview para no quedar en negro. Cubre demos sin tiles. */
