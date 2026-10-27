@@ -19,15 +19,24 @@ import type { SubcuencaDef } from '../../../types/content'
 const BASE = '/assets/maps/capas/mosaicos-del-agua'
 
 export const SUBCUENCAS: SubcuencaDef[] = [
-  { slug: 'piendamo', image: `${BASE}/subcuenca-piendamo.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
-  { slug: 'salado', image: `${BASE}/subcuenca-salado.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
-  { slug: 'ovejas', image: `${BASE}/subcuenca-ovejas.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
-  { slug: 'timba', image: `${BASE}/subcuenca-timba.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
-  { slug: 'quinamayo', image: `${BASE}/subcuenca-quinamayo.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
-  { slug: 'claro-jamundi', image: `${BASE}/subcuenca-claro-jamundi.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
-  { slug: 'palo', image: `${BASE}/subcuenca-palo.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
-  { slug: 'lili-melendez-canaveralejo', image: `${BASE}/subcuenca-lili-melendez-canaveralejo.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
-  { slug: 'desbaratado', image: `${BASE}/subcuenca-desbaratado.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
-  { slug: 'cali', image: `${BASE}/subcuenca-cali.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
-  { slug: 'guachal', image: `${BASE}/subcuenca-guachal.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.893209, 2.273382], width: 4911, height: 8731 },
+  { slug: 'piendamo', image: `${BASE}/subcuenca-piendamo.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.970182, 2.160647], width: 5893, height: 10477 },
+  { slug: 'salado', image: `${BASE}/subcuenca-salado.webp`, pgw: [0, 0.000166, 0.000166, 0, -76.970182, 2.165771], width: 5844, height: 10390 },
+  { slug: 'ovejas', image: '/assets/maps/capas/mosaicos-del-agua/subcuenca-ovejas.webp',  // rivers.ts
+  pgw: [0, 0.000166, 0.000166, 0, -76.970182, 2.158158], width: 5893, height: 10477 },
+{ slug: 'timba', image: '/assets/maps/capas/mosaicos-del-agua/subcuenca-timba.webp',  // rivers.ts
+  pgw: [0, 0.000166, 0.000166, 0, -76.970182, 2.155522], width: 5893, height: 10477 },
+{ slug: 'quinamayo', image: '/assets/maps/capas/mosaicos-del-agua/subcuenca-quinamayo.webp',  // rivers.ts
+  pgw: [0, 0.000166, 0.000166, 0, -76.970182, 2.155522], width: 5893, height: 10477 },
+{ slug: 'claro-jamundi', image: '/assets/maps/capas/mosaicos-del-agua/subcuenca-claro-jamundi.webp',  // rivers.ts
+  pgw: [0, 0.000166, 0.000166, 0, -76.970182, 2.155522], width: 5893, height: 10477 },
+{ slug: 'palo', image: '/assets/maps/capas/mosaicos-del-agua/subcuenca-palo.webp',  // rivers.ts
+  pgw: [0, 0.000166, 0.000166, 0, -76.96691, 2.166241], width: 5834, height: 10372 },
+{ slug: 'lili-melendez-canaveralejo', image: '/assets/maps/capas/mosaicos-del-agua/subcuenca-lili-melendez-canaveralejo.webp',  // rivers.ts
+  pgw: [0, 0.000166, 0.000166, 0, -76.970182, 2.155522], width: 5893, height: 10477 },
+{ slug: 'desbaratado', image: '/assets/maps/capas/mosaicos-del-agua/subcuenca-desbaratado.webp',  // rivers.ts
+  pgw: [0, 0.000166, 0.000166, 0, -76.971656, 2.155522], width: 5893, height: 10477 },
+{ slug: 'cali', image: '/assets/maps/capas/mosaicos-del-agua/subcuenca-cali.webp',  // rivers.ts
+  pgw: [0, 0.000166, 0.000166, 0, -76.970182, 2.155522], width: 5893, height: 10477 },
+{ slug: 'guachal', image: '/assets/maps/capas/mosaicos-del-agua/subcuenca-guachal.webp',  // rivers.ts
+  pgw: [0, 0.000166, 0.000166, 0, -76.973057, 2.154454], width: 5893, height: 10477 },
 ]
