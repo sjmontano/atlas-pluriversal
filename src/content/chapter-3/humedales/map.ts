@@ -14,8 +14,8 @@ export default makeMap({
     minimap: 'valle',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap3-presentacion-humedales' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_III/Metadata_3_Cap_Se_encharca_arriba_se_deseca_abajo.pdf' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1tqSNlYiyHNblPsxBe9Lq1GxH9RDX0jXR/view?usp=sharing' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap3/Se encharca arriba se deseca abajo.pdf' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap3/Se encharca arriba se deseca abajo.pdf' },
     ],
   },
   geo: {

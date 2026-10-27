@@ -7,9 +7,9 @@ export default makeMap({
     title: 'Entramado territorial Villa Rica con sus alternativas transformadoras',
     minimap: 'villa-rica',
     sidebar: [
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_II/Metadata_2_Cap_.xlsx_-_Red-nodo_entramado_territorial_Villa_Rica_con_sus_alternativas_transformadoras.pdf' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap2/Entramado territorial Villa Rica con sus alternativas transformadoras.pdf' },
       { id: 'galeria', type: 'modal', icon: 'gallery', label: 'Galería de imágenes', frame: '2', target: 'cap2-galeria-villa-rica' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/16zn-XhEFckoZe4zfEIZxPxzabGy1Z14D/view' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap2/Mapa alternativas transformadoras villa rica.pdf' },
       { id: 'sintesis', type: 'goto', icon: 'sintesis', label: 'Síntesis', frame: '2', to: '/capitulo/2/chapter2-m-villa-rica' },
     ],
   },

@@ -9,8 +9,8 @@ export default makeMap({
     minimap: 'villa-rica',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap2-sintesis-villa-rica' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_II/Metadata_2_Cap_.xlsx_-_Modelo_territorial_de_Villa_Rica.pdf' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1MgqxX2ZC73RWk7YBgIqeHe64e78eopG_/view' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap2/Modelo territorial de Villa Rica.pdf' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap2/Modelo territorial de Villa Rica.pdf' },
     ],
   },
   geo: {

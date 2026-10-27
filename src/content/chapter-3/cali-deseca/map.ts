@@ -11,8 +11,8 @@ export default makeMap({
     minimap: 'cali',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap3-presentacion-cali-deseca' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_III/Metadata_3_Cap_Cali_deseca.pdf' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1CGHbXCMCqEJIbxw7sNKpM88R9QBA8twX/view?usp=sharing' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap3/Cali deseca.pdf' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap3/Cali deseca.pdf' },
     ],
   },
   geo: {

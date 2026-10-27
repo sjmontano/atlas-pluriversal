@@ -298,8 +298,8 @@
      100% por tema) mientras el riel queda fijo al borde del modal. */
   max-width: var(--body-max-width);
   padding-top: clamp(10px, 1.5vh, 16px);
+  padding-left: var(--content-left-indent);     
   padding-bottom: var(--modal-padding);
-  padding-left: var(--content-left-indent);
 
   font-size: var(--body-font-size);
   line-height: var(--body-line-height);

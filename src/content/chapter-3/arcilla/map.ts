@@ -10,8 +10,8 @@ export default makeMap({
     minimap: 'villa-rica',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap3-presentacion-arcilla' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_III/Metadata_3_Cap_Aguas_que_llegan.pdf' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1k6iPW9SNs2E_WaI_tCrGE1y6Edz9mYet/view' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap3/Aguas que llegan.pdf' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap3/Aguas que llegan.pdf' },
     ],
   },
   geo: {

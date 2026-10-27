@@ -11,8 +11,8 @@ export default makeMap({
     layerMenu: false,
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap1-presentacion-bredunco' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_I/Bredunco_Cap_1.pdf' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/19t24x_n0A_Fe_tgzWX57uP6azJc-PHyo/view' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap1/Bredunco_Cap_1.pdf' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap1/Bredunco Caucayaco Cauca.pdf' },
     ],
   },
   geo: {

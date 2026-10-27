@@ -31,6 +31,9 @@ public/assets/maps/intro/
 !public/assets/maps/cap2/modelo-territorial-suarez.png
 assets-raw/
 
+# PDFs descargables (fichas y mapas) — se sirven desde public/pdf pero no se versionan
+public/pdf/
+
 # Environment files
 .env*
 !.env.example

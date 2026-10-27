@@ -8,8 +8,8 @@ export default makeMap({
     minimap: 'sur',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap3-presentacion-monocultivo' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_III/Metadata_3_Cap_Monocultivo_de_ca%C3%B1a_de_az%C3%BAcar.pdf' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1JFb4V6eD-kicm4_kjof2IMxpq6m6dsBR/view' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap3/Monocultivo de cana de azucar.pdf' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap3/Monocultivo de cana de azucar.pdf' },
       { id: 'datos', type: 'link', icon: 'datos', label: 'Datos', frame: '3', href: 'https://docs.google.com/spreadsheets/d/1TtjNpRPwglIfDh-EvJ6u3_XTIhzcpG-i/edit?usp=sharing' },
     ],
   },

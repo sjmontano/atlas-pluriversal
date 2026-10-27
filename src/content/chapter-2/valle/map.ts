@@ -10,8 +10,8 @@ export default makeMap({
     minimap: 'cuenca',
     sidebar: [
       { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap2-intro' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_II/Metadata_2_Cap_.xlsx_-_Tejidos,_nodos_y_alternativas_transformadoras_en_el_sur_del_valle_alto_del_r%C3%ADo_Cauca.pdf' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1qHF90DfU8z8z4HVw4486_oInkoFyiWBn/view' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap2/Tejidos nodos y alternativas transformadoras en el sur del valle alto del rio Cauca.pdf' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap2/NodosEntramados.pdf' },
     ],
   },
   geo: {

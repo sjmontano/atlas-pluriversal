@@ -15,7 +15,11 @@ const CAP4_INTRO: Modal = {
   highlight: 'Actores, acciones, capacidades y poderes en los nodos del tejido',
   icon: 'presentation',
   body: paragraphs(
-    'En este capitulo presentamos las fincas y centros agropecuarios que hacen parte de las alternativas transformadoras en los tres nodos o entramados territoriales.',
+    [
+      'En este capítulo presentamos una síntesis de la caracterización de seis fincas tradicionales localizadas en Suárez, Villa Rica, Padilla y Guachené, los centros agropecuarios de la Asociación Cultural Casa del niño y de la niña en Villa Rica y de Asoyogé en Suárez, y el bosque comestible de la madrevieja El Pondaje en el oriente de Cali. Estos lugares hacen parte del trayecto que hemos emprendido en el teijo para consolidar el Agropalenke soberanía de vida. Esta caracterización surgió de un ejercicio colectivo de codiseño territorial realizado a través de conversaciones y caminatas entre los miembros de las alternativas transformadoras y de los colaboratorios del Tejido.',
+      'Mediante esta ejercicio de caracterización y los mapas y gráficos resultantes buscamos principalmente acercarnos a las relaciones materiales, simbólicas, físicas, culturales, sociales y ambientales, que ofrecen las fincas tradicionales, los centros agropecuarios y el bosque comestible como hechos ordenadores del territorio, como estrategias de restauración de ecosistemas degradados y como sistemas productivos que permiten la autonomía, seguridad y soberanía alimentaria, en un contexto profundamente impactado por industrias extractivistas y degradativas, como son la minería intensiva, los cultivos ilícitos y el monocultivo de la caña de azúcar, así como por la urbanización desmedida, la segregación espacial y el abandono estatal.',
+      'Desde la perspectiva del codiseño territorial, que alimenta los empeños para consolidar el Agropalenke soberanía de vida llamamos la atención para generar nuevos relacionamientos y hacer presentes formas invisibilizadas de ordenar el territorio desde miradas y prácticas sustentables y que impactan los determinantes ambientales de los instrumentos de planificación. Los casos presentados para este capítulo, más allá de mostrar datos técnicos, permiten reconocer y valorar los saberes locales, las estrategias de manejo de los agroecosistemas y las formas de organización comunitaria, elementos indispensables para construir propuestas ecológicas relevantes el sur del valle alto del río Cauca.',
+    ].join('\n\n'),
     'cap4-intro',
   ),
   trigger: {

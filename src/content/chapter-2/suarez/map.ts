@@ -7,9 +7,9 @@ export default makeMap({
     title: 'Entramado territorial Suárez con sus alternativas transformadoras',
     minimap: 'suarez',
     sidebar: [
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/Fichas_t%C3%A9nicas_PDF/Fichas_Cap_II/Metadata_2_Cap_.xlsx_-_Red-nodo_entramado_territorial_Su%C3%A1rez_con_sus_alternativas_transformadoras.pdf' },
+      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap2/Entramado territorial Suarez con sus alternativas transformadoras.pdf' },
       { id: 'galeria', type: 'modal', icon: 'gallery', label: 'Galería de imágenes', frame: '2', target: 'cap2-galeria-suarez' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: 'https://drive.google.com/file/d/1ndp-Y4eOTq62w20vqb72DrwD8SfkjmNH/view' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap2/Mapa alternativas transformadoras suarez.pdf' },
       { id: 'sintesis', type: 'goto', icon: 'sintesis', label: 'Síntesis', frame: '2', to: '/capitulo/2/chapter2-m-suarez' },
     ],
   },
