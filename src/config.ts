@@ -1,4 +1,5 @@
-export const DEV_TOOLS = import.meta.env.VITE_DEV_TOOLS === 'true'
+export const DEV_TOOLS =
+  import.meta.env.VITE_DEV_TOOLS === 'true' || import.meta.env.DEV
 
 /** Capa de tiles XYZ local. `VITE_TILES_ENABLED=false` la omite por completo
  *  (demo sin tiles: base + previews + Cloudinary; sin spinner de 15s).
