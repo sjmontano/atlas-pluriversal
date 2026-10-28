@@ -8,7 +8,7 @@
  * de cada marker — todos laten desde el primer frame, en desorden (como los
  * POIs de un mapa real), no en cascada.
  *
- * CalibraciÃ³n: conversiÃ³n vhâ†’% sobre el render de referencia 1920Ã—945
+ * Calibración: conversión vhâ†’% sobre el render de referencia 1920Ã—945
  * con recorte cover vertical de 135px (67.5 por lado).
  */
 

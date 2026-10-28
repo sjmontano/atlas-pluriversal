@@ -17,8 +17,8 @@ const legenda = (
 
 export const LEGENDS: LegendItem[] = [
 
-  legenda('asoyoge-leyenda-01-1-vivienda-y-espacios-as', '1.Vivienda y espacios asociados', '/assets/legends/cap4/viviendaEspaciosAsociados.svg', 10, 'ZonificaciÃ³n'),
-  legenda('asoyoge-leyenda-02-5-transformaciÃ³n-product', '5.TransformaciÃ³n productiva', '/assets/legends/cap4/transformacionProductiva.svg', 20, 'ZonificaciÃ³n'),
-  legenda('asoyoge-leyenda-03-delimitaciÃ³n', 'DelimitaciÃ³n', '/assets/legends/cap4/delimitacion.svg', 30, 'ZonificaciÃ³n'),
-  legenda('asoyoge-leyenda-04-trocha', 'Trocha', '/assets/legends/cap4/trocha.svg', 40, 'ZonificaciÃ³n'),
+  legenda('asoyoge-leyenda-01-1-vivienda-y-espacios-as', '1.Vivienda y espacios asociados', '/assets/legends/cap4/viviendaEspaciosAsociados.svg', 10, 'Zonificación'),
+  legenda('asoyoge-leyenda-02-5-transformación-product', '5.Transformación productiva', '/assets/legends/cap4/transformacionProductiva.svg', 20, 'Zonificación'),
+  legenda('asoyoge-leyenda-03-delimitación', 'Delimitación', '/assets/legends/cap4/delimitacion.svg', 30, 'Zonificación'),
+  legenda('asoyoge-leyenda-04-trocha', 'Trocha', '/assets/legends/cap4/trocha.svg', 40, 'Zonificación'),
 ]
