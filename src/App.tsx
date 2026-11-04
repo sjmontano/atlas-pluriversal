@@ -4,16 +4,19 @@ import { ModalRenderer } from '@components/modal/shell/ModalRenderer'
 
 import { DEV_TOOLS } from '@config'
 
-const DevMenu = lazy(() =>
+/* Páginas de desarrollo: sus rutas solo existen con DEV_TOOLS. @__PURE__ permite
+ * que la build de producción descarte el lazy sin usar, de modo que ningún chunk
+ * público referencie los de estas páginas. */
+const DevMenu = /* @__PURE__ */ lazy(() =>
   import('@pages/DevMenu.tsx').then((m) => ({ default: m.DevMenu })),
 )
-const TestMapPage = lazy(() =>
+const TestMapPage = /* @__PURE__ */ lazy(() =>
   import('@pages/TestMapPage.tsx').then((m) => ({ default: m.TestMapPage })),
 )
-const ModalDemoPage = lazy(() =>
+const ModalDemoPage = /* @__PURE__ */ lazy(() =>
   import('@pages/ModalDemoPage.tsx').then((m) => ({ default: m.ModalDemoPage })),
 )
-const UiMockupPage = lazy(() =>
+const UiMockupPage = /* @__PURE__ */ lazy(() =>
   import('@pages/UiMockupPage.tsx').then((m) => ({ default: m.UiMockupPage })),
 )
 const InicioPage = lazy(() =>
@@ -34,7 +37,7 @@ const EntramadosPage = lazy(() =>
 const CreditsPage = lazy(() =>
   import('@pages/CreditsPage.tsx').then((m) => ({ default: m.CreditsPage })),
 )
-const ShellMockupPage = lazy(() =>
+const ShellMockupPage = /* @__PURE__ */ lazy(() =>
   import('@pages/ShellMockupPage.tsx').then((m) => ({ default: m.ShellMockupPage })),
 )
 
@@ -55,9 +58,10 @@ function Fallback() {
 }
 
 export function App() {
+  /* Precalienta el visor para la primera entrada a un mapa. */
   useEffect(() => {
     const timer = setTimeout(() => {
-      void import('@pages/TestMapPage.tsx')
+      void import('@components/map/AtlasMap.tsx')
     }, 1500)
     return () => clearTimeout(timer)
   }, [])
@@ -72,11 +76,11 @@ export function App() {
           <Route path="/capitulo/:chapterId/:mapId" element={<ChapterPage />} />
           <Route path="/entramados" element={<EntramadosPage />} />
           <Route path="/credits" element={<CreditsPage />} />
-          <Route path="/dev" element={<DevMenu />} />
-          <Route path="/modales" element={<ModalDemoPage />} />
+          {DEV_TOOLS && <Route path="/dev" element={<DevMenu />} />}
+          {DEV_TOOLS && <Route path="/modales" element={<ModalDemoPage />} />}
           {DEV_TOOLS && <Route path="/dev/ui" element={<UiMockupPage />} />}
           {DEV_TOOLS && <Route path="/dev/shell" element={<ShellMockupPage />} />}
-          <Route path="/test/:mapId" element={<TestMapPage />} />
+          {DEV_TOOLS && <Route path="/test/:mapId" element={<TestMapPage />} />}
         </Routes>
         <ModalRenderer />
       </Suspense>

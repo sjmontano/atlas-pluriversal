@@ -23,7 +23,7 @@ export function ChapterEntry() {
   const { chapterId } = useParams<{ chapterId: string }>()
   const chapter = getChapter(Number(chapterId))
   const first = chapter?.maps[0]?.mapId
-  if (chapter === null || first === undefined) return <Navigate to="/dev" replace />
+  if (chapter === null || first === undefined) return <Navigate to="/" replace />
   return <Navigate to={`/capitulo/${chapter.id}/${first}`} replace />
 }
 
@@ -63,7 +63,7 @@ export function ChapterPage() {
     return (
       <div className={styles.missing}>
         <p>Capítulo o mapa no encontrado: {String(chapterId)} / {String(mapId)}</p>
-        <Link className={styles.missingLink} to="/dev">← Volver al menú</Link>
+        <Link className={styles.missingLink} to="/">← Volver al inicio</Link>
       </div>
     )
   }
