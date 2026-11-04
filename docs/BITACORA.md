@@ -4,6 +4,42 @@
 
 ---
 
+## 2026-11-04 — Revisión del profesor: menú de capas, Firefox/macOS y textos
+
+Rama `fix/revision-profesor`, un commit por corrección.
+
+| # | Mapa o alcance | Corrección | Commit |
+|---|---|---|---|
+| 1 | Mosaico de cuencas y aguas | Ojos, números y textos en un mismo eje | `79a811f` |
+| 2 | Ecosistemas | Colores de capa en círculos | `078b74c` |
+| 3 | Síntesis de Suárez | Fondo negro en Firefox/macOS | `0678b05` |
+| 4 | Aguas que llegan | Convenciones alineadas | `ff7aa93` |
+| 5 | Cali deseca | Leyenda 2022 alineada con 1937 | `8c98d96` |
+| 6 | Bosque comestible y menú | Sin palabras partidas con guion | `3f57e84` |
+| 7 | Capítulo IV | Tildes dañadas e icono de El Paso | `3d07a8a` |
+| 7 | Capítulos I a III | Erratas de texto | `65ce51f` |
+
+**Regla del menú:** todos los ojos viven en una columna. La jerarquía se expresa
+sangrando lo que va después del ojo (`--indent`), nunca moviendo el ojo. La columna
+del chevron (`--chev-col`) solo se reserva si el menú tiene grupos colapsables.
+
+**Causa del fondo negro:** `chapter2-m-suarez` usa de base un PNG local de 9448×5314.
+Firefox/macOS tiene `MAX_TEXTURE_SIZE` 4096 y el fallback de la base subía las URLs
+locales sin reducir. El arreglo `52729c9` solo cubría capas y Cloudinary. La medición
+con `texSubImage2D` en Chrome pasó de 9448×5314 a 4096×2304. Falta confirmarlo en el
+Mac del profesor.
+
+**Pendientes:**
+
+- Tabla de datos de El desierto verde: es un enlace a Google Sheets y el formato
+  diseñado no está en el repositorio.
+- Bosque comestible: confirmar si «Botadero de escombros y basura» debe quedar como
+  «Botadero de escombros». Se conservó el texto actual.
+- Tres pruebas ya fallaban antes de esta rama (`ModalShell`, `sidebarIcons`,
+  `encuadreLabelIcons`).
+
+---
+
 ## 2026-08-19 — Tiles initial-only borrosos: causa raíz y fix (techo de pantalla)
 
 ### Hallazgos (debugging sistemático con chrome-devtools + lap metric)
