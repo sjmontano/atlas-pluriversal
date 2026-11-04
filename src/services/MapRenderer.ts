@@ -20,8 +20,8 @@ import { processBounds, expandBoundsPerAxis, type PGWData, type BoundsResult, ty
 import { createBearingAwareConstrain } from './TransformConstrain'
 import { constrainMinZoom, computeTileRange, screenCeilingZoom } from '@utils/tileZoom'
 import { resolveBaseLevel, BASE_TRANSFORMS, baseRangeForEntry, matchesGeoAspect, pickBaseSource, type BaseLevel } from '@utils/baseZoom'
-import { clampTransform } from '@utils/textureLimit'
-import { maxTextureEdge } from './TextureLimiter'
+import { clampTransform, downscalePlan, isCloudinaryUpload } from '@utils/textureLimit'
+import { maxTextureEdge, prepareRasterUrl } from './TextureLimiter'
 import { MAP_TILE_MODES } from '@data/tiles'
 import { logger } from './MapLogger'
 import { useMapStore } from '@stores/mapStore'
@@ -74,6 +74,7 @@ export function attachBaseZoomFallback(
         return { minZoom: min, maxZoom: Math.max(min, screenCeilingZoom(entry.geo, 1920)) }
       })()
   let current: BaseLevel | null = null
+  let appliedUrl: string | null = null
   let raf = 0
   let disposed = false
   const edge = maxTextureEdge(map)
@@ -92,7 +93,7 @@ export function attachBaseZoomFallback(
       return
     }
     preloadImage(url)
-      .then(() => {
+      .then(async () => {
         if (disposed || current === target) return
         // Guarda de aspecto: si la fuente local está rotada 90° respecto al
         // geo (el generador la rota con sourceRotate, el runtime no puede),
@@ -109,9 +110,26 @@ export function attachBaseZoomFallback(
           current = target
           return
         }
+        // Las URLs locales no pasan por los transforms de Cloudinary: una
+        // fuente mayor que MAX_TEXTURE_SIZE dejaría la base en negro en
+        // Firefox/macOS (límite 4096). Se reduce antes de subirla.
+        let fitted = url
+        if (size && !isCloudinaryUpload(url)) {
+          fitted = await prepareRasterUrl(map, url, size.naturalWidth, size.naturalHeight, edge)
+          if (disposed || current === target) return
+          if (fitted === url && downscalePlan(size.naturalWidth, size.naturalHeight, edge) !== null) {
+            logger.warn(CATEGORY, `Base ${target} excede ${edge}px y no se pudo reducir, conserva preview: ${mapId}`)
+            current = target
+            return
+          }
+        }
         const src = map.getSource(IMAGE_SOURCE_ID) as maplibregl.ImageSource | undefined
         if (src) {
-          src.updateImage({ url, coordinates })
+          // Los niveles de una fuente local resuelven a la misma imagen.
+          if (fitted !== appliedUrl) {
+            src.updateImage({ url: fitted, coordinates })
+            appliedUrl = fitted
+          }
           current = target
           logger.info(CATEGORY, `Base ${target}: ${mapId}`)
         }
@@ -131,6 +149,7 @@ export function attachBaseZoomFallback(
     const src = map.getSource(IMAGE_SOURCE_ID) as maplibregl.ImageSource | undefined
     if (!src) return
     current = null
+    appliedUrl = null
     try {
       src.updateImage({ url: localUrl, coordinates })
       logger.info(CATEGORY, `Base restaurada a la referencia local: ${mapId}`)
