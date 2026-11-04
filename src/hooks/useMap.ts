@@ -9,9 +9,11 @@
  * Se ejecuta una vez por mapId. Al cambiar de mapa o desmontar,
  * destruye la instancia de MapLibre anterior.
  *
- * StrictMode (solo dev): React monta→desmonta→remonta el effect. Con
- * un contador de generación (`buildGen`) la primera build se descarta
- * automáticamente sin afectar al estado visible.
+ * Cada ejecución del effect tiene su propio flag `cancelled`: una build que
+ * resuelve después de su cleanup destruye su mapa y no toca el estado global.
+ * Cubre el doble montaje de StrictMode y la navegación rápida, donde AtlasMap
+ * lleva `key` por mapa y la instancia vieja queda desmontada con la build en
+ * vuelo (el store es compartido: su setMapBuilt(true) anularía el de la nueva).
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -51,12 +53,6 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
   const lowPowerMode = useMapUIStore((s) => s.lowPowerMode)
   const tileProfile = useConnectionStore((s) => s.tileProfile)
 
-  // ── contador de generación (resuelve el doble-build de StrictMode) ────────
-  // En StrictMode dev el effect se ejecuta 2 veces seguidas (montar→desmontar→
-  // remontar). Cada ejecución incrementa buildGen; el .then solo aplica
-  // el resultado si el número de generación coincide con el último en curso.
-  const buildGenRef = useRef(0)
-
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -70,19 +66,18 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
       return
     }
 
-    const buildGen = ++buildGenRef.current
+    let cancelled = false
     let destroy: (() => void) | null = null
 
     setLoading(true)
     setError(null)
 
-    logger.debug(CATEGORY, 'effect:build-start', { mapId, buildGen })
+    logger.debug(CATEGORY, 'effect:build-start', { mapId })
 
     buildGeoreferencedMap(container, mapId, entry, { lowPowerMode, tileProfile, tilesEnabled: TILES_ENABLED })
       .then((result) => {
-        // ¿Sigue siendo esta la build más reciente?
-        if (buildGen !== buildGenRef.current) {
-          logger.trace(CATEGORY, 'effect:build-descartado', { mapId, buildGen })
+        if (cancelled) {
+          logger.trace(CATEGORY, 'effect:build-descartado', { mapId })
           result.destroy()
           return
         }
@@ -93,11 +88,11 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
         }
         setMapBuilt(true)
         setLoading(false)
-        logger.debug(CATEGORY, 'effect:build-ok', { mapId, buildGen })
+        logger.debug(CATEGORY, 'effect:build-ok', { mapId })
       })
       .catch((err: unknown) => {
-        if (buildGen !== buildGenRef.current) {
-          logger.trace(CATEGORY, 'effect:build-abortado', { mapId, buildGen })
+        if (cancelled) {
+          logger.trace(CATEGORY, 'effect:build-abortado', { mapId })
           return
         }
         const msg = err instanceof Error ? err.message : String(err)
@@ -108,12 +103,14 @@ export function useMap({ mapId, containerRef, controllerRef }: UseMapOptions): U
       })
 
     return () => {
+      cancelled = true
       destroy?.()
       mapRef.current = null
       if (controllerRef) {
         controllerRef.current = null
       }
       setMapBuilt(false)
+      setLoading(false)
       logger.debug(CATEGORY, 'effect:cleanup', { mapId })
     }
     // containerRef es estable (ref de React); solo mapId dispara rebuild.

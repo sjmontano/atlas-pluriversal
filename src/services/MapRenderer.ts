@@ -455,6 +455,33 @@ export async function buildGeoreferencedMap(
   // normal: 4 en paralelo (equilibrio entre velocidad y presión de recursos).
   maplibregl.config.MAX_PARALLEL_IMAGE_REQUESTS = opts?.lowPowerMode ? 2 : 4
 
+  // Si la build falla, el llamador nunca recibe `destroy`: el mapa se elimina
+  // aquí para no dejar un canvas huérfano en el contenedor.
+  try {
+    return await finishBuild(map, { container, mapId, entry, opts, bounds, coordinates, center, initialZoom, maxZoom })
+  } catch (err) {
+    try { map.remove() } catch { /* noop */ }
+    throw err
+  }
+}
+
+interface FinishBuildContext {
+  container: HTMLElement
+  mapId: string
+  entry: MapContent
+  opts: BuildOptions | undefined
+  bounds: GeographicBounds
+  coordinates: ImageCoordinates
+  center: BoundsResult['center']
+  initialZoom: number
+  maxZoom: number
+}
+
+/** Espera el 'load' del mapa y agrega imagen base, tiles y controlador. */
+async function finishBuild(map: maplibregl.Map, ctx: FinishBuildContext): Promise<BuildMapResult> {
+  const { container, mapId, entry, opts, bounds, coordinates, center, initialZoom, maxZoom } = ctx
+  const { images, config } = entry
+
   await new Promise<void>((resolve, reject) => {
     map.once('load', () => resolve())
     map.once('error', (e) =>
