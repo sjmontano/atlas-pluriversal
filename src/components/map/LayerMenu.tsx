@@ -107,6 +107,14 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
 
   const legendGroups = tree.freeLegends
 
+  /* ¿Algún grupo muestra chevron? Decide si se reserva su columna en todo el
+     menú para que ojos y números queden en un mismo eje. */
+  const hasChevron = (node: TreeNode): boolean =>
+    node.kind === 'group' &&
+    ((node.group.header !== false && (node.group.collapsible ?? isCollapsible(node))) ||
+      node.children.some(hasChevron))
+  const menuHasChevrons = tree.roots.some(hasChevron)
+
   const isExpanded = (node: GroupNode): boolean =>
     expandedGroups[node.group.id] ?? node.group.expandedByDefault ?? true
 
@@ -170,7 +178,7 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
     const open = !collapsible || expanded
     return (
       <div key={node.group.id} className={`${styles.group} ${node.depth === 0 ? styles.macro : styles.sub}`}>
-        <div className={styles.groupHeader}>
+        <div className={`${styles.groupHeader}${collapsible ? '' : ` ${styles.headerNoChev}`}`}>
           {collapsible && (
             <button
               type="button"
@@ -241,7 +249,7 @@ export function LayerMenu({ mapId, offsetTop = false }: Props) {
         aria-hidden={!pinned}
         onClick={() => setPinned(true)}
       >
-        <div className={styles.body}>
+        <div className={`${styles.body}${menuHasChevrons ? ` ${styles.hasChevrons}` : ''}`}>
           {menuTitle !== undefined && <h2 className={styles.menuTitle}>{menuTitle}</h2>}
 
           {hasLayers && tree.roots.map((node) => renderNode(node))}

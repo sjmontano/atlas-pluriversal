@@ -211,6 +211,17 @@
  * deben pisarlo. Derecha con aire del filo del viewport. */
 .body {
   padding: 7vh 32px 7vh 116px;
+  /* Ejes del menú: todos los ojos viven en una misma columna y la jerarquía
+   * se expresa sangrando lo que va DESPUÉS del ojo (--indent). La columna del
+   * chevron solo se reserva si el menú tiene grupos colapsables (.hasChevrons)
+   * para que los grupos sin chevron no queden corridos a la izquierda. */
+  --chev-col: 0px;
+  --eye-col: 34px; /* ojo 28 + gap 6 */
+  --indent: 0px;
+}
+
+.hasChevrons {
+  --chev-col: 34px; /* chevron 28 + gap 6 */
 }
 
 /* Ventanas angostas (pero no móvil): paddings proporcionales (~20% izq)
@@ -222,14 +233,6 @@
 
   .body {
     padding: 7vh 20px 7vh 64px;
-  }
-
-  .groupChildren {
-    padding-left: 10px;
-  }
-
-  .layerRow {
-    padding-left: 8px;
   }
 }
 
@@ -297,7 +300,24 @@
 .groupChildren {
   display: flex;
   flex-direction: column;
-  padding-left: 16px;
+}
+
+/* Cada nivel de subgrupo sangra su contenido, nunca el ojo. */
+.sub {
+  --indent: 16px;
+}
+
+.sub .sub {
+  --indent: 32px;
+}
+
+.sub > .groupHeader > .groupName {
+  margin-left: var(--indent);
+}
+
+/* Sin chevron propio: arranca en la columna del ojo, igual que sus hermanos. */
+.groupHeader.headerNoChev {
+  padding-left: var(--chev-col);
 }
 
 /* Macro-grupo top-level: mismo nivel jerárquico que título y secciones
@@ -417,8 +437,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 0 5px 24px;
+  padding: 5px 0 5px var(--chev-col);
   font-size: 13px;
+}
+
+.layerRow > .eye {
+  margin-right: var(--indent);
 }
 
 .layerRow:hover {
