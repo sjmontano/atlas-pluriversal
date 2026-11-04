@@ -262,10 +262,10 @@
   padding: 6px 0;
 }
 
-/* Anidada bajo un grupo: misma sangría que las filas de sección con
- * encabezado (16 del contenedor + 18 = 34px del eje). */
+/* Anidada bajo un grupo: sin ojo propio, reserva su columna para que el icono
+ * caiga en el mismo eje que los de las capas con ojo. */
 .groupChildren > .staticRow {
-  padding-left: 18px;
+  padding-left: calc(var(--chev-col) + var(--eye-col) + var(--indent));
 }
 
 .staticIcon {
@@ -443,6 +443,12 @@
 
 .layerRow > .eye {
   margin-right: var(--indent);
+}
+
+/* Completa el gap 12 de las filas estáticas: nombres en un mismo eje. */
+.layerRow > .swatch + .layerName,
+.layerRow > .legendIcon + .layerName {
+  margin-left: 6px;
 }
 
 .layerRow:hover {
