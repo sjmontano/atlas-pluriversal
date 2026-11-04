@@ -24,5 +24,5 @@ export const LEGENDS: LegendItem[] = [
   legenda('la-virginia-leyenda-05-cultivos-diversos', 'Cultivos diversos', '/assets/legends/cap4/cultivoDiverso.svg', 50, 'Zonificación'),
   legenda('la-virginia-leyenda-06-productivos-especiales', 'Productivos especiales', '/assets/legends/cap4/cultivoDiverso2.svg', 60, 'Zonificación'),
   legenda('la-virginia-leyenda-07-delimitación', 'Delimitación', '/assets/legends/cap4/delimitacion.svg', 70, 'Zonificación'),
-  legenda('la-virginia-leyenda-08-vÃ­a', 'VÃ­a', '/assets/legends/cap4/trocha.svg', 80, '1.Vestigios de Casa'),
+  legenda('la-virginia-leyenda-08-vía', 'Vía', '/assets/legends/cap4/trocha.svg', 80, '1.Vestigios de Casa'),
 ]
