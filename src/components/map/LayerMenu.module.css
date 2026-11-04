@@ -519,13 +519,24 @@
 }
 .legendGroupName::before {
   content: '';
-  width: 28px;
+  width: calc(var(--chev-col) + 28px);
   height: 28px;
   flex-shrink: 0;
 }
 
 .legendGroup:has(.legendGroupName) .legendRow {
-  padding-left: 34px;
+  padding-left: calc(var(--chev-col) + var(--eye-col));
+}
+
+/* Leyenda libre bajo capas con ojo (Cali deseca, '2022'): mismo tamaño y ritmo
+ * que las filas de capa de arriba, para que se lean como una sola lista. */
+.group ~ .legendSection .legendRow {
+  padding-block: 5px;
+}
+
+.group ~ .legendSection .legendName {
+  font-size: 14px;
+  line-height: 1.35;
 }
 
 /* Fila informativa v17: insignia circular + texto (no clickeable,
