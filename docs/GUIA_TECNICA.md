@@ -125,7 +125,7 @@ dimensiones reales, calcula el rango de zoom con el **techo de pantalla** y escr
 en `public/assets/maps/tiles/`.
 
 Procedimiento detallado y consideraciones de GDAL: `docs/GUIA_GENERAR_TILES_LOCALES.md` y
-`docs/FACETA_2_TILES_PLAN.md`.
+`../docs-trabajo/FACETA_2_TILES_PLAN.md`.
 
 ### 6.2 Modos
 
@@ -275,8 +275,8 @@ Si el fallo es visual, compara con `?log=trace` y revisa el estado de tiles en e
 
 - `docs/DEPLOY.md` — despliegue detallado.
 - `docs/GUIA_GENERAR_TILES_LOCALES.md` — generación local de tiles.
-- `docs/FACETA_2_TILES_PLAN.md` — plan de tiles, caché, CDN y contingencias.
+- `../docs-trabajo/FACETA_2_TILES_PLAN.md` — plan de tiles, caché, CDN y contingencias.
 - `docs/MODALES.md` — inventario de modales.
 - `docs/GLOSARIO.md` — vocabulario técnico.
 - `docs/GLOSARIO_MAPAS.md` — vocabulario de mapas.
-- `docs/superpowers/specs/` — especificaciones fechadas.
+- `../docs-trabajo/superpowers/specs/` — especificaciones fechadas.

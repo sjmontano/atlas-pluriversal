@@ -4,7 +4,7 @@
  * Un solo ImageSource piramidal: base (vista lejana, previsualización de baja
  * resolución para internet lento) → medium (intermedia) → high (acercamiento). Los umbrales derivan del minZoom del tileset para
  * que base y tiles hablen el mismo idioma. Ver
- * docs/superpowers/specs/2026-10-07-fallback-cloudinary-zoom-design.md
+ * docs/DECISIONES.md (historia del diseño en ../docs-trabajo/superpowers).
  */
 
 export type BaseLevel = 'low' | 'base' | 'medium' | 'high'
