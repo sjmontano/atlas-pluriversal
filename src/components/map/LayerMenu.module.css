@@ -280,7 +280,7 @@
   flex: 1;
   min-width: 0;
   overflow-wrap: break-word;
-  hyphens: auto;
+  hyphens: manual;
   font-size: 14px;
   line-height: 1.35;
   text-wrap: pretty;
@@ -429,7 +429,7 @@
   flex: 1;
   min-width: 0;
   overflow-wrap: break-word;
-  hyphens: auto;
+  hyphens: manual;
   cursor: pointer;
 }
 
@@ -473,7 +473,7 @@
   flex: 1;
   min-width: 0;
   overflow-wrap: break-word;
-  hyphens: auto;
+  hyphens: manual;
   font-size: 14px;
   line-height: 1.35;
   text-wrap: pretty;
@@ -575,7 +575,7 @@
   flex: 1;
   min-width: 0;
   overflow-wrap: break-word;
-  hyphens: auto;
+  hyphens: manual;
   font-size: 15px;
   line-height: 1.4;
   text-wrap: pretty;
