@@ -28,7 +28,7 @@ import { useMapStore } from '@stores/mapStore'
 import { useMapUIStore } from '@stores/mapUIStore'
 import type { MapContent, TileDeliveryProfile } from '../types/content'
 
-maplibregl.setWorkerUrl('/vendor/maplibre/maplibre-gl-worker.mjs')
+maplibregl.setWorkerUrl(`${import.meta.env.BASE_URL}vendor/maplibre/maplibre-gl-worker.mjs`)
 
 const CATEGORY = 'MapRenderer'
 
