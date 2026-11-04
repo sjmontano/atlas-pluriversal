@@ -31,8 +31,8 @@ export const LEGENDS: LegendItem[] = [
 
   legenda('urc-leyenda-aguas', 'Aguas superficiales', 'AguasSuperficiales2.webp', 60, 'urc-3'),
 
-  legenda('urc-leyenda-paramos', 'Paramos', 'Paramos.webp', 70, 'urc-4'),
-  legenda('urc-leyenda-niviales', 'Niviales', 'Niviales.webp', 80, 'urc-4'),
+  legenda('urc-leyenda-paramos', 'Páramos', 'Paramos.webp', 70, 'urc-4'),
+  legenda('urc-leyenda-niviales', 'Nivales', 'Niviales.webp', 80, 'urc-4'),
   legenda('urc-leyenda-volcanes', 'Volcanes', 'Volcanes.webp', 90, 'urc-4'),
 
   legenda('urc-leyenda-alto', 'Alto Cauca', 'AltoCauca.webp', 100, 'urc-5'),

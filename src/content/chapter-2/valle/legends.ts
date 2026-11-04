@@ -19,7 +19,7 @@ export const LEGENDS: LegendItem[] = [
   legenda('valle-humedales', 'Humedales', 'humedales2.svg', 40),
   legenda('valle-represas', 'Represas', 'represas.svg', 50),
   legenda('valle-zonas-urbanas', 'Zonas urbanas', 'zonasUrbanas.svg', 60),
-  legenda('valle-red-vial', 'Red víal', 'redVial.svg', 70),
+  legenda('valle-red-vial', 'Red vial', 'redVial.svg', 70),
   legenda('valle-areas-mixtas', 'Áreas mixtas (Fincas tradicionales, bosques, zonas verdes y policultivos)', 'areasMixtas.svg', 80),
   legenda('valle-monocultivos', 'Monocultivos (caña de azúcar y otros)', 'monocultivos.svg', 90),
   legenda('valle-sur-valle-alto', 'Sur del valle alto del río Cauca', 'surValleAlto.svg', 100),

@@ -18,7 +18,7 @@ export const LEGENDS: LegendItem[] = [
   legenda('monocultivo-leyenda-rios-tributarios', 'Ríos tributarios', `${VALLE}/riosTributarios.svg`, 20),
   legenda('monocultivo-leyenda-represas', 'Represas', `${VALLE}/represas.svg`, 30),
   legenda('monocultivo-leyenda-zonas-urbanas', 'Zonas urbanas', `${CAP3}/zonaUrbana.svg`, 40),
-  legenda('monocultivo-leyenda-red-vial', 'Red víal', `${VALLE}/redVial.svg`, 50),
+  legenda('monocultivo-leyenda-red-vial', 'Red vial', `${VALLE}/redVial.svg`, 50),
   legenda('monocultivo-leyenda-fincas-tradicionales', 'Fincas tradicionales y cultivos diversos.', `${CAP3}/fincaTra.svg`, 60),
   legenda('monocultivo-leyenda-bosques', 'Bosques', `${CAP3}/zonaVerde.svg`, 70),
   legenda(

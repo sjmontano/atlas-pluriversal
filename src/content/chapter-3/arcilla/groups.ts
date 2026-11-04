@@ -5,7 +5,7 @@ import type { LayerGroup } from '../../../types/layer'
 export const GROUPS: LayerGroup[] = [
   {
     id: 'arcilla-lagos',
-    name: 'Lagos de mineria de arcillas',
+    name: 'Lagos de minería de arcillas',
     order: 1,
     eye: false,
     numbered: false,

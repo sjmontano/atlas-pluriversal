@@ -29,7 +29,7 @@ const G = {
 export const LEGENDS: LegendItem[] = [
   legenda('mvr-cabeceras', 'Cabeceras municipales', null, 10),
   legenda('mvr-cuerpos-agua', 'Cuerpos de agua', `${V2}/riosPrincipales.svg`, 20),
-  legenda('mvr-red-vial', 'Red Víal', `${V2}/redVial.svg`, 30),
+  legenda('mvr-red-vial', 'Red vial', `${V2}/redVial.svg`, 30),
   legenda('mvr-fincas', 'Fincas tradicionales, bosques, zonas verdes y policultivos', `${V}/fincaTradicional.svg`, 40, G.estructural),
   legenda('mvr-lugares', 'Lugares emblemáticos', `${V}/lugaresEmblematicos.svg`, 50, G.emblematico),
   legenda('mvr-panamericana', 'Vía Panamericana', `${V}/panamericana.svg`, 60, G.emblematico),
