@@ -453,10 +453,12 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
+/* Color de capa/leyenda: círculo del mismo tamaño que la insignia con icono
+ * (.legendIcon) para que ambos tipos de fila compartan eje. */
 .swatch {
-  width: 31px;
-  height: 15px;
-  border-radius: 2px;
+  width: 1.63vw;
+  height: 1.63vw;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
@@ -545,10 +547,10 @@
 }
 
 .legendRow.large .swatch {
-  width: 3.8vw;
-  height: 1.8vw;
-  min-width: 38px;
-  min-height: 18px;
+  width: 3vw;
+  height: 3vw;
+  min-width: 48px;
+  min-height: 48px;
 }
 
 .legendName {
