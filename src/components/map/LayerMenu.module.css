@@ -455,10 +455,6 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
-.layerSelected {
-  background: rgba(255, 255, 255, 0.12);
-}
-
 /* Color de capa/leyenda: círculo del mismo tamaño que la insignia con icono
  * (.legendIcon) para que ambos tipos de fila compartan eje. */
 .swatch {

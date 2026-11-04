@@ -177,24 +177,6 @@ export function validateBounds(bounds: GeographicBounds): boolean {
 }
 
 /**
- * Expande unos bounds por un factor fraccionario en cada lado.
- * Útil para crear viewportMaxBounds con margen alrededor de la imagen.
- *
- * @param bounds - Bounds originales
- * @param factor - Fracción a expandir (0.15 = 15% por lado)
- *
- * @example
- * expandBounds([-78.9, -0.3, -65.7, 6.4], 0.1)
- * // west −10% del span, south −10%, east +10%, north +10%
- */
-export function expandBounds(
-  bounds: GeographicBounds,
-  factor: number,
-): GeographicBounds {
-  return expandBoundsPerAxis(bounds, factor, factor)
-}
-
-/**
  * Expande unos bounds por un factor fraccionario en cada lado, con factores
  * independientes por eje. Útil para crear viewportMaxBounds con margen
  * alrededor de la imagen, controlando izquierda/derecha (H) y

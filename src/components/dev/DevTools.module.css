@@ -219,13 +219,6 @@
   box-shadow: 0 0 0 1px #4a6aff inset;
 }
 
-.opacitySlider {
-  width: 100%;
-  height: 4px;
-  accent-color: #6a8cff;
-  cursor: pointer;
-}
-
 .mapSelector {
   display: flex;
   flex-direction: column;

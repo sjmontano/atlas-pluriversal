@@ -31,10 +31,6 @@ export function scaleParam(pgw: PGWData, key: 'd' | 'b', factor: number): PGWDat
   return [a, d, b * factor, e, c, f]
 }
 
-export function resizeDims(width: number, height: number, dW: number, dH: number): { width: number; height: number } {
-  return { width: width + dW, height: height + dH }
-}
-
 /**
  * Re-escala la huella de la capa por eje (escalado simétrico: los dos
  * lados opuestos de un eje se mueven por igual) manteniendo el centro

@@ -19,13 +19,6 @@
   transform: scale(1.04);
 }
 
-.logo {
-  width: clamp(120px, 14vw, 200px);
-  height: auto;
-  filter: brightness(0) invert(1);
-  opacity: 0.95;
-}
-
 .logoVolver {
   width: clamp(120px, 14vw, 200px);
   height: auto;
