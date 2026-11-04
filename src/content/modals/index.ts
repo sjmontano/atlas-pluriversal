@@ -91,7 +91,7 @@ const AYUDA: Modal = {
   variant: 'full',
   title: 'Ayuda',
   highlight: 'Sobre el Atlas',
-  icon: 'ayuda',
+  icon: 'info',
   hideHeader: true,
   bodyFullBleed: true,
   theme: {
