@@ -212,6 +212,7 @@ const PERFIL_CUENCA: Modal = {
   icon: 'perfil',
   hideHeader: true,
   fullBleed: true,
+  bodyFullBleed: true,
   theme: {
     bgColor: '#f2eee7',
     bodyMaxWidth: '100%',
