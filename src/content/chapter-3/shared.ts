@@ -1,6 +1,6 @@
 import type { LegendItem, RasterPgwLayer } from '../../types/layer'
 import type { PGWData } from '@services/BoundsCalculator'
-import { SWATCH } from '@content/theme'
+import { SWATCH } from '@content/theme/swatches'
 
 export const CLOUD = 'https://res.cloudinary.com/dvluvxfvn/image/upload'
 

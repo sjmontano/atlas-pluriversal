@@ -1,6 +1,6 @@
 import type { RasterPgwLayer } from '../../../types/layer'
 import { rasterLayer, CLOUD } from '../shared'
-import { SWATCH } from '@content/theme'
+import { SWATCH } from '@content/theme/swatches'
 
 // PGW en el mismo marco rotado de la base ([0, B, D, 0, C, F]).
 // v17 traía residuo ±4.5e-5 en A/E que el detector isRotatedPGW (ε=1e-10)

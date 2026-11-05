@@ -18,6 +18,7 @@
 //   npm run tiles                                  # todos los mapas con tiles
 //   npm run tiles -- chapter1-ecosistemas          # un mapa
 //   npm run tiles -- chapter1-ecosistemas --force  # regenerar tiles existentes
+//   npm run tiles -- --dry-run                     # listar mapas; no escribe nada
 //
 // Salida:
 //   public/assets/maps/tiles/mapas-standard/{mapId}/{z}/{x}/{y}.webp
@@ -32,7 +33,6 @@ import { spawnSync } from 'node:child_process'
 import { join, dirname, extname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { MAP_TILE_MODES } from '../src/data/tiles.ts'
 import { processBounds } from '../src/services/BoundsCalculator.ts'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -86,13 +86,13 @@ function walkContent() {
   const files = []
   for (const dir of readdirSync(contentRoot, { withFileTypes: true })) {
     if (!dir.isDirectory()) continue
-    // ./<dir>/index.ts (intro suelto) y ./<dir>/<sub>/index.ts (capítulos)
-    const direct = join(contentRoot, dir.name, 'index.ts')
+    // ./<dir>/map.ts (intro suelto) y ./<dir>/<sub>/map.ts (capítulos)
+    const direct = join(contentRoot, dir.name, 'map.ts')
     if (existsSync(direct)) files.push(direct)
     const sub = join(contentRoot, dir.name)
     for (const subDir of readdirSync(sub, { withFileTypes: true })) {
       if (!subDir.isDirectory()) continue
-      const candidate = join(sub, subDir.name, 'index.ts')
+      const candidate = join(sub, subDir.name, 'map.ts')
       if (existsSync(candidate)) files.push(candidate)
     }
   }
@@ -310,13 +310,14 @@ async function generateMap(mapId, mod, { force = false } = {}) {
 async function main() {
   const args = process.argv.slice(2)
   const force = args.includes('--force')
+  const dryRun = args.includes('--dry-run')
   const targets = args.filter((a) => !a.startsWith('-'))
 
   const modules = []
   for (const file of walkContent()) {
     const mod = await import(pathToFileURL(file).href)
     const mapId = mod.default?.mapId
-    if (mapId && MAP_TILE_MODES[mapId]) {
+    if (mapId && mod.default.tiles) {
       modules.push({ mapId, mod })
     }
   }
@@ -325,6 +326,16 @@ async function main() {
   const todo = wanted ? modules.filter((m) => wanted.has(m.mapId)) : modules
 
   console.log(`📦 ${modules.length} mapas registrados con tiles (de ${walkContent().length} módulos en content)`)
+
+  if (dryRun) {
+    for (const { mapId, mod } of todo) {
+      const { minZoom, maxZoom, source } = mod.default.tiles
+      const local = source?.startsWith('/assets-raw/') ? join(ROOT, source) : null
+      const estado = !source ? 'sin source' : !local || existsSync(local) ? 'ok' : 'source no existe'
+      console.log(`${mapId}	z${minZoom}-${maxZoom}	${source ?? '-'}	${estado}`)
+    }
+    return
+  }
 
   let grandTotal = 0
   for (const { mapId, mod } of todo) {

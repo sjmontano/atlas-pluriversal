@@ -1,5 +1,5 @@
 import type { LegendItem } from '../../../types/layer'
-import { SWATCH } from '@content/theme'
+import { SWATCH } from '@content/theme/swatches'
 import { LEG_RIO_CAUCA, TEXTO_CUERPOS_DE_AGUA } from '../shared'
 
 export const LEGENDS: LegendItem[] = [
