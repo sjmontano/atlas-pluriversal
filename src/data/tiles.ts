@@ -83,15 +83,17 @@ export function tileUrlTemplate(mapId: string, profile: TileDeliveryProfile = 's
  * Fabrica MapTilesConfig para un mapa. La referencia de pantalla es 1920×1080;
  * el bearing es el del mapa (initialBearing) para que el constrainMinZoom sea
  * coherente con el runtime. `initial-cover` usa este mismo nivel como único
- * nivel del tileset, apropiado para mapas sin zoom.
+ * nivel del tileset, apropiado para mapas sin zoom. `declared` son los tiles
+ * declarados en el map.ts; sin ellos se usan las listas de este archivo.
  */
 export function makeTilesConfig(
   mapId: string,
   geo: MapGeoEntry,
   initialBearing: number,
   zoomMax?: number,
+  declared?: { mode: TileZoomMode; source: string },
 ): MapTilesConfig | null {
-  const mode = MAP_TILE_MODES[mapId]
+  const mode = declared?.mode ?? MAP_TILE_MODES[mapId]
   if (!mode) return null
   const range = computeTileRange(geo, mode, 1920, 1080, initialBearing)
   if (!range) return null
@@ -106,7 +108,7 @@ export function makeTilesConfig(
     // último nivel — overzoom — sin nuevos requests).
     maxZoom: Math.max(range.minZoom, zoomMax ?? range.maxZoom),
     fadeDuration: 300,
-    source: LOCAL_TILE_SOURCES[mapId],
+    source: declared?.source ?? LOCAL_TILE_SOURCES[mapId],
     preview: `/assets/maps/previews/${mapId}.webp`,
     sourceRotate: 'auto',
     tilePixelSizeByProfile: {
