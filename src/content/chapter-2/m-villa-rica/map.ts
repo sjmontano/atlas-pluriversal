@@ -9,7 +9,7 @@ const V2 = '/assets/legends/cap2-valle'
 export default defineMap({
   id: 'chapter2-m-villa-rica',
   title: 'Síntesis territorial de Villa Rica',
-  minimap: 'villa-rica',
+  minimap: 'villa-rica', ui: { chapterTabs: false },
   zoomMax: 13,
   tiles: { mode: 'detail', source: 'cap2/modelo-territorial-villa-rica.png' },
   sidebar: [

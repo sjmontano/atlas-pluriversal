@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { makeMap } from '@content/_map'
 import { cld, defineMap, group, legendas, rasterFrame, sb } from '@content/kit'
 
 const geo = { pgw: [0, 1e-6, 1e-6, 0, -76.5, 3.2] as const, width: 7015, height: 12472 }
@@ -18,17 +17,16 @@ describe('cld', () => {
 describe('defineMap', () => {
   const sidebar = [sb.presentacion('x')]
 
-  it('produce lo mismo que makeMap con cada default', () => {
-    const ui = { title: 'T', minimap: 'sur' as const, sidebar }
-    const a = makeMap({ mapId: 'chapter4-asoyoge', ui, geo, base, full, zoomMax: 20 })
-    const b = defineMap({ id: 'chapter4-asoyoge', title: 'T', minimap: 'sur', sidebar, geo, base, full, zoomMax: 20 })
-    expect(json(b)).toBe(json(a))
+  it('aplica los defaults de configuración', () => {
+    const m = defineMap({ id: 'x', title: 'T', minimap: 'sur', sidebar, geo, base, full, zoomMax: 20 })
+    expect(m.config.initialBearing).toBe(-90)
+    expect(m.config.zoomMax).toBe(20)
+    expect(m.config.dragPan).toBe(true)
+    expect(m.images.placeholder).toContain('/upload/w_512,q_25,f_webp/')
   })
 
   it('respeta bearing 0 y sin full', () => {
-    const a = makeMap({ mapId: 'sin-tiles', ui: { title: 'T' }, geo, base, bearing: 0 })
     const b = defineMap({ id: 'sin-tiles', title: 'T', geo, base, bearing: 0 })
-    expect(json(b)).toBe(json(a))
     expect(b.config.initialBearing).toBe(0)
     expect(b.tiles).toBeNull()
   })
@@ -62,17 +60,13 @@ describe('defineMap', () => {
     expect(m.config.dragPan).toBe(false)
   })
 
-  it('tiles declarados no dependen de las listas', () => {
+  it('tiles declarados llegan al contenido', () => {
     const m = defineMap({ id: 'sin-lista', title: 'T', geo, base, tiles: { mode: 'detail', source: 'cap4/a.png' } })
+    expect(m.tiles?.mode).toBe('detail')
     expect(m.tiles?.source).toBe('/assets-raw/maps/cap4/a.png')
     expect(m.tiles?.urlTemplate).toContain('/sin-lista/')
   })
 
-  it('rechaza un modo distinto al que lee MapRenderer', () => {
-    expect(() =>
-      defineMap({ id: 'chapter4-asoyoge', title: 'T', geo, base, tiles: { mode: 'detail', source: 'a.png' } }),
-    ).toThrow(/MAP_TILE_MODES/)
-  })
 })
 
 describe('sb', () => {

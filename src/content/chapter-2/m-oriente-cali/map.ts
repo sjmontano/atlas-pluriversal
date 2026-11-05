@@ -8,7 +8,7 @@ const V2 = '/assets/legends/cap2-valle'
 export default defineMap({
   id: 'chapter2-m-oriente-cali',
   title: 'Síntesis territorial del Oriente de Cali',
-  minimap: 'cali',
+  minimap: 'cali', ui: { chapterTabs: false },
   zoomMax: 10,
   tiles: { mode: 'detail', source: 'cap2/modelo-territorial-oriente-cali.png' },
   sidebar: [

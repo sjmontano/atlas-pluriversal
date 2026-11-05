@@ -2,10 +2,6 @@
 
 Guía para aplicar lo que piden los revisores. Cada mapa es un solo archivo.
 
-**Estado de la migración:** capítulo 4 hecho. En los capítulos 1, 2 y 3 y en `intro`, el
-`map.ts` todavía reparte su contenido en `legends.ts`, `layers.ts`, `groups.ts`, `pois.ts`,
-etc., junto a él en la misma carpeta, y sus tiles se declaran en `src/data/tiles.ts`.
-
 ## Qué archivo tocar
 
 La URL dice cuál es el mapa: `/capitulo/N/chapterN-<slug>` corresponde a
@@ -18,6 +14,7 @@ La URL dice cuál es el mapa: `/capitulo/N/chapterN-<slug>` corresponde a
 | Texto de una ventana modal | `src/content/modals/chapter-N.ts` |
 | Colores compartidos | `src/content/theme/` (`swatches.ts`, `poi.ts`, `layers.ts`) |
 | Alineación del menú de capas | `src/components/map/LayerMenu.module.css` |
+| Ocultar las pestañas de capítulos en un mapa | `ui: { chapterTabs: false }` en su `map.ts` |
 
 Los `id` no se corrigen aunque tengan erratas: otros archivos y enlaces dependen de ellos.
 
@@ -53,9 +50,4 @@ npx tsc -b --noEmit
 npx vitest run tests/content
 ```
 
-Mientras dure la migración, `contentSnapshot` falla ante cualquier cambio de contenido. Si el
-cambio es intencional, revisar el diff y aceptarlo con
-`npx vitest run tests/content/contentSnapshot.test.ts -u`.
-
-Cambiar `tiles.mode` exige cambiarlo también en `MAP_TILE_MODES` (`src/data/tiles.ts`), que
-aún lee `MapRenderer`. Si no coinciden, `defineMap` lanza un error.
+La prueba de integridad nombra grupos, modales y assets que no existan.

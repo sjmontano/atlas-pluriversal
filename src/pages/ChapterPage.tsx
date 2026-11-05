@@ -71,10 +71,6 @@ export function ChapterPage() {
   const isFirstMap = chapter.maps[0]?.mapId === mapRef.mapId
   const backTo = isFirstMap ? '/intro' : `/capitulo/${chapter.id}`
 
-  // Desactivar tabs de capítulos en mapas de síntesis (solo Cap 2 por ahora)
-  const synthesisMapIds = ['chapter2-m-oriente-cali', 'chapter2-m-villa-rica', 'chapter2-m-suarez']
-  const showChapters = !synthesisMapIds.includes(mapRef.mapId)
-
   return (
     <ShellLayout
       title={ui?.title ?? mapRef.title}
@@ -84,7 +80,7 @@ export function ChapterPage() {
       minimap={ui?.minimap ?? mapRef.minimap ?? 'cuenca'}
       showNorth={ui?.homeNav ?? true}
       showHome={ui?.homeNav ?? true}
-      showChapters={showChapters}
+      showChapters={ui?.chapterTabs ?? true}
       /* Auto-hide solo en mapas de contenido: las intros conservan el menú fijo */
       chaptersAutoHide={!isFirstMap}
       chaptersAutoHideKey={mapRef.mapId}

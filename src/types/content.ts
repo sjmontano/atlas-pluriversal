@@ -1,4 +1,5 @@
 import type { PGWData } from '@services/BoundsCalculator'
+import type { TileZoomMode } from '@utils/tileZoom'
 import type { MiniMapKey } from './chapter'
 import type { Layer, LayerGroup, LegendItem } from './layer'
 import type { Poi } from './poi'
@@ -44,6 +45,8 @@ export interface MapConfig {
 }
 
 export interface MapTilesConfig {
+  /** Cómo se calcula el rango de zoom del tileset y de la base piramidal. */
+  mode: TileZoomMode
   urlTemplate: string
   urlTemplateStandard?: string
   urlTemplateHd?: string
@@ -95,6 +98,8 @@ export interface MapUI {
   northIndicator?: boolean
   /** Mostrar botón HomeNav. Default: true. */
   homeNav?: boolean
+  /** Muestra las pestañas de capítulos. Default: true; los mapas de síntesis las apagan. */
+  chapterTabs?: boolean
   /** Botones del sidebar (ToolRail). Si se omite, sidebar vacío. */
   sidebar?: MapUISidebarItem[]
   /** Etiqueta flotante con el nombre de la capa al hover sobre su

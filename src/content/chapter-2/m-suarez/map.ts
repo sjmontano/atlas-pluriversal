@@ -12,7 +12,7 @@ const V2 = '/assets/legends/cap2-valle'
 export default defineMap({
   id: 'chapter2-m-suarez',
   title: 'Síntesis territorial de Suárez',
-  minimap: 'suarez',
+  minimap: 'suarez', ui: { chapterTabs: false },
   zoomMax: 12,
   bearing: 180,
   tiles: { mode: 'detail', source: 'cap2/modelo-territorial-suarez.png' },

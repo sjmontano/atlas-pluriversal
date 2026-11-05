@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest'
 import { getMapContent } from '@content/index'
 import { ALL_MODALS, getModalById } from '@content/modals/index'
 import { CHAPTERS } from '@data/chapters/chapters'
-import { MAP_TILE_MODES } from '@data/tiles'
 
 /**
  * Integridad del contenido: un error de digitación en un id o una ruta no
@@ -65,7 +64,7 @@ function revisarMapa(id: string, ids: Set<string>): string[] {
     for (const v of new Set(repetidos)) out.push(`${id}: ${tipo} repetido ${v}`)
   }
 
-  if (!MAP_TILE_MODES[id]) out.push(`${id}: sin modo de tiles`)
+  if (!c.tiles) out.push(`${id}: sin tiles declarados`)
   unico('grupo', (c.groups ?? []).map((g) => g.id))
   unico('capa', (c.layers ?? []).map((l) => l.id))
   unico('leyenda', (c.legends ?? []).map((l) => l.id))
@@ -120,10 +119,6 @@ describe('integridad del contenido', () => {
 
   it('los modales apuntan a assets que existen', () => {
     expect(assetsDeModales().filter((e) => !CONOCIDOS.has(e))).toEqual([])
-  })
-
-  it('cada modo de tiles corresponde a un mapa', () => {
-    expect(Object.keys(MAP_TILE_MODES).filter((m) => !conjunto.has(m))).toEqual([])
   })
 
   it('la lista de defectos conocidos sigue vigente', () => {

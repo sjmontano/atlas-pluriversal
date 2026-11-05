@@ -7,7 +7,7 @@
  * Sin abstracciones para mapas atípicos (encuadres, humedales): esos usan literales.
  */
 
-import { MAP_TILE_MODES, makeTilesConfig } from '@data/tiles'
+import { makeTilesConfig } from '@data/tiles'
 import type { TileZoomMode } from '@utils/tileZoom'
 import type { MapConfig, MapContent, MapGeoEntry, MapUI, MapUISidebarItem } from '../types/content.ts'
 import type { LayerBase, LayerCategory, LayerGroup, LegendItem, RasterPgwLayer } from '../types/layer.ts'
@@ -37,7 +37,7 @@ export interface DefineMapOptions extends Pick<
   zoomMax?: number
   /** Default: -90. Mapas atípicos: problematicas -30, bosque-comestible 0. */
   bearing?: number
-  /** `source` es relativo a assets-raw/maps/. Si se omite, usa las listas de data/tiles.ts. */
+  /** `source` es relativo a assets-raw/maps/. Sin esto, el mapa no tiene tileset. */
   tiles?: { mode: TileZoomMode; source: string }
   /** Reemplaza o añade a la configuración base (márgenes, dragPan…). */
   config?: Partial<Omit<MapConfig, 'initialBearing' | 'zoomMax'>>
@@ -46,12 +46,6 @@ export interface DefineMapOptions extends Pick<
 /** Las capas, grupos, leyendas, etc. se emiten en el orden en que se escriben. */
 export function defineMap(opts: DefineMapOptions): MapContent {
   const { id, title, minimap, sidebar, ui, geo, base, full, placeholder, zoomMax, bearing, tiles, config, ...extras } = opts
-  // MapRenderer aún lee el modo de MAP_TILE_MODES: dos valores distintos darían
-  // un tileset generado con un rango y servido con otro.
-  const listed = MAP_TILE_MODES[id]
-  if (tiles && listed && listed !== tiles.mode) {
-    throw new Error(`${id}: tiles.mode '${tiles.mode}' difiere de MAP_TILE_MODES ('${listed}')`)
-  }
   const initialBearing = bearing ?? -90
   const { dragPan = true, scrollZoom = true, ...configRest } = config ?? {}
   return {
@@ -71,9 +65,9 @@ export function defineMap(opts: DefineMapOptions): MapContent {
     tiles: makeTilesConfig(
       id,
       geo,
+      tiles && { mode: tiles.mode, source: `/assets-raw/maps/${tiles.source}` },
       initialBearing,
       zoomMax,
-      tiles && { mode: tiles.mode, source: `/assets-raw/maps/${tiles.source}` },
     ),
     ...extras,
   }

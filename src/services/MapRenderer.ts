@@ -22,7 +22,6 @@ import { constrainMinZoom, computeTileRange, screenCeilingZoom } from '@utils/ti
 import { resolveBaseLevel, BASE_TRANSFORMS, baseRangeForEntry, matchesGeoAspect, pickBaseSource, type BaseLevel } from '@utils/baseZoom'
 import { clampTransform, cloudinaryVariant, downscalePlan, isCloudinaryUpload } from '@utils/textureLimit'
 import { maxTextureEdge, prepareRasterUrl } from './TextureLimiter'
-import { MAP_TILE_MODES } from '@data/tiles'
 import { logger } from './MapLogger'
 import { useMapStore } from '@stores/mapStore'
 import { useMapUIStore } from '@stores/mapUIStore'
@@ -57,7 +56,7 @@ export function attachBaseZoomFallback(
   opts?: BuildOptions,
 ): () => void {
   const tilesEnabled = opts?.tilesEnabled !== false
-  const mode = MAP_TILE_MODES[mapId] ?? 'detail'
+  const mode = entry.tiles?.mode ?? 'detail'
   const range = entry.tiles
     ? baseRangeForEntry(entry.tiles, 0, 0)
     : (() => {
