@@ -30,9 +30,9 @@ export default defineMap({
   base: cld('v1759512655/geoImages/pdxepthixmeebgei59yq.webp'),
   full: cld('v1759512616/geoImages/sj5c6kcyz8oilmta1ra8.webp'),
   pois: [
-    arrow('poi-cap2-villarica-casa-nino', 2, 'Casa del Niño y de La Niña', [-76.45, 3.183], cld('v1761186701/geoImages/pyhbpjnlbhiezwueuzxb.webp'), 275, 'cap2-at-casa-nino'),
-    arrow('poi-cap2-villarica-huellas', 3, 'Huellas', [-76.429, 3.213], cld('v1761187057/geoImages/dtarbfe6sduopq1q4xca.webp'), 310, 'cap2-at-palenques-juveniles'),
-    arrow('poi-cap2-villarica-uaofroc', 4, 'UAOFROC', [-76.425, 3.226], cld('v1761187126/geoImages/ki5sktr8jnwo2oowkpqt.webp'), 250, 'cap2-at-uoafroc'),
-    arrow('poi-cap2-villarica-territorio-paz', 5, 'Consejo Comunitario Territorio y Paz', [-76.453, 3.23], cld('v1761187204/geoImages/to8dj0cmmtlzlztkvqr7.webp'), 130, 'cap2-at-territorio-paz'),
+    arrow('poi-cap2-villarica-casa-nino', 2, 'Casa del Niño y de La Niña', [-76.44941, 3.185797], cld('v1761186701/geoImages/pyhbpjnlbhiezwueuzxb.webp'), 275, 'cap2-at-casa-nino'),
+    arrow('poi-cap2-villarica-huellas', 3, 'Huellas', [-76.460893, 3.174849], cld('v1761187057/geoImages/dtarbfe6sduopq1q4xca.webp'), 310, 'cap2-at-palenques-juveniles'),
+    arrow('poi-cap2-villarica-uaofroc', 4, 'UAOFROC', [-76.423267, 3.225334], cld('v1761187126/geoImages/ki5sktr8jnwo2oowkpqt.webp'), 250, 'cap2-at-uoafroc'),
+    arrow('poi-cap2-villarica-territorio-paz', 5, 'Consejo Comunitario Territorio y Paz', [-76.450547, 3.228123], cld('v1761187204/geoImages/to8dj0cmmtlzlztkvqr7.webp'), 130, 'cap2-at-territorio-paz'),
   ],
 })
