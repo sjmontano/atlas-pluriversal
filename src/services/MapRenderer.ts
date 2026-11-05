@@ -699,15 +699,30 @@ export function addTilesLayer(
     return
   }
 
+  // Mismo perfil ya aplicado (useMap lo reaplica al construir o al cambiar la
+  // potencia): no hay nada nuevo que cargar y el estado actual sigue valiendo.
+  const profile = opts?.tileProfile ?? 'standard'
+  if (appliedProfileByMap.get(map) === profile && map.getSource(TILES_SOURCE_ID)) return
+
   useMapStore.getState().setTilesStatus('loading')
-  ensureTilesSource(map, tiles, bounds, opts?.tileProfile ?? 'standard', opts?.lowPowerMode)
-  attachTileTelemetry(map, mapId)
+  ensureTilesSource(map, tiles, bounds, profile, opts?.lowPowerMode)
+  tileLoadPhase(map, mapId)
 }
 
 /** Perfil aplicado actualmente al source de tiles, por instancia de mapa. */
 const appliedProfileByMap = new WeakMap<maplibregl.Map, TileDeliveryProfile>()
-/** Mapas que ya tienen la telemetría de tiles adjunta (evita listeners duplicados). */
-const telemetryByMap = new WeakSet<maplibregl.Map>()
+/** Telemetría por mapa (evita listeners duplicados); cada valor abre una fase de carga. */
+const telemetryByMap = new WeakMap<maplibregl.Map, () => void>()
+
+/** Abre una fase de carga (mapa nuevo o cambio de perfil), con su telemetría. */
+function tileLoadPhase(map: maplibregl.Map, mapId: string): void {
+  let beginPhase = telemetryByMap.get(map)
+  if (!beginPhase) {
+    beginPhase = attachTileTelemetry(map, mapId)
+    telemetryByMap.set(map, beginPhase)
+  }
+  beginPhase()
+}
 
 function ensureTilesSource(
   map: maplibregl.Map,
@@ -767,11 +782,13 @@ function ensureTilesSource(
  * Solo se dispara si nRequested > 0 (tiles realmente pedidos); el primer
  * tile:loaded lo desactiva inmediatamente. Tiempo extendido a 15s porque
  * en Slow 4G los tiles pueden tardar >8s sin ser caída de conexión.
+ *
+ * Solo cuentan los eventos que traen un tile (`e.coord`): el source raster
+ * emite además `dataloading` y `data` con sourceDataType 'content' al agregarse,
+ * sin que se haya descargado nada. Devuelve la función que abre cada fase de
+ * carga: reinicia los contadores y el plazo de 15s.
  */
-function attachTileTelemetry(map: maplibregl.Map, mapId: string): void {
-  if (telemetryByMap.has(map)) return
-  telemetryByMap.add(map)
-
+function attachTileTelemetry(map: maplibregl.Map, mapId: string): () => void {
   const inFlight = new Set<string>()
   let nRequested = 0
   let nLoaded = 0
@@ -783,18 +800,35 @@ function attachTileTelemetry(map: maplibregl.Map, mapId: string): void {
   let tilesTimedOut = false
   let tilesTimer: ReturnType<typeof setTimeout> | null = null
 
-  if (typeof window !== 'undefined') {
+  const clearTilesTimer = (): void => {
+    if (tilesTimer) {
+      clearTimeout(tilesTimer)
+      tilesTimer = null
+    }
+  }
+
+  const beginPhase = (): void => {
+    nRequested = 0
+    nLoaded = 0
+    inFlight.clear()
+    tilesTimedOut = false
+    clearTilesTimer()
+    if (typeof window === 'undefined') return
     tilesTimer = setTimeout(() => {
-      if (nRequested > 0 && nLoaded === 0 && !tilesTimedOut) {
-        tilesTimedOut = true
-        useMapStore.getState().setTilesStatus('degraded')
-        logger.warn(CATEGORY, `Tiles no cargaron en 15s: ${mapId} — mapa básico sin tiles`)
-        // La base escala sola a high (mejor Cloudinary disponible) para que el
-        // mapa siga usable sin tiles. Si no hay fallback registrado, no-op.
-        try {
-          degradedEscalators.get(map)?.()
-        } catch { /* noop */ }
+      if (nLoaded > 0 || tilesTimedOut) return
+      if (nRequested === 0) {
+        // Nada pedido (capa apagada, viewport sin cobertura): nada que esperar.
+        useMapStore.getState().setTilesStatus('ready')
+        return
       }
+      tilesTimedOut = true
+      useMapStore.getState().setTilesStatus('degraded')
+      logger.warn(CATEGORY, `Tiles no cargaron en 15s: ${mapId} — mapa básico sin tiles`)
+      // La base escala sola a high (mejor Cloudinary disponible) para que el
+      // mapa siga usable sin tiles. Si no hay fallback registrado, no-op.
+      try {
+        degradedEscalators.get(map)?.()
+      } catch { /* noop */ }
     }, 15000)
   }
 
@@ -806,35 +840,35 @@ function attachTileTelemetry(map: maplibregl.Map, mapId: string): void {
   const onSourceEvent = (e: maplibregl.MapSourceDataEvent): void => {
     if (e.dataType !== 'source' || e.sourceId !== TILES_SOURCE_ID) return
 
-    if (e.type === 'dataloading') {
-      const key = tileKey(e)
+    const key = tileKey(e)
+
+    if (e.type === 'dataloading' && key) {
       nRequested++
-      if (key) {
-        logger.info(CATEGORY, 'tile:request', { key })
-        if (inFlight.has(key)) {
-          nDuplicates++
-          logger.info(CATEGORY, 'tile:duplicate', { key })
-        }
-        inFlight.add(key)
+      logger.info(CATEGORY, 'tile:request', { key })
+      if (inFlight.has(key)) {
+        nDuplicates++
+        logger.info(CATEGORY, 'tile:duplicate', { key })
       }
-    } else if (e.type === 'data' && e.sourceDataType === 'content') {
-      const key = tileKey(e)
+      inFlight.add(key)
+    } else if (e.type === 'data' && key) {
       nLoaded++
-      inFlight.delete(key ?? '')
-      if (tilesTimer) {
-        clearTimeout(tilesTimer)
-        tilesTimer = null
-      }
+      inFlight.delete(key)
+      clearTilesTimer()
       if (nLoaded === 1) {
         useMapStore.getState().setTilesStatus('ready')
       }
       logger.info(CATEGORY, 'tile:loaded', { key })
-    } else if (e.type === 'dataabort') {
-      const key = tileKey(e)
+    } else if (e.type === 'dataabort' && key) {
       nAborted++
-      inFlight.delete(key ?? '')
+      inFlight.delete(key)
       logger.info(CATEGORY, 'tile:aborted', { key })
-    } else if (e.type === 'data' && e.sourceDataType === 'idle' && !summarized) {
+    } else if (e.type === 'data' && e.sourceDataType === 'idle') {
+      // MapLibre solo emite idle aquí si el viewport no necesita ningún tile.
+      if (nRequested === 0 && nLoaded === 0) {
+        clearTilesTimer()
+        useMapStore.getState().setTilesStatus('ready')
+      }
+      if (summarized) return
       summarized = true
       logger.info(CATEGORY, `Tiles resumen: ${mapId}`, {
         requested: nRequested,
@@ -861,6 +895,10 @@ function attachTileTelemetry(map: maplibregl.Map, mapId: string): void {
       })
     }
   })
+  // El plazo no debe sobrevivir al mapa: el store es compartido con el siguiente.
+  map.on('remove', clearTilesTimer)
+
+  return beginPhase
 }
 
 const preloadPromises = new Map<string, Promise<void>>()
