@@ -1,4 +1,5 @@
 import { processBounds } from '@services/BoundsCalculator'
+import { obliqueFrame, obliqueMinZoom } from '@services/TransformConstrain'
 import type { MapGeoEntry } from '../types/content'
 
 export type TileZoomMode = 'detail' | 'initial-only' | 'initial-cover' | 'none'
@@ -33,7 +34,9 @@ export function constrainMinZoom(
   canvasH: number,
   bearing: number,
 ): number {
-  const { bounds } = processBounds(geo.pgw, geo.width, geo.height)
+  const { bounds, coordinates } = processBounds(geo.pgw, geo.width, geo.height)
+  const frame = obliqueFrame(coordinates, bearing)
+  if (frame) return obliqueMinZoom(frame, canvasW, canvasH)
   const [west, south, east, north] = bounds
   const latSpan = north - south
   const lonSpan = east - west

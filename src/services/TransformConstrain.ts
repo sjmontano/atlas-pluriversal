@@ -20,11 +20,70 @@
 
 import { LngLat } from 'maplibre-gl'
 import type { TransformConstrainFunction } from 'maplibre-gl'
-import type { GeographicBounds } from './BoundsCalculator'
+import type { GeographicBounds, ImageCoordinates } from './BoundsCalculator'
 
 export interface CanvasSizeProvider {
   (): { clientWidth: number; clientHeight: number }
 }
+
+/* ── Rotación oblicua ─────────────────────────────────────────────────────
+ * Con un bearing que no es múltiplo de 90° (imagen girada respecto al norte),
+ * el rectángulo lon/lat de la imagen es más grande que la imagen: limitar por
+ * él deja ver sus bordes. Ahí se limita en el marco de la pantalla, proyectando
+ * las 4 esquinas reales. Se trabaja en grados Mercator, donde la escala de
+ * pantalla es igual en ambos ejes. */
+
+const DEG = Math.PI / 180
+const mercatorY = (lat: number): number => Math.log(Math.tan(Math.PI / 4 + (lat * DEG) / 2)) / DEG
+const latFromMercatorY = (y: number): number => (2 * Math.atan(Math.exp(y * DEG)) - Math.PI / 2) / DEG
+
+/** Extensión de la imagen sobre los ejes de la pantalla para un bearing oblicuo. */
+export interface ObliqueFrame {
+  right: readonly [number, number]
+  up: readonly [number, number]
+  uMin: number
+  uMax: number
+  vMin: number
+  vMax: number
+}
+
+/** Marco de la imagen en ejes de pantalla; null si el bearing es múltiplo de 90°. */
+export function obliqueFrame(
+  coordinates: ImageCoordinates,
+  bearing: number,
+  marginH = 0,
+  marginV = 0,
+): ObliqueFrame | null {
+  if (bearing % 90 === 0) return null
+  const t = bearing * DEG
+  const right = [Math.cos(t), -Math.sin(t)] as const
+  const up = [Math.sin(t), Math.cos(t)] as const
+  const us: number[] = []
+  const vs: number[] = []
+  for (const [lng, lat] of coordinates) {
+    const y = mercatorY(lat)
+    us.push(lng * right[0] + y * right[1])
+    vs.push(lng * up[0] + y * up[1])
+  }
+  // Rectángulo interior a las 4 esquinas: la imagen nunca está girada exactamente
+  // igual que el bearing, y el exterior dejaría una línea de fondo en los bordes.
+  const [uLo, uHi] = us.sort((a, b) => a - b).slice(1, 3) as [number, number]
+  const [vLo, vHi] = vs.sort((a, b) => a - b).slice(1, 3) as [number, number]
+  const du = (uHi - uLo) * marginH
+  const dv = (vHi - vLo) * marginV
+  return { right, up, uMin: uLo - du, uMax: uHi + du, vMin: vLo - dv, vMax: vHi + dv }
+}
+
+/** Zoom mínimo con el que el viewport cabe dentro del marco. */
+export function obliqueMinZoom(frame: ObliqueFrame, W: number, H: number): number {
+  return Math.max(
+    Math.log2((W * 360) / (512 * (frame.uMax - frame.uMin))),
+    Math.log2((H * 360) / (512 * (frame.vMax - frame.vMin))),
+  )
+}
+
+const clampSpan = (value: number, min: number, max: number, half: number): number =>
+  min + half <= max - half ? Math.max(min + half, Math.min(max - half, value)) : (min + max) / 2
 
 /**
  * @param getCanvas - Devuelve el elemento contenedor del mapa (para leer W/H)
@@ -33,13 +92,31 @@ export interface CanvasSizeProvider {
  * @param maxZoom - Zoom máximo permitido (techo de detalle). MapLibre con
  *   transformConstrain custom NO clampea el maxZoom nativo, así que este
  *   clamps lo reemplaza. Opcional: si se omite no hay techo.
+ * @param frame - Marco de `obliqueFrame()`: si existe, reemplaza a `vmb`.
  */
 export function createBearingAwareConstrain(
   getCanvas: CanvasSizeProvider,
   vmb: GeographicBounds,
   bearing: number,
   maxZoom?: number,
+  frame?: ObliqueFrame | null,
 ): TransformConstrainFunction {
+  if (frame) {
+    const { right, up, uMin, uMax, vMin, vMax } = frame
+    return (lngLat: LngLat, zoom: number) => {
+      const { clientWidth: W, clientHeight: H } = getCanvas()
+      const clampedZoom = Math.max(obliqueMinZoom(frame, W, H), Math.min(maxZoom ?? Infinity, zoom))
+      const dpp = 360 / (512 * Math.pow(2, clampedZoom))
+      const y = mercatorY(lngLat.lat)
+      const u = clampSpan(lngLat.lng * right[0] + y * right[1], uMin, uMax, (W / 2) * dpp)
+      const v = clampSpan(lngLat.lng * up[0] + y * up[1], vMin, vMax, (H / 2) * dpp)
+      return {
+        center: new LngLat(u * right[0] + v * up[0], latFromMercatorY(u * right[1] + v * up[1])),
+        zoom: clampedZoom,
+      }
+    }
+  }
+
   const [west, south, east, north] = vmb
   const normalized = ((bearing % 360) + 360) % 360
   const isQuarterTurn = normalized === 90 || normalized === 270

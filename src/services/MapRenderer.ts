@@ -17,7 +17,7 @@ import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { DEV_TOOLS } from '@config'
 import { processBounds, expandBoundsPerAxis, hasNonDegenerateSpan, type PGWData, type BoundsResult, type ImageCoordinates, type GeographicBounds } from './BoundsCalculator'
-import { createBearingAwareConstrain } from './TransformConstrain'
+import { createBearingAwareConstrain, obliqueFrame } from './TransformConstrain'
 import { constrainMinZoom, computeTileRange, screenCeilingZoom } from '@utils/tileZoom'
 import { resolveBaseLevel, BASE_TRANSFORMS, baseRangeForEntry, matchesGeoAspect, pickBaseSource, type BaseLevel } from '@utils/baseZoom'
 import { clampTransform, cloudinaryVariant, downscalePlan, isCloudinaryUpload } from '@utils/textureLimit'
@@ -404,6 +404,7 @@ export async function buildGeoreferencedMap(
       vmb,
       config.initialBearing,
       maxZoom,
+      obliqueFrame(coordinates, config.initialBearing, viewportMarginH, viewportMarginV),
     )
   }
   const map = new maplibregl.Map(mapOptions)
@@ -592,6 +593,7 @@ async function finishBuild(map: maplibregl.Map, ctx: FinishBuildContext): Promis
           newVmb,
           config.initialBearing,
           maxZoom,
+          obliqueFrame(coordinates, config.initialBearing, marginH, marginV),
         ),
       )
       logger.debug(CATEGORY, `viewportMargins actualizado: ${mapId}`, { marginH, marginV })
