@@ -1,24 +1,58 @@
-import { makeMap } from '../../_map.ts'
-import { POIS } from './pois'
-import { LEGENDS } from './legends'
+import type { Poi } from '../../../types/poi'
+import { cld, defineMap, legendas, sb } from '../../kit.ts'
 
-export default makeMap({
-  mapId: 'chapter4-introduccion',
-  ui: {
-    title: 'Actores, acciones, capacidades y poderes en los nodos del tejido',
-    minimap: 'valle',
-    sidebar: [
-      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-intro' },
-      { id: 'datos', type: 'modal', icon: 'datos', label: 'Datos', frame: '3', target: 'cap4-dato-introduccion' },
-    ],
-  },
-  geo: {
-    pgw: [0, 0.000105655592, 0.000105661672, 0, -76.847071012304, 2.747088048609] as const,
-    width: 5876,
-    height: 10446,
-  },
-  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765910985/geoImages/u7oiqxpnvoocf2mym8qw.webp',
-  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765910781/geoImages/nxrpulpigg0ohxe0bjxy.webp',
+const POPUP_NODE = '/assets/pois/markers/popup-node.svg'
+const ARROW_COLOR = '#3D80A5'
+
+const nodo = (id: string, name: string, capa: string, coords: [number, number], angle: number, targetMapId: string): Poi => ({
+  id,
+  name,
+  coords,
+  capa,
+  variant: 'arrow',
+  icon: POPUP_NODE,
+  arrowColor: ARROW_COLOR,
+  angle,
+  popup: { title: name },
+  /* v17 (agregarToponimos.jsx: el primer toponimo es "Nodo Suárez" →
+   * onMapChange(index+1)): en el intro el clic navega al mapa de la
+   * finca en vez de abrir modal. Orden 1:1 con chapters.ts. */
+  targetMapId,
+})
+
+const POIS: Poi[] = [
+  nodo('poi-cap4-intro-asoyoge', 'ASOYOGE', 'Nodo Suárez',[-76.708302, 2.944349],  5, 'chapter4-asoyoge'),
+  nodo('poi-cap4-intro-el-buhido', 'Finca El Buhido', 'Nodo Suárez', [-76.70854, 2.96],   70, 'chapter4-el-buhido'),
+  nodo('poi-cap4-intro-bosque-comestible', 'Bosque comestible del oriente de Cali', 'Nodo Oriente de Cali', [-76.54, 3.448], 0, 'chapter4-bosque-comestible'),
+  nodo('poi-cap4-intro-los-bajios', 'Finca Los Bajios', 'Nodo Villa Rica', [-76.434, 3.238], 260, 'chapter4-los-bajios'),
+  nodo('poi-cap4-intro-el-paso', 'Finca El Paso', 'Nodo Suárez', [-76.65, 3.0], 210, 'chapter4-el-paso'),
+  nodo('poi-cap4-intro-las-mercedes', 'Finca Las Mercedes', 'Nodo Suárez',[-76.701894, 2.95443], 280, 'chapter4-las-mercedes'),
+  nodo('poi-cap4-intro-la-virginia', 'Finca La Virginia', 'Nodo Villa Rica', [-76.355624, 3.286533], 90, 'chapter4-la-virginia'),
+  nodo('poi-cap4-intro-centro-agropecuario', 'Centro agropecuario de Villa Rica', 'Nodo Villa Rica', [-76.465, 3.214], 0, 'chapter4-centro-agropecuario'),
+  nodo('poi-cap4-intro-la-caicedo', 'Finca La Caicedo', 'Nodo Villa Rica', [-76.48444, 3.25], 150, 'chapter4-la-caicedo'),
+]
+
+export default defineMap({
+  id: 'chapter4-introduccion',
+  title: 'Actores, acciones, capacidades y poderes en los nodos del tejido',
+  minimap: 'valle',
   zoomMax: 12,
-  extras: { pois: POIS, legends: LEGENDS },
+  tiles: { mode: 'detail', source: 'cap4/intro-localizacion-fincas.png' },
+  sidebar: [
+    sb.presentacion('cap4-intro'),
+    sb.modal('datos', 'cap4-dato-introduccion'),
+  ],
+  geo: { pgw: [0, 0.000105655592, 0.000105661672, 0, -76.847071012304, 2.747088048609], width: 5876, height: 10446 },
+  base: cld('v1765910985/geoImages/u7oiqxpnvoocf2mym8qw.webp'),
+  full: cld('v1765910781/geoImages/nxrpulpigg0ohxe0bjxy.webp'),
+  pois: POIS,
+  // Leyenda v17 (introduccionCap4, layerMenu.jsx): puramente informativa, sin ojos.
+  legends: legendas('introduccion-leyenda', '/assets/legends/cap4', undefined, 10, [
+    ['01-monocultivo-de-caña-de-a', 'Monocultivo de caña de azúcar', 'monocultivoAzucar.svg'],
+    ['02-áreas-urbanas', 'Áreas urbanas', 'areaUrbana.svg'],
+    ['03-fincas-tradicionales--cu', 'Fincas tradicionales, cultivos diversos y bosques', 'fincaTradicional.svg'],
+    ['04-cuerpos-de-agua', 'Cuerpos de agua', '/assets/legends/cap2-valle/riosPrincipales.svg'],
+    ['05-curvas-de-nivel', 'Curvas de nivel', 'curvaNivel.svg'],
+    ['06-fincas-tradicionales-agr', 'Fincas tradicionales Agropalenke soberanía de vida', 'palenke.svg'],
+  ]),
 })
