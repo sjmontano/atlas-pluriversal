@@ -55,6 +55,7 @@ describe('Sidebar ↔ catálogo de iconos ↔ modales', () => {
     const targets = [
       'cap4-dato-introduccion',
       'cap4-perfil-asoyoge',
+      'cap4-arbol-asoyoge',
       'cap4-perfil-el-buhido',
       'cap4-arbol-el-buhido',
       'cap4-perfil-el-paso',

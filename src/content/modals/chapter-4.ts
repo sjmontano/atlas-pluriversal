@@ -354,6 +354,18 @@ const CAP4_PERFIL_ASOYOGE: Modal = diagrama(
   'Perfil',
 )
 
+const CAP4_ARBOL_ASOYOGE: Modal = diagrama(
+  'cap4-arbol-asoyoge',
+  'Centro agropecuario ASOYOGE (0,51 ha)',
+  'Mapa de árbol',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-4/arbol-asoyoge.png',
+  'chapter4-asoyoge',
+  'Mapa de árbol',
+  '#f2eee7',
+)
+
 const CAP4_PERFIL_EL_BUHIDO: Modal = diagrama(
   'cap4-perfil-el-buhido',
   'Finca El Buhido',
@@ -455,7 +467,6 @@ const CAP4_PERFIL_CENTRO_AGROPECUARIO: Modal = diagrama(
   '/assets/modal/chapter-4/perfil-centro-agropecuario.png',
   'chapter4-centro-agropecuario',
   'Perfil',
-  '#f2eee7',
 )
 
 const CAP4_ARBOL_CENTRO_AGROPECUARIO: Modal = diagrama(
@@ -510,6 +521,7 @@ export const CHAPTER4_MODALS: Modal[] = [
   CAP4_PRESENTACION_PROBLEMACAS,
   CAP4_DATO_INTRODUCCION,
   CAP4_PERFIL_ASOYOGE,
+  CAP4_ARBOL_ASOYOGE,
   CAP4_PERFIL_EL_BUHIDO,
   CAP4_ARBOL_EL_BUHIDO,
   CAP4_PERFIL_EL_PASO,
