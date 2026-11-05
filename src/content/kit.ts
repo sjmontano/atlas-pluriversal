@@ -32,6 +32,8 @@ export interface DefineMapOptions extends Pick<
   geo: MapGeoEntry
   base: string
   full?: string
+  /** Default: derivado de `base` en Cloudinary. Solo para imágenes locales (encuadres). */
+  placeholder?: string
   zoomMax?: number
   /** Default: -90. Mapas atípicos: problematicas -30, bosque-comestible 0. */
   bearing?: number
@@ -43,7 +45,7 @@ export interface DefineMapOptions extends Pick<
 
 /** Las capas, grupos, leyendas, etc. se emiten en el orden en que se escriben. */
 export function defineMap(opts: DefineMapOptions): MapContent {
-  const { id, title, minimap, sidebar, ui, geo, base, full, zoomMax, bearing, tiles, config, ...extras } = opts
+  const { id, title, minimap, sidebar, ui, geo, base, full, placeholder, zoomMax, bearing, tiles, config, ...extras } = opts
   // MapRenderer aún lee el modo de MAP_TILE_MODES: dos valores distintos darían
   // un tileset generado con un rango y servido con otro.
   const listed = MAP_TILE_MODES[id]
@@ -56,7 +58,7 @@ export function defineMap(opts: DefineMapOptions): MapContent {
     mapId: id,
     ui: { title, minimap, ...ui, sidebar },
     geo,
-    images: { base, full, placeholder: ph(base) },
+    images: { base, full, placeholder: placeholder ?? ph(base) },
     config: {
       initialBearing,
       useTransformConstrain: true,
