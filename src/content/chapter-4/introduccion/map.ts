@@ -21,15 +21,15 @@ const nodo = (id: string, name: string, capa: string, coords: [number, number], 
 })
 
 const POIS: Poi[] = [
-  nodo('poi-cap4-intro-asoyoge', 'ASOYOGE', 'Nodo Suárez',[-76.708302, 2.944349],  5, 'chapter4-asoyoge'),
-  nodo('poi-cap4-intro-el-buhido', 'Finca El Buhido', 'Nodo Suárez', [-76.70854, 2.96],   70, 'chapter4-el-buhido'),
-  nodo('poi-cap4-intro-bosque-comestible', 'Bosque comestible del oriente de Cali', 'Nodo Oriente de Cali', [-76.54, 3.448], 0, 'chapter4-bosque-comestible'),
-  nodo('poi-cap4-intro-los-bajios', 'Finca Los Bajios', 'Nodo Villa Rica', [-76.434, 3.238], 260, 'chapter4-los-bajios'),
-  nodo('poi-cap4-intro-el-paso', 'Finca El Paso', 'Nodo Suárez', [-76.65, 3.0], 210, 'chapter4-el-paso'),
-  nodo('poi-cap4-intro-las-mercedes', 'Finca Las Mercedes', 'Nodo Suárez',[-76.701894, 2.95443], 280, 'chapter4-las-mercedes'),
-  nodo('poi-cap4-intro-la-virginia', 'Finca La Virginia', 'Nodo Villa Rica', [-76.355624, 3.286533], 90, 'chapter4-la-virginia'),
-  nodo('poi-cap4-intro-centro-agropecuario', 'Centro agropecuario de Villa Rica', 'Nodo Villa Rica', [-76.465, 3.214], 0, 'chapter4-centro-agropecuario'),
-  nodo('poi-cap4-intro-la-caicedo', 'Finca La Caicedo', 'Nodo Villa Rica', [-76.48444, 3.25], 150, 'chapter4-la-caicedo'),
+  nodo('poi-cap4-intro-asoyoge', 'ASOYOGE', 'Nodo Suárez', [-76.710153, 2.948455], 5, 'chapter4-asoyoge'),
+  nodo('poi-cap4-intro-el-buhido', 'Finca El Buhido', 'Nodo Suárez', [-76.708394, 2.96013], 70, 'chapter4-el-buhido'),
+  nodo('poi-cap4-intro-bosque-comestible', 'Bosque comestible del oriente de Cali', 'Nodo Oriente de Cali', [-76.575406, 3.467092], 0, 'chapter4-bosque-comestible'),
+  nodo('poi-cap4-intro-los-bajios', 'Finca Los Bajios', 'Nodo Villa Rica', [-76.485365, 3.23002], 260, 'chapter4-los-bajios'),
+  nodo('poi-cap4-intro-el-paso', 'Finca El Paso', 'Nodo Suárez', [-76.69915, 2.975909], 210, 'chapter4-el-paso'),
+  nodo('poi-cap4-intro-las-mercedes', 'Finca Las Mercedes', 'Nodo Suárez', [-76.709398, 2.954486], 280, 'chapter4-las-mercedes'),
+  nodo('poi-cap4-intro-la-virginia', 'Finca La Virginia', 'Nodo Villa Rica', [-76.355482, 3.286452], 90, 'chapter4-la-virginia'),
+  nodo('poi-cap4-intro-centro-agropecuario', 'Centro agropecuario de Villa Rica', 'Nodo Villa Rica', [-76.488842, 3.229798], 0, 'chapter4-centro-agropecuario'),
+  nodo('poi-cap4-intro-la-caicedo', 'Finca La Caicedo', 'Nodo Villa Rica', [-76.500006, 3.23554], 150, 'chapter4-la-caicedo'),
 ]
 
 export default defineMap({
