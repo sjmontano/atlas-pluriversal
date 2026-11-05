@@ -296,7 +296,8 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
         <PoiModal poi={activePoi} onClose={() => setActivePoi(null)} />
       ) : null}
 
-      {(loading || tilesStatus === 'loading') && (
+      {/* Con imagen base el mapa ya es usable: los tiles cargan encima sin bloquear. */}
+      {(loading || (tilesStatus === 'loading' && content?.config.useImageBase === false)) && (
         <div className={styles.overlay}>
           <div className={styles.spinner} aria-label="Cargando mapa" />
         </div>
