@@ -20,6 +20,13 @@ export function clampCloudinaryUrl(url: string, edge: number = MAX_TEXTURE_EDGE)
   return `${url.slice(0, start)}c_limit,w_${edge},h_${edge}/${url.slice(start)}`
 }
 
+/** Variante de resolución de una URL Cloudinary sin generar assets nuevos.
+ *  URLs locales (sin /upload/): no-op, devuelve la misma URL. */
+export function cloudinaryVariant(url: string, transform: string): string {
+  if (!url.includes('/upload/')) return url
+  return url.replace('/upload/', `/upload/${transform}/`)
+}
+
 export function clampTransform(transform: string, edge: number = MAX_TEXTURE_EDGE): string {
   return transform.replace(/([wh])_(\d+)/g, (_match, axis: string, value: string) => {
     return `${axis}_${Math.min(Number(value), edge)}`

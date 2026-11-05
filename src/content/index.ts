@@ -44,6 +44,7 @@ export function resolveMapUI(map: MapContent): Required<MapUI> & { sidebar: MapU
     minimap: map.ui?.minimap ?? 'cuenca',
     northIndicator: map.ui?.northIndicator ?? true,
     homeNav: map.ui?.homeNav ?? true,
+    chapterTabs: map.ui?.chapterTabs ?? true,
     sidebar: map.ui?.sidebar ?? DEFAULT_SIDEBAR,
     layerTooltips: map.ui?.layerTooltips ?? false,
     layerMenu: map.ui?.layerMenu ?? true,

@@ -3,13 +3,12 @@ import { LAYER_STYLES } from '@content/theme'
 import type * as maplibregl from 'maplibre-gl'
 import type { ExpressionSpecification } from 'maplibre-gl'
 import type { GeojsonLayer, Layer, RasterPgwLayer } from '../types/layer.ts'
-import { processBounds, type ImageCoordinates, type PGWData } from './BoundsCalculator'
+import { processBounds, hasNonDegenerateSpan, type PGWData } from './BoundsCalculator'
 import { logger } from './MapLogger'
-import { hideMapTooltip, layerTooltipHtml, moveMapTooltip, showMapTooltip } from './PoiManager'
+import { hideMapTooltip, layerTooltipHtml, moveMapTooltip, POIS_LAYER_ID, showMapTooltip } from './PoiManager'
 
 const CATEGORY = 'LayerManager'
 const SOURCE_PREFIX = 'atlas-layer-'
-const POIS_LAYER_ID = 'atlas-pois-layer'
 
 interface StoreSnapshot {
   visibleLayers: Set<string>
@@ -108,21 +107,6 @@ function opacityPaintProp(
   return 'raster-opacity'
 }
 
-function isDegenerate(coords: ImageCoordinates): boolean {
-  let minX = Infinity; let minY = Infinity
-  let maxX = -Infinity; let maxY = -Infinity
-  for (const [lng, lat] of coords) {
-    const x = (lng + 180) / 360
-    const s = Math.sin((lat * Math.PI) / 180)
-    const y = 0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)
-    if (x < minX) minX = x
-    if (x > maxX) maxX = x
-    if (y < minY) minY = y
-    if (y > maxY) maxY = y
-  }
-  return Math.max(maxX - minX, maxY - minY) < 2 ** -25
-}
-
 function getBeforeId(map: maplibregl.Map, layerOrder: number, allLayers: Layer[]): string | undefined {
   const sorted = allLayers
     .filter((l) => l.order > layerOrder)
@@ -154,7 +138,7 @@ export function addLayer(
 
   if (layer.type === 'raster-pgw') {
     const { coordinates } = processBounds(pgw, width, height)
-    if (isDegenerate(coordinates)) {
+    if (!hasNonDegenerateSpan(coordinates)) {
       logger.warn(CATEGORY, `Skipping degenerate layer: ${layer.id}`)
       return
     }
@@ -323,7 +307,7 @@ export function updateLayerPGW(
   const source = map.getSource(sid) as maplibregl.ImageSource | undefined
   if (!source) return
   const { coordinates } = processBounds(pgw, width, height)
-  if (!isDegenerate(coordinates)) {
+  if (hasNonDegenerateSpan(coordinates)) {
     source.setCoordinates(coordinates)
   }
 }

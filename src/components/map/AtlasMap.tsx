@@ -17,7 +17,7 @@ import {
   bindLayerClicks,
   bindLayerTooltips,
 } from '@services/LayerManager'
-import { addPois, removePois } from '@services/PoiManager'
+import { addPois, hideMapTooltip, removePois } from '@services/PoiManager'
 import { prepareLayerImages } from '@services/TextureLimiter'
 import { addEncuadres, removeEncuadres } from '@services/EncuadresManager'
 import { addOceanLabels, removeOceanLabels } from '@services/OceanLabelsManager'
@@ -31,7 +31,7 @@ import { getMapContent } from '@content'
 import { getModalById } from '@content/modals'
 import { routeForMap } from '@data/chapters/chapters.ts'
 import type { MapController } from '@services/MapRenderer'
-import { ensurePreviewFallback } from '@services/MapRenderer'
+import { ensurePreviewFallback, IMAGE_LAYER_ID, TILES_LAYER_ID } from '@services/MapRenderer'
 import { processBounds } from '@services/BoundsCalculator'
 import type { Poi } from '../../types/poi.ts'
 import { LayerMenu } from './LayerMenu'
@@ -117,6 +117,9 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     )
     const map = mapRef.current
     return () => {
+      /* mapRef.current es null al montar: sin esto un tooltip de POI en hover
+       * quedaba en pantalla tras desmontar. */
+      hideMapTooltip()
       if (map) {
         /* removePois PRIMERO y con guard independiente: oculta el tooltip
          * del body (hideTooltip) aunque el mapa ya esté destruido por el
@@ -158,7 +161,7 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
   useEffect(() => {
     const map = mapRef.current
     if (!map || !mapBuilt || content === null || tilesStatus !== 'degraded') return
-    if (map.getLayer('atlas-base-image-layer')) return
+    if (map.getLayer(IMAGE_LAYER_ID)) return
     try {
       const { coordinates } = processBounds(content.geo.pgw, content.geo.width, content.geo.height)
       const url = content.tiles?.preview ?? content.images.placeholder
@@ -172,9 +175,9 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     const map = mapRef.current
     if (!map) return
     try {
-      if (map.getLayer('atlas-tiles-layer')) {
+      if (map.getLayer(TILES_LAYER_ID)) {
         const show = tilesVisible && tilesStatus !== 'degraded'
-        map.setLayoutProperty('atlas-tiles-layer', 'visibility', show ? 'visible' : 'none')
+        map.setLayoutProperty(TILES_LAYER_ID, 'visibility', show ? 'visible' : 'none')
       }
     } catch { /* noop */ }
   }, [tilesVisible, tilesStatus, mapRef])
@@ -185,9 +188,9 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     const map = mapRef.current
     if (!map) return
     try {
-      if (map.getLayer('atlas-base-image-layer')) {
+      if (map.getLayer(IMAGE_LAYER_ID)) {
         map.setLayoutProperty(
-          'atlas-base-image-layer',
+          IMAGE_LAYER_ID,
           'visibility',
           baseImageVisible ? 'visible' : 'none',
         )

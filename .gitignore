@@ -18,16 +18,19 @@ public/assets/maps/tiles
 
 # Mapas originales PNG — referencia local del generador (no se despliegan;
 # en public/ quedan solo los 3 de runtime). Para versionarlos usar Git LFS.
-public/assets/maps/cap1/
-public/assets/maps/cap3/
-public/assets/maps/cap4/
-public/assets/maps/intro/
-# Excepciones: assets de runtime (van al deploy y a git)
+public/assets/maps/cap1/*
+public/assets/maps/cap2/*
+public/assets/maps/cap3/*
+public/assets/maps/cap4/*
+public/assets/maps/intro/*
+# Excepciones: assets de runtime (van al deploy y a git). Con `carpeta/*` sí
+# funcionan: git no puede re-incluir archivos de una carpeta excluida entera.
 !public/assets/maps/cap1/encuadres-high.webp
 !public/assets/maps/cap1/encuadres-mid.webp
 !public/assets/maps/cap1/encuadres-low.webp
 !public/assets/maps/cap1/formas-del-paisaje.png
 !public/assets/maps/cap2/modelo-territorial-suarez.png
+!public/assets/maps/cap2/sintesisCali.webp
 assets-raw/
 
 # PDFs descargables (fichas y mapas) — se sirven desde public/pdf pero no se versionan
@@ -48,11 +51,35 @@ public/pdf/
 *.sln
 *.sw?
 
-# Skills y codebase-memory locales
+Thumbs.db
+Desktop.ini
+
+# Salidas de herramientas
+coverage
+.vercel
+*.tsbuildinfo
+
+# Herramientas de asistentes IA (configuración local, no se versiona)
+AGENTS.md
+CLAUDE.md
+CLAUDE.local.md
+*.local.md
 .agents/
 .claude/
+.codebase-memory/
+.codex/
+.cursor/
+.engram/
+.gemini/
+.mcp.json
 .opencode/
+.superpowers/
+graphify-out/
+opencode.json
 skills-lock.json
 
-# Scratch de subagentes (ledgers, briefs, review packages)
-.superpowers/
+# Documentación de trabajo (vive fuera del repositorio, en ../docs-trabajo)
+*.pdf
+*.docx
+*.xlsx
+*.pptx

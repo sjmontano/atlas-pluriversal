@@ -17,7 +17,7 @@ import {
   WATER_PGW,
   WATER_W,
   WATER_H,
-} from '@content/chapter-1/mosaicos-del-agua/layers'
+} from '@content/chapter-1/mosaicos-del-agua/footprint'
 import type { SubcuencaDef } from '../types/content.ts'
 import { prepareRasterUrl } from './TextureLimiter'
 import { SUBCUENCA_TEXTURE_EDGE } from '@utils/textureLimit'

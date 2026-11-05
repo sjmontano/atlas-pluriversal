@@ -1,25 +1,30 @@
-import { makeMap } from '../../_map.ts'
-import { LEGENDS } from './legends'
+import { cld, defineMap, legendas, sb } from '../../kit.ts'
 
-export default makeMap({
-  mapId: 'chapter4-la-caicedo',
-  ui: {
-    title: 'Finca La Caicedo',
-    minimap: 'sur',
-    sidebar: [
-      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-la-caicedo' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap4/Finca La Caicedo.pdf' },
-      { id: 'perfil', type: 'modal', icon: 'perfil', label: 'Perfil', frame: '1', target: 'cap4-perfil-la-caicedo' },
-      { id: 'mapa-arbol', type: 'modal', icon: 'mapa-arbol', label: 'Mapa de árbol', frame: '1', target: 'cap4-arbol-la-caicedo' },
-    ],
-  },
-  geo: {
-    pgw: [0, 3.17488e-7, 3.17511e-7, 0, -76.42831830916282, 3.1837989140567857] as const,
-    width: 6945,
-    height: 12347,
-  },
-  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/fmyppc7aotckznz2zsah.png',
-  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765994205/geoImages/ssdze3oougoysjid5icz.png',
+export default defineMap({
+  id: 'chapter4-la-caicedo',
+  title: 'Finca La Caicedo',
+  minimap: 'sur',
   zoomMax: 20,
-  extras: { legends: LEGENDS },
+  tiles: { mode: 'initial-only', source: 'cap4/finca-la-caicedo.png' },
+  sidebar: [
+    sb.presentacion('cap4-presentacion-la-caicedo'),
+    sb.ficha('FichasCap4/Finca La Caicedo.pdf'),
+    sb.modal('perfil', 'cap4-perfil-la-caicedo'),
+    sb.modal('mapa-arbol', 'cap4-arbol-la-caicedo'),
+  ],
+  geo: { pgw: [0, 3.17488e-7, 3.17511e-7, 0, -76.42831830916282, 3.1837989140567857], width: 6945, height: 12347 },
+  base: cld('v1765991292/geoImages/fmyppc7aotckznz2zsah.png'),
+  full: cld('v1765994205/geoImages/ssdze3oougoysjid5icz.png'),
+  // Leyenda v17 (laCaicedo, layerMenu.jsx): puramente informativa, sin ojos.
+  legends: legendas('la-caicedo-leyenda', '/assets/legends/cap4', 'Zonificación', 10, [
+    ['01-2-disposición-de-residuo', '2.Disposición de residuos', 'dispocisionResiduos2.svg'],
+    ['02-1-entrada-finca', '1.Entrada finca', 'entradaPredio.svg'],
+    ['03-1-vivienda-y-espacios-as', '1.Vivienda y espacios asociados', 'viviendaEspaciosAsociados.svg'],
+    ['04-4-cría-de-animales', '4.Cría de animales', 'criaAnimales.svg'],
+    ['05-5-transformación-product', '5.Transformación productiva', 'transformacionProductiva.svg'],
+    ['06-7-zonas-en-transición', '7.Zonas en transición', 'zonaTransicion.svg'],
+    ['07-9-cultivos-diversos', '9.Cultivos diversos', 'cultivoDiverso.svg'],
+    ['08-delimitación', 'Delimitación', 'delimitacion.svg'],
+    ['09-vía', 'Vía', 'trocha.svg'],
+  ]),
 })

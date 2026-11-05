@@ -111,7 +111,7 @@ describe('composeEncuadreLabel', () => {
       fallbackBg: '#0a2240',
       factory,
     })
-    expect(ctx.font).toContain(`italic 500 ${LABEL_METRICS.fontPx * LABEL_ART_SCALE}px`)
+    expect(ctx.font).toContain(`italic 700 ${LABEL_METRICS.fontPx * LABEL_ART_SCALE}px`)
     expect(ctx.font).toContain('Noto Sans')
   })
 

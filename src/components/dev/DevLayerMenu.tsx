@@ -1,20 +1,12 @@
 import { useMemo, useState, useCallback } from 'react'
 import { useLayerStore } from '@stores/layerStore'
 import { getMapContent } from '@content'
+import { triState } from '../map/layerTree'
 import type { Layer, LegendItem } from '../../types/layer'
 import styles from './DevLayerMenu.module.css'
 
 interface Props {
   mapId: string
-}
-
-function groupTriState(groupId: string, layers: Layer[], visibleLayers: Set<string>): boolean | 'indeterminate' {
-  const groupLayers = layers.filter((l) => l.group === groupId)
-  if (groupLayers.length === 0) return false
-  const visibleCount = groupLayers.filter((l) => visibleLayers.has(l.id)).length
-  if (visibleCount === 0) return false
-  if (visibleCount === groupLayers.length) return true
-  return 'indeterminate'
 }
 
 function groupLegends(legends: LegendItem[]): Array<[string | null, LegendItem[]]> {
@@ -61,7 +53,7 @@ export function DevLayerMenu({ mapId }: Props) {
 
   const handleGroupToggle = useCallback(
     (groupId: string, groupLayers: Layer[]) => {
-      const state = groupTriState(groupId, groupLayers, visibleLayers)
+      const state = triState(visibleLayers, groupLayers.map((l) => l.id))
       setLayerGroupVisible(groupId, state !== true, groupLayers.map((l) => l.id))
     },
     [visibleLayers, setLayerGroupVisible],
@@ -112,7 +104,7 @@ export function DevLayerMenu({ mapId }: Props) {
                 const groupLayers = layers!.filter((l) => l.group === group.id)
                 if (groupLayers.length === 0) return null
                 const isExpanded = expandedGroups[group.id] !== false
-                const tri = groupTriState(group.id, layers!, visibleLayers)
+                const tri = triState(visibleLayers, groupLayers.map((l) => l.id))
 
                 return (
                   <div key={group.id} className={styles.group}>
@@ -121,7 +113,7 @@ export function DevLayerMenu({ mapId }: Props) {
                         type="checkbox"
                         checked={tri === true}
                         ref={(el) => {
-                          if (el) el.indeterminate = tri === 'indeterminate'
+                          if (el) el.indeterminate = tri === 'mixed'
                         }}
                         onChange={() => handleGroupToggle(group.id, groupLayers)}
                         className={styles.groupCheckbox}

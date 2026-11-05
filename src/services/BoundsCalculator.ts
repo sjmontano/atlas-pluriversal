@@ -177,24 +177,6 @@ export function validateBounds(bounds: GeographicBounds): boolean {
 }
 
 /**
- * Expande unos bounds por un factor fraccionario en cada lado.
- * Útil para crear viewportMaxBounds con margen alrededor de la imagen.
- *
- * @param bounds - Bounds originales
- * @param factor - Fracción a expandir (0.15 = 15% por lado)
- *
- * @example
- * expandBounds([-78.9, -0.3, -65.7, 6.4], 0.1)
- * // west −10% del span, south −10%, east +10%, north +10%
- */
-export function expandBounds(
-  bounds: GeographicBounds,
-  factor: number,
-): GeographicBounds {
-  return expandBoundsPerAxis(bounds, factor, factor)
-}
-
-/**
  * Expande unos bounds por un factor fraccionario en cada lado, con factores
  * independientes por eje. Útil para crear viewportMaxBounds con margen
  * alrededor de la imagen, controlando izquierda/derecha (H) y
@@ -248,4 +230,31 @@ export function processBounds(
   const isValid = validateBounds(bounds)
 
   return { bounds, coordinates, center, isValid }
+}
+
+/**
+ * Span mínimo (en coordenadas Mercator 0..1) para que un polígono se considere
+ * no degenerado. MapLibre v6 calcula en `ImageSource.setCoordinates` el tile
+ * central con `zoom = floor(-log2(span))`; si las 4 esquinas quedan casi en el
+ * mismo punto el zoom explota (>25) y `CanonicalTileID` lanza "outside of
+ * bounds". 2^-25 → zoom 25, el máximo permitido.
+ */
+const MIN_MERCATOR_SPAN = 2 ** -25
+
+/** Convierte las 4 esquinas a Mercator y comprueba que el span no colapse. */
+export function hasNonDegenerateSpan(coordinates: ImageCoordinates): boolean {
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+  for (const [lng, lat] of coordinates) {
+    const x = (lng + 180) / 360
+    const s = Math.sin((lat * Math.PI) / 180)
+    const y = 0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)
+    if (x < minX) minX = x
+    if (x > maxX) maxX = x
+    if (y < minY) minY = y
+    if (y > maxY) maxY = y
+  }
+  return Math.max(maxX - minX, maxY - minY) >= MIN_MERCATOR_SPAN
 }

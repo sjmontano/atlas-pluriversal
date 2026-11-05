@@ -1,28 +1,38 @@
-import { makeMap } from '../../_map.ts'
-import { LEGENDS } from './legends'
+import { cld, defineMap, legendas, sb } from '../../kit.ts'
 
-const base =
-  'https://res.cloudinary.com/dvluvxfvn/image/upload/v1768342194/geoImages/yqwuuru4zw9jvfoa4cpl.webp'
+const base = cld('v1768342194/geoImages/yqwuuru4zw9jvfoa4cpl.webp')
 
-export default makeMap({
-  mapId: 'chapter4-problematicas',
-  ui: {
-    title: 'Humedales problemáticas',
-    minimap: 'valle',
-    sidebar: [
-      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-problematicas' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap4/Metadata_4_Cap_Agropalenke.pdf' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap4/Humedales problematicas.png' },
-    ],
-  },
-  geo: {
-    pgw: [0.000001194087, -0.00000206822, -0.000002068153, -0.000001194048, -76.48394660129709, 3.4428801608900352] as const,
-    width: 4960,
-    height: 8822,
-  },
+export default defineMap({
+  id: 'chapter4-problematicas',
+  title: 'Humedales problemáticas',
+  minimap: 'valle',
+  bearing: -30,
+  zoomMax: 17,
+  tiles: { mode: 'detail', source: 'cap4/pondaje-problematicas.png' },
+  sidebar: [
+    sb.presentacion('cap4-presentacion-problematicas'),
+    sb.ficha('FichasCap4/Metadata_4_Cap_Agropalenke.pdf'),
+    sb.descarga('MapasCap4/Humedales problematicas.png'),
+  ],
+  geo: { pgw: [0.000001194087, -0.00000206822, -0.000002068153, -0.000001194048, -76.48394660129709, 3.4428801608900352], width: 4960, height: 8822 },
   base,
   full: base,
-  zoomMax: 17,
-  bearing: -30,
-  extras: { legends: LEGENDS },
+  // Leyenda v17 (problematicas, layerMenu.jsx): puramente informativa, sin ojos.
+  legends: [
+    ...legendas('problematicas-leyenda', '/assets/legends/cap4', 'Problematicas', 10, [
+      ['01-áreas-urbanas-nuevas', 'Áreas urbanas nuevas', 'areaUrbanaNueva.svg'],
+      ['02-disposición-de-residuos', 'Disposición de residuos y escombros', 'disposicionResiduos.svg'],
+      ['03-ocupación-de-las-franjas', 'Ocupación de las franjas de protección del humedal', 'ocupacionFranjas.svg'],
+      ['04-verimiento-de-aguas-resi', 'Verimiento de aguas residuales', 'palenke.svg'],
+    ]),
+    ...legendas('problematicas-leyenda', '/assets/legends/cap4', 'Agua', 50, [
+      ['05-canales', 'Canales', 'Canales.svg'],
+      ['06-humedales-y-actualidad', 'Humedales y actualidad', 'aljibe.svg'],
+      ['07-humedales--pot-2000-2014', 'Humedales  POT 2000-2014', 'humedalesPot.svg'],
+    ]),
+    ...legendas('problematicas-leyenda', '/assets/legends/cap4', 'Elementos', 80, [
+      ['08-área-urbana-2022', 'Área urbana 2022', 'areaUrbana.svg'],
+      ['09-zonas-verdes-2014', 'Zonas verdes 2014', 'zonaVerdes2014.svg'],
+    ]),
+  ],
 })

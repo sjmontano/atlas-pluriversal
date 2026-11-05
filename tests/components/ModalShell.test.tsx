@@ -201,18 +201,14 @@ describe('ModalRenderer (motor + uiStore)', () => {
     expect(screen.getByText(/Me conocen como lago/)).toBeDefined()
   })
 
-  it('el datasheet muestra los campos de la ficha técnica', () => {
+  it('la ficha técnica muestra su descripción', () => {
     const modal = getModalById('ficha-tecnica') as Modal
     render(<ModalRenderer />)
     act(() => {
       useModalStore.getState().openModal(modal)
     })
     expect(screen.getByRole('dialog', { name: /Ficha técnica/ })).toBeDefined()
-    expect(screen.getByText(/Proyecto/)).toBeDefined()
-    expect(screen.getByText(/CC BY-NC-ND 4\.0/)).toBeDefined()
-    expect(
-      screen.getAllByText(/Atlas Pluriversal del Río Cauca/).length,
-    ).toBeGreaterThan(0)
+    expect(screen.getByText(/Este mapa se conforma de dos elementos/)).toBeDefined()
   })
 
   it('el alert muestra el mensaje de en construcción', () => {

@@ -30,6 +30,7 @@
 import { useEffect, useState } from 'react'
 import { useMapUIStore, type BackgroundSource } from '@stores/mapUIStore'
 import { BASE_TRANSFORMS, pickBaseSource, type BaseLevel } from '@utils/baseZoom'
+import { cloudinaryVariant } from '@utils/textureLimit'
 import { getMapContent } from '@content'
 import styles from './SourceToggles.module.css'
 
@@ -73,7 +74,7 @@ export function SourceToggles({ mapId, compact = false }: { mapId?: string; comp
     let cancelled = false
     void Promise.all(
       LEVELS.map(async (level) => {
-        const url = source.replace('/upload/', `/upload/${BASE_TRANSFORMS[level]}/`)
+        const url = cloudinaryVariant(source, BASE_TRANSFORMS[level])
         return [level, await probe(url)] as const
       }),
     ).then((entries) => {

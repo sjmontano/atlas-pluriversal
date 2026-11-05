@@ -1,24 +1,26 @@
-import { makeMap } from '../../_map.ts'
-import { LEGENDS } from './legends'
+import { cld, defineMap, legendas, sb } from '../../kit.ts'
 
-export default makeMap({
-  mapId: 'chapter4-los-bajios',
-  ui: {
-    title: 'Finca Los Bajíos',
-    minimap: 'valle',
-    sidebar: [
-      { id: 'presentacion', type: 'modal', icon: 'presentation', label: 'Presentación', frame: '1', target: 'cap4-presentacion-los-bajios' },
-      { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap4/Finca Los Bajios.pdf' },
-      { id: 'mapa-arbol', type: 'modal', icon: 'mapa-arbol', label: 'Mapa de árbol', frame: '1', target: 'cap4-arbol-los-bajios' },
-    ],
-  },
-  geo: {
-    pgw: [0, 1.98448e-7, 1.98462e-7, 0, -76.4406963166678, 3.191896067095853] as const,
-    width: 7015,
-    height: 12472,
-  },
-  base: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991292/geoImages/xrssyymmhamqorcf5gb0.png',
-  full: 'https://res.cloudinary.com/dvluvxfvn/image/upload/v1765991261/geoImages/o0jnbtkeiddi6ielq1ow.png',
+export default defineMap({
+  id: 'chapter4-los-bajios',
+  title: 'Finca Los Bajíos',
+  minimap: 'valle',
   zoomMax: 21,
-  extras: { legends: LEGENDS },
+  tiles: { mode: 'initial-only', source: 'cap4/finca-los-bajios.png' },
+  sidebar: [
+    sb.presentacion('cap4-presentacion-los-bajios'),
+    sb.ficha('FichasCap4/Finca Los Bajios.pdf'),
+    sb.modal('mapa-arbol', 'cap4-arbol-los-bajios'),
+  ],
+  geo: { pgw: [0, 1.98448e-7, 1.98462e-7, 0, -76.4406963166678, 3.191896067095853], width: 7015, height: 12472 },
+  base: cld('v1765991292/geoImages/xrssyymmhamqorcf5gb0.png'),
+  full: cld('v1765991261/geoImages/o0jnbtkeiddi6ielq1ow.png'),
+  // Leyenda v17 (losBajios, layerMenu.jsx): puramente informativa, sin ojos.
+  legends: legendas('los-bajios-leyenda', '/assets/legends/cap4', 'Zonificación', 10, [
+    ['01-cuerpos-de-agua---aljibe', 'Cuerpos de agua - Aljibe', 'aljibe.svg'],
+    ['02-huerta', 'Huerta', 'huertas.svg'],
+    ['03-construcción', 'Construcción', 'construccion.svg'],
+    ['04-cultivos-diversos', 'Cultivos diversos', 'cultivoDiverso.svg'],
+    ['05-delimitación', 'Delimitación', 'delimitacion.svg'],
+    ['06-trocha', 'Trocha', 'trocha.svg'],
+  ]),
 })

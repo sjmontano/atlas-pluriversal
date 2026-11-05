@@ -15,7 +15,6 @@
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
-    "framer-motion": "^12.42.2",
     "maplibre-gl": "^6.0.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

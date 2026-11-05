@@ -23,7 +23,7 @@ export function ChapterEntry() {
   const { chapterId } = useParams<{ chapterId: string }>()
   const chapter = getChapter(Number(chapterId))
   const first = chapter?.maps[0]?.mapId
-  if (chapter === null || first === undefined) return <Navigate to="/dev" replace />
+  if (chapter === null || first === undefined) return <Navigate to="/" replace />
   return <Navigate to={`/capitulo/${chapter.id}/${first}`} replace />
 }
 
@@ -63,17 +63,13 @@ export function ChapterPage() {
     return (
       <div className={styles.missing}>
         <p>Capítulo o mapa no encontrado: {String(chapterId)} / {String(mapId)}</p>
-        <Link className={styles.missingLink} to="/dev">← Volver al menú</Link>
+        <Link className={styles.missingLink} to="/">← Volver al inicio</Link>
       </div>
     )
   }
 
   const isFirstMap = chapter.maps[0]?.mapId === mapRef.mapId
   const backTo = isFirstMap ? '/intro' : `/capitulo/${chapter.id}`
-
-  // Desactivar tabs de capítulos en mapas de síntesis (solo Cap 2 por ahora)
-  const synthesisMapIds = ['chapter2-m-oriente-cali', 'chapter2-m-villa-rica', 'chapter2-m-suarez']
-  const showChapters = !synthesisMapIds.includes(mapRef.mapId)
 
   return (
     <ShellLayout
@@ -84,7 +80,7 @@ export function ChapterPage() {
       minimap={ui?.minimap ?? mapRef.minimap ?? 'cuenca'}
       showNorth={ui?.homeNav ?? true}
       showHome={ui?.homeNav ?? true}
-      showChapters={showChapters}
+      showChapters={ui?.chapterTabs ?? true}
       /* Auto-hide solo en mapas de contenido: las intros conservan el menú fijo */
       chaptersAutoHide={!isFirstMap}
       chaptersAutoHideKey={mapRef.mapId}

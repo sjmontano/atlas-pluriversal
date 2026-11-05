@@ -4,6 +4,30 @@
 
 ---
 
+## 2026-11-04 — Depuración: repo limpio y un archivo por mapa
+
+Rama `chore/depuracion`. El detalle de cada cambio está en el mensaje de su commit.
+
+- **Repo:** solo versiona el producto. Lo de IA, la historia, las evidencias y los assets sin
+  referencias quedaron en `../docs-trabajo/`.
+- **Código muerto:** salieron `MapControls`, `ZoomBadge`, barriles sin uso y `framer-motion`.
+- **Bugs:** mapas vacíos al navegar rápido, rutas dev abiertas en producción, URL del worker con
+  base `/atlas/` y telemetría de tiles que nunca detectaba una caída.
+- **Contenido:** cada mapa es un `src/content/chapter-N/<slug>/map.ts` construido con
+  `src/content/kit.ts`. Modo y fuente de tiles viven en el mapa, no en listas paralelas. Guía de
+  correcciones: `src/content/CORRECCIONES.md`.
+- **Regla:** cada mapa conserva 3 sistemas de imagen: Cloudinary (`low`, `base`, `medium`, `high`),
+  base local y tiles.
+
+**Pendientes:**
+
+- Rotar las credenciales de MongoDB Atlas y Cloudinary que estuvieron en
+  `docs/MEMORIA_TECNICA.md`: siguen en el historial del repo público.
+- Archivos faltantes: `construccion.svg` y `represas.svg`.
+- `chapters.ts` aún lista los mapas a mano y duplica títulos.
+
+---
+
 ## 2026-11-04 — Revisión del profesor: menú de capas, Firefox/macOS y textos
 
 Rama `fix/revision-profesor`, un commit por corrección.

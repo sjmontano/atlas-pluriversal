@@ -90,7 +90,7 @@
 - **Consecuencia:** menos tiles, menos peso y mejor nitidez. El dato de zoom deja de ser una
   decisión editorial.
 - **Evidencia:** `70823f7`, `26bccf1`, `882f685`, `57ebe19`, `f74890d`;
-  `docs/superpowers/specs/2026-08-17-tiles-techo-pantalla-design.md`.
+  `../docs-trabajo/superpowers/specs/2026-08-17-tiles-techo-pantalla-design.md`.
 
 ---
 
@@ -213,7 +213,7 @@
   respaldo inmediato.
 - **Consecuencia:** todos los mapas son presentables; la nitidez máxima depende de la imagen,
   no de la pirámide.
-- **Evidencia:** `8c50250`; `docs/superpowers/specs/2026-10-07-fallback-cloudinary-zoom-design.md`.
+- **Evidencia:** `8c50250`; `../docs-trabajo/superpowers/specs/2026-10-07-fallback-cloudinary-zoom-design.md`.
 
 ---
 
