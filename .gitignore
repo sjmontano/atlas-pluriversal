@@ -30,7 +30,6 @@ public/assets/maps/intro/*
 !public/assets/maps/cap1/encuadres-low.webp
 !public/assets/maps/cap1/formas-del-paisaje.png
 !public/assets/maps/cap2/modelo-territorial-suarez.png
-!public/assets/maps/cap2/sintesisCali.webp
 assets-raw/
 
 # PDFs descargables (fichas y mapas) — se sirven desde public/pdf pero no se versionan

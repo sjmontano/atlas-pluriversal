@@ -352,7 +352,7 @@ const SINTESIS_CALI_IMAGEN: Modal = {
   variant: 'full',
   title: 'Síntesis territorial Oriente de Cali',
   icon: 'gallery',
-  image: '/assets/maps/cap2/sintesisCali.webp',
+  image: '/assets/modal/chapter-2/sintesisCali.webp',
   fullImage: true,
   hideHeader: true,
   closeLeft: true,

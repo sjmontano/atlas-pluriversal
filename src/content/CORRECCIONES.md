@@ -12,6 +12,8 @@ La URL dice cuál es el mapa: `/capitulo/N/chapterN-<slug>` corresponde a
 | Título, etiqueta, leyenda, grupo, orden, color de una capa o leyenda | `map.ts` del mapa |
 | Imagen, punto de interés (POI), botones de la barra lateral | `map.ts` del mapa |
 | Texto de una ventana modal | `src/content/modals/chapter-N.ts` |
+| Imagen de una ventana modal | `public/assets/modal/chapter-N/`, y la ruta en `modals/chapter-N.ts` |
+| Archivo del botón Descargar o de la ficha técnica | `sb.descarga('MapasCapN/archivo.png')` o `sb.ficha(...)` en `map.ts`; el archivo va en `public/pdf/`, que no se versiona |
 | Colores compartidos | `src/content/theme/` (`swatches.ts`, `poi.ts`, `layers.ts`) |
 | Alineación del menú de capas | `src/components/map/LayerMenu.module.css` |
 | Ocultar las pestañas de capítulos en un mapa | `ui: { chapterTabs: false }` en su `map.ts` |
