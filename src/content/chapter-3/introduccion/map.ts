@@ -36,7 +36,7 @@ const encuadres: Encuadre[] = [
     id: 'encuadre-cap3-se-encharca',
     name: 'Se encharca arriba se deseca abajo',
     targetMapId: 'chapter3-humedales',
-    labelCoords: [-76.81611, 2.99991],
+    labelCoords: [-76.800551, 2.984383],
     url: '/assets/geojson/cap3-se-encharca.json',
     color: CAP3_BLUE,
     labelRotate: LABEL_ROTATE,
