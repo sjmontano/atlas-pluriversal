@@ -16,7 +16,7 @@
 import * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { DEV_TOOLS } from '@config'
-import { processBounds, expandBoundsPerAxis, type PGWData, type BoundsResult, type ImageCoordinates, type GeographicBounds } from './BoundsCalculator'
+import { processBounds, expandBoundsPerAxis, hasNonDegenerateSpan, type PGWData, type BoundsResult, type ImageCoordinates, type GeographicBounds } from './BoundsCalculator'
 import { createBearingAwareConstrain } from './TransformConstrain'
 import { constrainMinZoom, computeTileRange, screenCeilingZoom } from '@utils/tileZoom'
 import { resolveBaseLevel, BASE_TRANSFORMS, baseRangeForEntry, matchesGeoAspect, pickBaseSource, type BaseLevel } from '@utils/baseZoom'
@@ -289,15 +289,6 @@ export function ensurePreviewFallback(
 const DEFAULT_VMB_EXPAND_FACTOR = 0
 
 /**
- * Span mínimo (en coordenadas Mercator 0..1) para que un polígono se considere
- * no degenerado. MapLibre v6 calcula en `ImageSource.setCoordinates` el tile
- * central con `zoom = floor(-log2(span))`; si las 4 esquinas quedan casi en el
- * mismo punto el zoom explota (>25) y `CanonicalTileID` lanza "outside of
- * bounds". 2^-25 → zoom 25, el máximo permitido.
- */
-const MIN_MERCATOR_SPAN = 2 ** -25
-
-/**
  * Techo de la VISTA: fijo y desacoplado de la generación de tiles. La cámara
  * puede superar el maxZoom del tileset (MapLibre reutiliza los tiles del
  * último nivel — overzoom — sin nuevos requests). 22 = techo nativo.
@@ -313,24 +304,6 @@ function resolveTileCacheSize(): number {
   if (conn?.effectiveType === '2g' || conn?.effectiveType === '3g') return 160
   if (hw <= 4) return 220
   return 400
-}
-
-/** Convierte las 4 esquinas a Mercator y comprueba que el span no colapse. */
-function isNonDegenerate(coordinates: ImageCoordinates): boolean {
-  let minX = Infinity
-  let minY = Infinity
-  let maxX = -Infinity
-  let maxY = -Infinity
-  for (const [lng, lat] of coordinates) {
-    const x = (lng + 180) / 360
-    const s = Math.sin((lat * Math.PI) / 180)
-    const y = 0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)
-    if (x < minX) minX = x
-    if (x > maxX) maxX = x
-    if (y < minY) minY = y
-    if (y > maxY) maxY = y
-  }
-  return Math.max(maxX - minX, maxY - minY) >= MIN_MERCATOR_SPAN
 }
 
 export interface MapController {
@@ -613,7 +586,7 @@ async function finishBuild(map: maplibregl.Map, ctx: FinishBuildContext): Promis
     updateBounds(pgw: PGWData, width: number, height: number): BoundsResult {
       const result = processBounds(pgw, width, height)
       const source = map.getSource(IMAGE_SOURCE_ID) as maplibregl.ImageSource | undefined
-      if (source && isNonDegenerate(result.coordinates)) {
+      if (source && hasNonDegenerateSpan(result.coordinates)) {
         source.setCoordinates(result.coordinates)
       }
       return result
