@@ -5,11 +5,10 @@ import type { ExpressionSpecification } from 'maplibre-gl'
 import type { GeojsonLayer, Layer, RasterPgwLayer } from '../types/layer.ts'
 import { processBounds, hasNonDegenerateSpan, type PGWData } from './BoundsCalculator'
 import { logger } from './MapLogger'
-import { hideMapTooltip, layerTooltipHtml, moveMapTooltip, showMapTooltip } from './PoiManager'
+import { hideMapTooltip, layerTooltipHtml, moveMapTooltip, POIS_LAYER_ID, showMapTooltip } from './PoiManager'
 
 const CATEGORY = 'LayerManager'
 const SOURCE_PREFIX = 'atlas-layer-'
-const POIS_LAYER_ID = 'atlas-pois-layer'
 
 interface StoreSnapshot {
   visibleLayers: Set<string>

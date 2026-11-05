@@ -33,7 +33,7 @@ maplibregl.setWorkerUrl(`${import.meta.env.BASE_URL}vendor/maplibre/maplibre-gl-
 const CATEGORY = 'MapRenderer'
 
 const TILES_SOURCE_ID = 'atlas-tiles'
-const TILES_LAYER_ID = 'atlas-tiles-layer'
+export const TILES_LAYER_ID = 'atlas-tiles-layer'
 
 /** Variante de resolución de una URL Cloudinary sin generar assets nuevos.
  *  URLs locales (sin /upload/): no-op, devuelve la misma URL. */
@@ -251,7 +251,7 @@ const BLANK_STYLE: maplibregl.StyleSpecification = {
 }
 
 const IMAGE_SOURCE_ID = 'atlas-base-image'
-const IMAGE_LAYER_ID = 'atlas-base-image-layer'
+export const IMAGE_LAYER_ID = 'atlas-base-image-layer'
 
 /** Garantiza una imagen base visible con la URL dada (crea o actualiza).
  *  Rescate para mapas sin base (useImageBase:false) cuando los tiles fallan:

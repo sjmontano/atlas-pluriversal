@@ -13,7 +13,7 @@ export interface GeoJSONFeature {
 
 /** Source única de POIs (la usa también el panel dev para recalibrar). */
 export const POIS_SOURCE_ID = 'atlas-pois-source'
-const POIS_LAYER_ID = 'atlas-pois-layer'
+export const POIS_LAYER_ID = 'atlas-pois-layer'
 const POIS_CIRCLE_LAYER_ID = 'atlas-pois-circle-layer'
 const POIS_PULSE_LAYER_ID = 'atlas-pois-pulse-layer'
 const POIS_ICON_LAYER_ID = 'atlas-pois-icon-layer'
