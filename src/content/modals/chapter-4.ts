@@ -505,6 +505,39 @@ const CAP4_ARBOL_LAS_MERCEDES: Modal = diagrama(
   '#f2eee7',
 )
 
+const CAP4_PERFIL_BOSQUE_COMESTIBLE: Modal = diagrama(
+  'cap4-perfil-bosque-comestible',
+  'Bosque comestible del oriente de Cali',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-bosque-comestible.png',
+  'chapter4-bosque-comestible',
+  'Perfil',
+)
+
+const CAP4_PERFIL_LOS_BAJIOS: Modal = diagrama(
+  'cap4-perfil-los-bajios',
+  'Finca Los Bajíos',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-los-bajios.png',
+  'chapter4-los-bajios',
+  'Perfil',
+)
+
+const CAP4_PERFIL_LAS_MERCEDES: Modal = diagrama(
+  'cap4-perfil-las-mercedes',
+  'Finca Las Mercedes',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-las-mercedes.png',
+  'chapter4-las-mercedes',
+  'Perfil',
+)
+
 /* ── Export ────────────────────────────────────────────────────────────── */
 
 export const CHAPTER4_MODALS: Modal[] = [
@@ -532,6 +565,9 @@ export const CHAPTER4_MODALS: Modal[] = [
   CAP4_ARBOL_LA_CAICEDO,
   CAP4_PERFIL_CENTRO_AGROPECUARIO,
   CAP4_ARBOL_CENTRO_AGROPECUARIO,
+  CAP4_PERFIL_BOSQUE_COMESTIBLE,
+  CAP4_PERFIL_LOS_BAJIOS,
   CAP4_ARBOL_LOS_BAJIOS,
+  CAP4_PERFIL_LAS_MERCEDES,
   CAP4_ARBOL_LAS_MERCEDES,
 ]

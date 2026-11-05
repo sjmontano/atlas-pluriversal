@@ -9,6 +9,7 @@ export default defineMap({
   sidebar: [
     sb.presentacion('cap4-presentacion-las-mercedes'),
     sb.ficha('FichasCap4/Finca Las Mercedes.pdf'),
+    sb.modal('perfil', 'cap4-perfil-las-mercedes'),
     sb.modal('mapa-arbol', 'cap4-arbol-las-mercedes'),
   ],
   geo: { pgw: [0, 2.37423e-7, 2.3744e-7, 0, -76.68619953199119, 2.930137907002091], width: 7015, height: 12472 },

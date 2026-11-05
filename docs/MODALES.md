@@ -51,8 +51,8 @@ Ficha/descargar C1 son **links Drive del sidebar** por diseño v17, no modales.
 | `cap4-intro` | intro | `paragraph`, `large` | botón → `chapter4-introduccion` |
 | `cap4-presentacion-*` (×10, vía `presentacion(4,…)`, literales) | presentación por finca | `paragraph`, `large` | botón → `chapter4-<finca>` |
 | `cap4-dato-introduccion` (vía `diagrama()`) | datos del capítulo | `image` (`dato-intro-cap4.png`), `large`, icon `datos` | botón → `chapter4-introduccion` |
-| `cap4-perfil-asoyoge/el-buhido/el-paso/la-virginia/la-caicedo/centro-agropecuario` (×6, vía `diagrama()`) | perfil = corte de zonificación | `image` (`perfil-*.png`), `large`, icon `perfil` | botón → su finca |
-| `cap4-arbol-el-buhido/los-bajios/el-paso/las-mercedes/la-virginia/centro-agropecuario/la-caicedo` (×7, vía `diagrama()`) | mapa de árbol = treemap de % por zona | `image` (`arbol-*.png`), `large`, icon `mapa-arbol` | botón → su finca |
+| `cap4-perfil-asoyoge/el-buhido/bosque-comestible/los-bajios/el-paso/las-mercedes/la-virginia/la-caicedo/centro-agropecuario` (×9, vía `diagrama()`) | perfil = corte de zonificación | `image` (`perfil-*.png`), `large`, icon `perfil` | botón → su finca |
+| `cap4-arbol-asoyoge/el-buhido/los-bajios/el-paso/las-mercedes/la-virginia/centro-agropecuario/la-caicedo` (×8, vía `diagrama()`) | mapa de árbol = treemap de % por zona | `image` (`arbol-*.png`), `large`, icon `mapa-arbol` | botón → su finca |
 
 Diagramas portados de v17 `iconsCap4/` → `public/assets/modal/chapter-4/`
 (kebab-case). Solo existen donde la comunidad produjo el diagrama.
@@ -103,6 +103,5 @@ sintesis, credits, marker, info, back, arrow-up`.
 
 ## Gaps conocidos (contenido por producir)
 
-- Perfil: `bosque-comestible`, `los-bajios`, `las-mercedes` (sin diagrama).
-- Árbol: `asoyoge`, `bosque-comestible` (sin diagrama).
+- Árbol: `bosque-comestible` (sin diagrama).
 - C3/C4: presentaciones de 1 párrafo (literales cortos vs C1 rico).
