@@ -17,7 +17,7 @@ import {
   bindLayerClicks,
   bindLayerTooltips,
 } from '@services/LayerManager'
-import { addPois, removePois } from '@services/PoiManager'
+import { addPois, hideMapTooltip, removePois } from '@services/PoiManager'
 import { prepareLayerImages } from '@services/TextureLimiter'
 import { addEncuadres, removeEncuadres } from '@services/EncuadresManager'
 import { addOceanLabels, removeOceanLabels } from '@services/OceanLabelsManager'
@@ -117,6 +117,9 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
     )
     const map = mapRef.current
     return () => {
+      /* mapRef.current es null al montar: sin esto un tooltip de POI en hover
+       * quedaba en pantalla tras desmontar. */
+      hideMapTooltip()
       if (map) {
         /* removePois PRIMERO y con guard independiente: oculta el tooltip
          * del body (hideTooltip) aunque el mapa ya esté destruido por el
