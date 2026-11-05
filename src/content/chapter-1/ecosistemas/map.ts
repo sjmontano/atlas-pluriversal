@@ -25,6 +25,8 @@ interface Row {
   group: string
   order: number
   url: string
+  /** Fuera del mapa y del menú, sin perder sus datos. Para reactivarla, borrar este campo. */
+  disabled?: boolean
 }
 
 // Grupo eco-1.1 — De litoral y aguas poco profundas
@@ -72,7 +74,7 @@ const ROWS: Row[] = [
   { key: 'zonaUrbanaIndustrial', name: 'Zonas urbanizadas, industrializadas y con minería intensiva', swatch: '#E24A3C', group: 'eco-2.3', order: 1, url: `${LOW}/zona-urbana-industrial-low.webp` },
   { key: 'aguaSuperficial', name: 'Cuerpos de agua artificial', swatch: '#4342A8', group: 'eco-2.3', order: 2, url: cld('v1752615018/geoImages/uw21wuzdbrqiefckuf4d.webp') },
 
-  { key: 'sinInformacion', name: 'Sin información y otras áreas', swatch: '#F7F5E7', group: '', order: 999, url: `${LOW}/sin-informacion-low.webp` },
+  { key: 'sinInformacion', name: 'Sin información y otras áreas', swatch: '#F7F5E7', group: '', order: 999, url: `${LOW}/sin-informacion-low.webp`, disabled: true },
 ]
 
 const base = cld('v1752350981/geoImages/g9xrqxop5nmfciklng1b.webp')
@@ -93,7 +95,7 @@ export default defineMap({
   tiles: { mode: 'detail', source: 'cap1/ecosistemas.png' },
   config: { viewportMarginH: -0.03, viewportMarginV: -0.12 },
   menuTitle: 'Ecosistemas y transformaciones',
-  layers: ROWS.map((row) =>
+  layers: ROWS.filter((row) => !row.disabled).map((row) =>
     eco({
       id: `${row.key}-layer`,
       name: row.name,
