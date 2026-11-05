@@ -9,7 +9,7 @@ export default makeMap({
     sidebar: [
       { id: 'ficha-tecnica', type: 'link', icon: 'fichatecnica', label: 'Ficha técnica', frame: '3', href: '/pdf/FichasTecnicas/FichasCap2/Entramado territorial Distrito de Aguablanca Cali con sus alternativas transformadoras.pdf' },
       { id: 'galeria', type: 'modal', icon: 'gallery', label: 'Galería de imágenes', frame: '2', target: 'cap2-galeria-cali' },
-      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap2/Mapa alternativas transformadoras del Oriente de Cali.pdf' },
+      { id: 'descargar', type: 'link', icon: 'download', label: 'Descargar', frame: '3', href: '/pdf/Descargables/MapasCap2/Mapa alternativas transformadoras del Oriente de Cali.png' },
       { id: 'sintesis', type: 'goto', icon: 'sintesis', label: 'Síntesis', frame: '2', to: '/capitulo/2/chapter2-m-oriente-cali' },
     ],
   },

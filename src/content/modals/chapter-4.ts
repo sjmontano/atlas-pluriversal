@@ -11,8 +11,8 @@ const CAP4_INTRO: Modal = {
   id: 'cap4-intro',
   section: 'capitulo-4',
   variant: 'large',
-  title: 'Capitulo IV',
-  highlight: 'Actores, acciones, capacidades y poderes en los nodos del tejido',
+  title: 'Actores, acciones, capacidades y poderes en los nodos del tejido',
+  highlight: 'Capitulo IV',
   icon: 'presentation',
   body: paragraphs(
     [
