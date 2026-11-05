@@ -868,7 +868,7 @@ function attachTileTelemetry(map: maplibregl.Map, mapId: string): () => void {
 }
 
 const preloadPromises = new Map<string, Promise<void>>()
-const preloadedImages = new Map<string, HTMLImageElement>()
+const preloadedImages = new Map<string, { naturalWidth: number; naturalHeight: number }>()
 
 /** Precarga una imagen en background (para el upgrade placeholder → full).
  *  Deduplica solicitudes en vuelo con un Map de promesas pendientes
@@ -876,7 +876,7 @@ const preloadedImages = new Map<string, HTMLImageElement>()
  *  y la primera build inicia el preload antes de ser descartada). */
 async function preloadImage(url: string): Promise<void> {
   const existing = preloadedImages.get(url)
-  if (existing?.complete && existing.naturalWidth > 0) {
+  if (existing && existing.naturalWidth > 0) {
     return
   }
 
@@ -887,7 +887,7 @@ async function preloadImage(url: string): Promise<void> {
     const img = new Image()
     img.crossOrigin = 'anonymous'
     img.onload = () => {
-      preloadedImages.set(url, img)
+      preloadedImages.set(url, { naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight })
       preloadPromises.delete(url)
       resolve()
     }
