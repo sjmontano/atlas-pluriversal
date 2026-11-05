@@ -19,7 +19,6 @@ public/assets/maps/tiles
 # Mapas originales PNG — referencia local del generador (no se despliegan;
 # en public/ quedan solo los 3 de runtime). Para versionarlos usar Git LFS.
 public/assets/maps/cap1/
-public/assets/maps/cap2/
 public/assets/maps/cap3/
 public/assets/maps/cap4/
 public/assets/maps/intro/
