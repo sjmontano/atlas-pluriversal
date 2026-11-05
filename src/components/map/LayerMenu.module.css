@@ -119,8 +119,8 @@
 }
 
 /* El decorador sigue al hover DEL BOTÓN (no del wrap): con el panel abierto
- * el mouse vive dentro del wrap y el fondo quedaba "pegado" encendido sin
- * la etiqueta (oculta en pinned). Así fondo+etiqueta van siempre juntos. */
+ * el mouse vive dentro del wrap y el fondo quedaba "pegado" encendido. Así
+ * fondo+etiqueta van siempre juntos. */
 .toggle:hover::before,
 .toggle:focus-visible::before {
   opacity: 1;
@@ -153,10 +153,18 @@
   transform: translateY(-50%) translateX(0);
 }
 
-/* Con el panel abierto el botón viaja sobre la zona de tabs: la etiqueta
-   estorbaría/montaría, así que solo vive en hover con el panel cerrado. */
-.wrap.pinned .toggleLabel {
-  display: none;
+/* Con el panel abierto el mouse vive dentro del wrap: la etiqueta solo sigue
+   al hover DEL BOTÓN, igual que su decorador, para que nunca salga uno sin
+   el otro. */
+.wrap.pinned:hover .toggleLabel {
+  opacity: 0;
+  transform: translateY(-50%) translateX(8px);
+}
+
+.wrap.pinned .toggle:hover .toggleLabel,
+.wrap.pinned .toggle:focus-visible .toggleLabel {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
 }
 
 /* ── Panel libre: la imagen ES el contenedor (v17) ───────────────────────
