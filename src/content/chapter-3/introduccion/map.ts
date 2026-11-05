@@ -40,6 +40,8 @@ const encuadres: Encuadre[] = [
     url: '/assets/geojson/cap3-se-encharca.json',
     color: CAP3_BLUE,
     labelRotate: LABEL_ROTATE,
+    /* Una sola línea: override del maxWidth global */
+    labelMaxWidth: 340,
     kind: 'line',
   },
   {
