@@ -30,9 +30,9 @@ export default defineMap({
   base: cld('v1759512015/geoImages/roog2p6gjo3dnnqpcfel.webp'),
   full: cld('v1759511931/geoImages/ku7ikq6ottmty9pl91u0.webp'),
   pois: [
-    arrow('poi-cap2-cali-chontaduro', 1, 'Casa del Chontaduro', [-76.486678, 3.432277], cld('v1761794279/geoImages/gqy5xtw09p0qfta46jr6.webp'), 270, 'cap2-at-casa-cultural'),
-    arrow('poi-cap2-cali-huerta', 2, 'Huerta Madre La Laguna', [-76.486929, 3.433365], cld('v1761792935/geoImages/lnyyorgnj7zmdzzi93p1.webp'), 90, 'cap2-at-red-nativos'),
-    arrow('poi-cap2-cali-chicas', 3, 'Chicas Comunicativas', [-76.495738, 3.413591], '/assets/pois/photos/organizaciones/chicas-comunicativas.webp', 140, 'cap2-at-chicas-comunicativas'),
+    arrow('poi-cap2-cali-chontaduro', 1, 'Casa del Chontaduro',[-76.487493, 3.431734], cld('v1761794279/geoImages/gqy5xtw09p0qfta46jr6.webp'), 270, 'cap2-at-casa-cultural'),
+    arrow('poi-cap2-cali-huerta', 2, 'Huerta Madre La Laguna',  [-76.487903, 3.433137], cld('v1761792935/geoImages/lnyyorgnj7zmdzzi93p1.webp'), 90, 'cap2-at-red-nativos'),
+    arrow('poi-cap2-cali-chicas', 3, 'Chicas Comunicativas',  [-76.497049, 3.412283], '/assets/pois/photos/organizaciones/chicas-comunicativas.webp', 140, 'cap2-at-chicas-comunicativas'),
     arrow('poi-cap2-cali-afroyoga-1', 4, 'Afro Yoga', [-76.506431, 3.390553], cld('v1761791824/geoImages/gk60hbzfh98apd8uuekk.webp'), 140, 'cap2-at-afro-yoga'),
     arrow('poi-cap2-cali-afroyoga-2', 4, 'Afro Yoga', [-76.516033, 3.443108], cld('v1761791824/geoImages/gk60hbzfh98apd8uuekk.webp'), 140, 'cap2-at-afro-yoga'),
     arrow('poi-cap2-cali-afroyoga-3', 4, 'Afro Yoga', [-76.489738, 3.45103], cld('v1761791824/geoImages/gk60hbzfh98apd8uuekk.webp'), 140, 'cap2-at-afro-yoga'),
