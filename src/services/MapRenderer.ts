@@ -20,7 +20,7 @@ import { processBounds, expandBoundsPerAxis, hasNonDegenerateSpan, type PGWData,
 import { createBearingAwareConstrain } from './TransformConstrain'
 import { constrainMinZoom, computeTileRange, screenCeilingZoom } from '@utils/tileZoom'
 import { resolveBaseLevel, BASE_TRANSFORMS, baseRangeForEntry, matchesGeoAspect, pickBaseSource, type BaseLevel } from '@utils/baseZoom'
-import { clampTransform, downscalePlan, isCloudinaryUpload } from '@utils/textureLimit'
+import { clampTransform, cloudinaryVariant, downscalePlan, isCloudinaryUpload } from '@utils/textureLimit'
 import { maxTextureEdge, prepareRasterUrl } from './TextureLimiter'
 import { MAP_TILE_MODES } from '@data/tiles'
 import { logger } from './MapLogger'
@@ -34,13 +34,6 @@ const CATEGORY = 'MapRenderer'
 
 const TILES_SOURCE_ID = 'atlas-tiles'
 export const TILES_LAYER_ID = 'atlas-tiles-layer'
-
-/** Variante de resolución de una URL Cloudinary sin generar assets nuevos.
- *  URLs locales (sin /upload/): no-op, devuelve la misma URL. */
-export function cloudinaryVariant(url: string, transform: string): string {
-  if (!url.includes('/upload/')) return url
-  return url.replace('/upload/', `/upload/${transform}/`)
-}
 
 /** URL de la base Cloudinary para un nivel base/medium/high.
  *  URLs locales (sin /upload/): no-op, devuelve la misma URL. */

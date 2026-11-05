@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cloudinaryVariant } from '@services/MapRenderer'
+import { cloudinaryVariant } from '@utils/textureLimit'
 
 describe('cloudinaryVariant', () => {
   it('inserta el transform tras /upload/ en URLs Cloudinary', () => {
