@@ -32,7 +32,7 @@ export default defineMap({
   legends: [
     ...legendas('encharcaron-leyenda', '/assets/legends/cap3', 'ench-1970', 10, [
       ['construcciones-1970', 'Construcciones', 'hum.svg'],
-      ['vias-1970', 'Vías', 'hum.svg'],
+      ['vias-1970', 'Vías', 'vias.svg'],
       ['quebradas-1970', 'Quebradas', '/assets/legends/cap2-valle/riosPrincipales.svg'],
       { id: 'rio-1970', name: 'Río Cauca', icon: 'rioCauca.svg', longText: TEXTO_RIO_CAUCA },
     ]),

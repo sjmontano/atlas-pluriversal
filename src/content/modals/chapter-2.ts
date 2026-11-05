@@ -378,6 +378,7 @@ function galeria(
     id,
     section: 'capitulo-2',
     variant: 'xl',
+    bodyFullBleed: true,
     title: 'Galería de imágenes',
     highlight,
     icon: 'gallery',
@@ -399,6 +400,7 @@ function galeria(
       label: 'Galería de imágenes',
       mapId,
     },
+
   }
 }
 
