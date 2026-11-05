@@ -1,34 +1,5 @@
-import type { LegendItem, RasterPgwLayer } from '../../types/layer'
-import type { PGWData } from '@services/BoundsCalculator'
+import type { LegendItem } from '../../types/layer'
 import { SWATCH } from '@content/theme/swatches'
-
-export const CLOUD = 'https://res.cloudinary.com/dvluvxfvn/image/upload'
-
-export const rasterLayer = (
-  id: string,
-  name: string,
-  image: string,
-  pgw: PGWData,
-  width: number,
-  height: number,
-  swatch: string,
-  order: number,
-  opts?: { group?: string; opacity?: number; visibleByDefault?: boolean; icon?: string },
-): RasterPgwLayer => ({
-  id,
-  name,
-  category: 'other',
-  type: 'raster-pgw',
-  image,
-  pgw,
-  width,
-  height,
-  opacity: opts?.opacity ?? 0.8,
-  visibleByDefault: opts?.visibleByDefault ?? false,
-  order,
-  group: opts?.group,
-  legend: { swatch, description: name, ...(opts?.icon !== undefined ? { icon: opts.icon } : {}) },
-})
 
 // Textos confirmados desde fuentes del proyecto (v17 lugares.js / modalsData).
 // Solo se usa longText donde existe fuente; el resto de leyendas no lleva tooltip.
