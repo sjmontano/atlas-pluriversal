@@ -354,6 +354,18 @@ const CAP4_PERFIL_ASOYOGE: Modal = diagrama(
   'Perfil',
 )
 
+const CAP4_ARBOL_ASOYOGE: Modal = diagrama(
+  'cap4-arbol-asoyoge',
+  'Centro agropecuario ASOYOGE (0,51 ha)',
+  'Mapa de árbol',
+  'mapa-arbol',
+  '1',
+  '/assets/modal/chapter-4/arbol-asoyoge.png',
+  'chapter4-asoyoge',
+  'Mapa de árbol',
+  '#f2eee7',
+)
+
 const CAP4_PERFIL_EL_BUHIDO: Modal = diagrama(
   'cap4-perfil-el-buhido',
   'Finca El Buhido',
@@ -455,7 +467,6 @@ const CAP4_PERFIL_CENTRO_AGROPECUARIO: Modal = diagrama(
   '/assets/modal/chapter-4/perfil-centro-agropecuario.png',
   'chapter4-centro-agropecuario',
   'Perfil',
-  '#f2eee7',
 )
 
 const CAP4_ARBOL_CENTRO_AGROPECUARIO: Modal = diagrama(
@@ -494,6 +505,39 @@ const CAP4_ARBOL_LAS_MERCEDES: Modal = diagrama(
   '#f2eee7',
 )
 
+const CAP4_PERFIL_BOSQUE_COMESTIBLE: Modal = diagrama(
+  'cap4-perfil-bosque-comestible',
+  'Bosque comestible del oriente de Cali',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-bosque-comestible.png',
+  'chapter4-bosque-comestible',
+  'Perfil',
+)
+
+const CAP4_PERFIL_LOS_BAJIOS: Modal = diagrama(
+  'cap4-perfil-los-bajios',
+  'Finca Los Bajíos',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-los-bajios.png',
+  'chapter4-los-bajios',
+  'Perfil',
+)
+
+const CAP4_PERFIL_LAS_MERCEDES: Modal = diagrama(
+  'cap4-perfil-las-mercedes',
+  'Finca Las Mercedes',
+  'Perfil de zonificación',
+  'perfil',
+  '1',
+  '/assets/modal/chapter-4/perfil-las-mercedes.png',
+  'chapter4-las-mercedes',
+  'Perfil',
+)
+
 /* ── Export ────────────────────────────────────────────────────────────── */
 
 export const CHAPTER4_MODALS: Modal[] = [
@@ -510,6 +554,7 @@ export const CHAPTER4_MODALS: Modal[] = [
   CAP4_PRESENTACION_PROBLEMACAS,
   CAP4_DATO_INTRODUCCION,
   CAP4_PERFIL_ASOYOGE,
+  CAP4_ARBOL_ASOYOGE,
   CAP4_PERFIL_EL_BUHIDO,
   CAP4_ARBOL_EL_BUHIDO,
   CAP4_PERFIL_EL_PASO,
@@ -520,6 +565,9 @@ export const CHAPTER4_MODALS: Modal[] = [
   CAP4_ARBOL_LA_CAICEDO,
   CAP4_PERFIL_CENTRO_AGROPECUARIO,
   CAP4_ARBOL_CENTRO_AGROPECUARIO,
+  CAP4_PERFIL_BOSQUE_COMESTIBLE,
+  CAP4_PERFIL_LOS_BAJIOS,
   CAP4_ARBOL_LOS_BAJIOS,
+  CAP4_PERFIL_LAS_MERCEDES,
   CAP4_ARBOL_LAS_MERCEDES,
 ]

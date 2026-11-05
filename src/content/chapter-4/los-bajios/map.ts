@@ -9,6 +9,7 @@ export default defineMap({
   sidebar: [
     sb.presentacion('cap4-presentacion-los-bajios'),
     sb.ficha('FichasCap4/Finca Los Bajios.pdf'),
+    sb.modal('perfil', 'cap4-perfil-los-bajios'),
     sb.modal('mapa-arbol', 'cap4-arbol-los-bajios'),
   ],
   geo: { pgw: [0, 1.98448e-7, 1.98462e-7, 0, -76.4406963166678, 3.191896067095853], width: 7015, height: 12472 },

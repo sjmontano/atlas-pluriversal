@@ -55,6 +55,7 @@ describe('Sidebar ↔ catálogo de iconos ↔ modales', () => {
     const targets = [
       'cap4-dato-introduccion',
       'cap4-perfil-asoyoge',
+      'cap4-arbol-asoyoge',
       'cap4-perfil-el-buhido',
       'cap4-arbol-el-buhido',
       'cap4-perfil-el-paso',
@@ -65,7 +66,10 @@ describe('Sidebar ↔ catálogo de iconos ↔ modales', () => {
       'cap4-arbol-la-caicedo',
       'cap4-perfil-centro-agropecuario',
       'cap4-arbol-centro-agropecuario',
+      'cap4-perfil-bosque-comestible',
+      'cap4-perfil-los-bajios',
       'cap4-arbol-los-bajios',
+      'cap4-perfil-las-mercedes',
       'cap4-arbol-las-mercedes',
       'cap2-galeria-suarez',
       'cap2-galeria-villa-rica',
