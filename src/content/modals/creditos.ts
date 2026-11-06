@@ -1,7 +1,7 @@
 /**
  * 👥 MODALES DE EQUIPOS — listas de créditos (v17 modalsData ids 19-21)
  * =====================================================================
- * Se abren desde las 3 filas de la página /credits. Texto verbatim v17.
+ * Se abren desde las 3 filas de la página /creditos. Texto verbatim v17.
  * Solo usa bloques existentes (paragraph).
  */
 

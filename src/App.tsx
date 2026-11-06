@@ -1,8 +1,9 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import { ModalRenderer } from '@components/modal/shell/ModalRenderer'
 
 import { DEV_TOOLS } from '@config'
+import { CHAPTERS, chapterPath } from '@data/chapters/chapters.ts'
 
 /* Páginas de desarrollo: sus rutas solo existen con DEV_TOOLS. @__PURE__ permite
  * que la build de producción descarte el lazy sin usar, de modo que ningún chunk
@@ -30,6 +31,12 @@ const ChapterEntry = lazy(() =>
 )
 const ChapterPage = lazy(() =>
   import('@pages/ChapterPage.tsx').then((m) => ({ default: m.ChapterPage })),
+)
+const LegacyChapterRedirect = lazy(() =>
+  import('@pages/ChapterPage.tsx').then((m) => ({ default: m.LegacyChapterRedirect })),
+)
+const LegacyMapRedirect = lazy(() =>
+  import('@pages/ChapterPage.tsx').then((m) => ({ default: m.LegacyMapRedirect })),
 )
 const EntramadosPage = lazy(() =>
   import('@pages/EntramadosPage.tsx').then((m) => ({ default: m.EntramadosPage })),
@@ -72,15 +79,25 @@ export function App() {
         <Routes>
           <Route path="/" element={<InicioPage />} />
           <Route path="/intro" element={<IntroMapPage />} />
-          <Route path="/capitulo/:chapterId" element={<ChapterEntry />} />
-          <Route path="/capitulo/:chapterId/:mapId" element={<ChapterPage />} />
+          {CHAPTERS.map((c) => (
+            <Route key={c.id} path={chapterPath(c.id)}>
+              <Route index element={<ChapterEntry chapterId={c.id} />} />
+              <Route path=":slug" element={<ChapterPage chapterId={c.id} />} />
+            </Route>
+          ))}
           <Route path="/entramados" element={<EntramadosPage />} />
-          <Route path="/credits" element={<CreditsPage />} />
+          <Route path="/creditos" element={<CreditsPage />} />
+          {/* Enlaces anteriores: siguen funcionando y llevan a la URL actual. */}
+          <Route path="/capitulo" element={<Navigate to="/intro" replace />} />
+          <Route path="/capitulo/:chapterId" element={<LegacyChapterRedirect />} />
+          <Route path="/capitulo/:chapterId/:mapId" element={<LegacyMapRedirect />} />
+          <Route path="/credits" element={<Navigate to="/creditos" replace />} />
           {DEV_TOOLS && <Route path="/dev" element={<DevMenu />} />}
           {DEV_TOOLS && <Route path="/modales" element={<ModalDemoPage />} />}
           {DEV_TOOLS && <Route path="/dev/ui" element={<UiMockupPage />} />}
           {DEV_TOOLS && <Route path="/dev/shell" element={<ShellMockupPage />} />}
           {DEV_TOOLS && <Route path="/test/:mapId" element={<TestMapPage />} />}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <ModalRenderer />
       </Suspense>

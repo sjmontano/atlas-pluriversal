@@ -1,11 +1,12 @@
 /**
  * 🗺️ CHAPTER PAGE — Visor público de un mapa dentro del shell
  * ============================================================
- * Ruta `/capitulo/:chapterId/:mapId`. Lee la config UI desde
+ * Ruta `/capitulo-N/:slug`. Lee la config UI desde
  * `map.ui` (map.ts) con fallback a CHAPTERS. Sincroniza
  * params ↔ stores (deep-linkable, atrás/adelante).
  *
- * `ChapterEntry` resuelve `/capitulo/:n` → primer mapa del capítulo.
+ * `ChapterEntry` resuelve `/capitulo-N` → primer mapa del capítulo.
+ * Los `Legacy*` redirigen los enlaces anteriores (`/capitulo/2/chapter2-valle`).
  */
 
 import { useEffect, useMemo } from 'react'
@@ -14,23 +15,35 @@ import { AtlasMap } from '@components/map/AtlasMap.tsx'
 import { buildRailFromSidebar } from '@components/shell/toolRailItems.ts'
 import { ShellLayout } from '@components/shell/ShellLayout'
 import { getMapContent, resolveMapUI } from '@content'
-import { getChapter } from '@data/chapters/chapters.ts'
+import { chapterPath, getChapter, mapIdFromSlug, routeForMap } from '@data/chapters/chapters.ts'
 import { useChapterStore } from '@stores/chapterStore'
 import { useMapStore } from '@stores/mapStore'
 import styles from './ChapterPage.module.css'
 
-export function ChapterEntry() {
-  const { chapterId } = useParams<{ chapterId: string }>()
-  const chapter = getChapter(Number(chapterId))
-  const first = chapter?.maps[0]?.mapId
-  if (chapter === null || first === undefined) return <Navigate to="/" replace />
-  return <Navigate to={`/capitulo/${chapter.id}/${first}`} replace />
+export function ChapterEntry({ chapterId }: { chapterId: number }) {
+  const first = getChapter(chapterId)?.maps[0]?.mapId
+  const route = first !== undefined ? routeForMap(first) : null
+  return <Navigate to={route ?? '/'} replace />
 }
 
-export function ChapterPage() {
+export function LegacyChapterRedirect() {
+  const { chapterId } = useParams<{ chapterId: string }>()
+  const chapter = getChapter(Number(chapterId))
+  return <Navigate to={chapter !== null ? chapterPath(chapter.id) : '/intro'} replace />
+}
+
+export function LegacyMapRedirect() {
   const { chapterId, mapId } = useParams<{ chapterId: string; mapId: string }>()
   const n = Number(chapterId)
-  const chapter = getChapter(n)
+  /* Acepta el id interno y el nombre nuevo: /capitulo/2/chapter2-valle y /capitulo/2/valle */
+  const route = routeForMap(mapId ?? '') ?? routeForMap(mapIdFromSlug(n, mapId ?? '') ?? '')
+  return <Navigate to={route ?? (getChapter(n) !== null ? chapterPath(n) : '/intro')} replace />
+}
+
+export function ChapterPage({ chapterId }: { chapterId: number }) {
+  const { slug } = useParams<{ slug: string }>()
+  const mapId = mapIdFromSlug(chapterId, slug ?? '') ?? undefined
+  const chapter = getChapter(chapterId)
   const mapRef = chapter?.maps.find((m) => m.mapId === mapId)
 
   /* Sincronía URL ↔ stores */
@@ -62,14 +75,14 @@ export function ChapterPage() {
   if (chapter === null || mapRef === undefined) {
     return (
       <div className={styles.missing}>
-        <p>Capítulo o mapa no encontrado: {String(chapterId)} / {String(mapId)}</p>
+        <p>Mapa no encontrado: {chapterPath(chapterId)}/{String(slug)}</p>
         <Link className={styles.missingLink} to="/">← Volver al inicio</Link>
       </div>
     )
   }
 
   const isFirstMap = chapter.maps[0]?.mapId === mapRef.mapId
-  const backTo = isFirstMap ? '/intro' : `/capitulo/${chapter.id}`
+  const backTo = isFirstMap ? '/intro' : chapterPath(chapter.id)
 
   return (
     <ShellLayout

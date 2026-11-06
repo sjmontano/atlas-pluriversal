@@ -83,8 +83,27 @@ export function getAllMaps(): ChapterMapRef[] {
   return CHAPTERS.flatMap((c) => c.maps)
 }
 
-/** Ruta pública de un mapa: /capitulo/:n/:mapId (null si no existe). */
+/** Ruta pública de un capítulo: /capitulo-2. */
+export function chapterPath(chapterId: number): string {
+  return `/capitulo-${chapterId}`
+}
+
+/**
+ * Nombre de un mapa en la URL. Los ids internos no cambian porque de ellos
+ * dependen las carpetas de tiles y el localStorage: chapter2-valle → valle,
+ * chapter2-m-suarez → sintesis-suarez.
+ */
+export function mapSlug(mapId: string): string {
+  return mapId.replace(/^chapter\d+-/, '').replace(/^m-/, 'sintesis-')
+}
+
+/** Ruta pública de un mapa: /capitulo-2/valle (null si no existe). */
 export function routeForMap(mapId: string): string | null {
   const chapter = CHAPTERS.find((c) => c.maps.some((m) => m.mapId === mapId))
-  return chapter !== undefined ? `/capitulo/${chapter.id}/${mapId}` : null
+  return chapter !== undefined ? `${chapterPath(chapter.id)}/${mapSlug(mapId)}` : null
+}
+
+/** Id interno del mapa con ese nombre en la URL dentro de un capítulo. */
+export function mapIdFromSlug(chapterId: number, slug: string): string | null {
+  return getChapterMapIds(chapterId).find((mapId) => mapSlug(mapId) === slug) ?? null
 }

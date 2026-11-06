@@ -22,7 +22,7 @@ pnpm dev
 ```
 
 Vite sirve la aplicación en el puerto que indique la consola. La ruta principal es `/`; el
-visor de mapas es `/capitulo/:n/:mapId`.
+visor de mapas es `/capitulo-N/:slug`.
 
 ### Variables de entorno
 

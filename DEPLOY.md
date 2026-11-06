@@ -32,7 +32,7 @@ VITE_ATLAS_BASE=/atlas/ pnpm build   # en PowerShell: $env:VITE_ATLAS_BASE="/atl
 
 ### Checklist post-deploy
 - [ ] `/atlas/` carga (topbar, mapa, modales).
-- [ ] Deep-link `/atlas/capitulo/1/chapter1-encuadres` resuelve (rewrite OK).
+- [ ] Deep-link `/atlas/capitulo-1/encuadres` resuelve (rewrite OK).
 - [ ] Red: tiles `200` con `cache-hit` en segunda visita; `index.html` sin caché larga.
 - [ ] `VITE_DEV_TOOLS` apagado (sin botón 🔧 ni rutas `/dev/*` más allá del menú).
 

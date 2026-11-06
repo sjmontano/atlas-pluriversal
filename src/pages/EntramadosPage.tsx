@@ -107,7 +107,7 @@ export function EntramadosPage() {
             <img src={SHELL_ASSETS.tooltips.fondo} alt="" />
           </span>
         </a>
-        <Link to="/credits" className={styles.btnCredits}>
+        <Link to="/creditos" className={styles.btnCredits}>
           <img src={`${BASE}/next.svg`} alt="" />
           <h2 className={styles.tejidoText}>Equipos de trabajo</h2>
         </Link>

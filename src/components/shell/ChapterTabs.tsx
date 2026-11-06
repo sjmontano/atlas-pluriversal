@@ -13,7 +13,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CHAPTERS } from '@data/chapters/chapters.ts'
+import { CHAPTERS, chapterPath } from '@data/chapters/chapters.ts'
 import { useChapterStore } from '@stores/chapterStore'
 import { SHELL_ASSETS } from './assets'
 import type { Chapter } from '../../types/chapter.ts'
@@ -157,7 +157,7 @@ export function ChapterTabs({ autoHide = false, autoHideKey }: ChapterTabsProps)
             {body}
           </div>
         ) : (
-          <Link key={chapter.id} to={`/capitulo/${chapter.id}`} className={className} data-chapter={chapter.id}>
+          <Link key={chapter.id} to={chapterPath(chapter.id)} className={className} data-chapter={chapter.id}>
             {body}
           </Link>
         )

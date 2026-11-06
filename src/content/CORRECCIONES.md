@@ -4,8 +4,9 @@ Guía para aplicar lo que piden los revisores. Cada mapa es un solo archivo.
 
 ## Qué archivo tocar
 
-La URL dice cuál es el mapa: `/capitulo/N/chapterN-<slug>` corresponde a
-`src/content/chapter-N/<slug>/map.ts`.
+La URL dice cuál es el mapa: `/capitulo-N/<slug>` corresponde a
+`src/content/chapter-N/<slug>/map.ts`. Los mapas de síntesis son la excepción:
+`/capitulo-2/sintesis-suarez` está en `chapter-2/m-suarez/map.ts`.
 
 | Piden cambiar | Dónde |
 | --- | --- |

@@ -22,7 +22,7 @@ const RAIL_ITEMS: ToolRailItem[] = [
   { id: 'm-galeria', icon: 'gallery', label: 'Galería', frame: '2', action: { kind: 'modal', modalId: 'galeria-ejemplo' } },
   { id: 'm-aviso', icon: 'info', label: 'Aviso', frame: '3', action: { kind: 'modal', modalId: 'en-construccion' } },
   { id: 'm-descarga', icon: 'download', label: 'Descargar', frame: '3', action: { kind: 'link', href: 'about:blank' } },
-  { id: 'm-goto', icon: 'datos', label: 'Ir a Cap. II', frame: '4', action: { kind: 'goto', to: '/capitulo/2' } },
+  { id: 'm-goto', icon: 'datos', label: 'Ir a Cap. II', frame: '4', action: { kind: 'goto', to: '/capitulo-2' } },
 ]
 
 function ShellMockup() {

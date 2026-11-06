@@ -84,7 +84,7 @@ Su contenido sigue el mismo contrato `MapContent`.
 
 | Campo | Tipo | Uso |
 |---|---|---|
-| `id` | `number` | 1–4; define la ruta `/capitulo/:n`. |
+| `id` | `number` | 1–4; define la ruta `/capitulo-N`. |
 | `roman` | `string` | Numeral para las pestañas. |
 | `title` | `string` | Título completo. |
 | `description` | `string` | Subtítulo. |

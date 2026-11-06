@@ -24,7 +24,7 @@ export default defineMap({
     sb.ficha('FichasCap2/Entramado territorial Distrito de Aguablanca Cali con sus alternativas transformadoras.pdf'),
     sb.modal('galeria', 'cap2-galeria-cali'),
     sb.descarga('MapasCap2/Mapa alternativas transformadoras del Oriente de Cali.png'),
-    sb.sintesis('/capitulo/2/chapter2-m-oriente-cali'),
+    sb.sintesis('chapter2-m-oriente-cali'),
   ],
   geo: { pgw: [0, 0.000015918409, 0.000015918925, 0, -76.53676820822001, 3.348181582808], width: 4960, height: 8822 },
   base: cld('v1759512015/geoImages/roog2p6gjo3dnnqpcfel.webp'),

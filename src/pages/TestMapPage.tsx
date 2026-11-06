@@ -3,7 +3,7 @@
  * ============================================================
  * A propósito SIN el ShellLayout completo: mapa a pantalla completa +
  * topbar mínima + paginación + DevToolsOverlay. La UI completa vive
- * solo en las rutas de producción (/capitulo/:n/:mapId, /intro).
+ * solo en las rutas de producción (/capitulo-N/:slug, /intro).
  */
 
 import { useParams, Link } from 'react-router-dom'

@@ -7,6 +7,7 @@
  * Sin abstracciones para mapas atípicos (encuadres, humedales): esos usan literales.
  */
 
+import { routeForMap } from '@data/chapters/chapters'
 import { makeTilesConfig } from '@data/tiles'
 import type { TileZoomMode } from '@utils/tileZoom'
 import type { MapConfig, MapContent, MapGeoEntry, MapUI, MapUISidebarItem } from '../types/content.ts'
@@ -106,13 +107,13 @@ export const sb = {
   /** `path` relativo a /pdf/Descargables/, p. ej. 'MapasCap4/Humedales problematicas.pdf'. */
   descarga: (path: string) =>
     link({ id: 'descargar', icon: 'download', label: 'Descargar', frame: '3' }, `/pdf/Descargables/${path}`),
-  sintesis: (to: string): MapUISidebarItem => ({
+  sintesis: (mapId: string): MapUISidebarItem => ({
     id: 'sintesis',
     type: 'goto',
     icon: 'sintesis',
     label: 'Síntesis',
     frame: '2',
-    to,
+    to: routeForMap(mapId) ?? '/',
   }),
   /** Preset ('perfil', 'mapa-arbol', 'galeria', 'datos', 'perfil-cuenca') o `{ id, icon, label, frame }`. */
   modal,

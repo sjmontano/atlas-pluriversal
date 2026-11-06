@@ -11,7 +11,7 @@ export default defineMap({
     sb.presentacion('cap4-presentacion-bosque-comestible'),
     sb.ficha('FichasCap4/Bosque comestible.pdf'),
     sb.modal('perfil', 'cap4-perfil-bosque-comestible'),
-    sb.sintesis('/capitulo/4/chapter4-problematicas'),
+    sb.sintesis('chapter4-problematicas'),
   ],
   geo: { pgw: [2.17e-10, -8.75649e-7, -8.75586e-7, -2.17e-10, -76.48242978189349, 3.43619004516839], width: 7015, height: 12472 },
   base: cld('v1765986412/geoImages/yodemiucfhtp0iklk2fi.png'),

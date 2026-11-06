@@ -147,7 +147,7 @@ No todos los mapas tienen audio: depende de los POI cargados.
 - Flecha del header: vuelve al mapa anterior o al capítulo.
 - Acciones de home/río en el shell.
 - El intro de capítulo vuelve a `/intro`.
-- Las rutas son enlazables: `/capitulo/:n/:mapId`.
+- Las rutas son enlazables: `/capitulo-N/:slug` (por ejemplo `/capitulo-2/valle`).
 
 ---
 
@@ -227,8 +227,8 @@ un estado comprensible y una imagen de respaldo.
 |---|---|---|
 | `/` | Inicio | Presentación, POI de entrada, accesos a capítulos, entramados y créditos. |
 | `/intro` | Introducción | Mapa introductorio y sus modales. |
-| `/capitulo/:n` | Entrada de capítulo | Redirige al primer mapa. |
-| `/capitulo/:n/:mapId` | Visor | Shell + mapa + capas + POI + modales. |
+| `/capitulo-N` | Entrada de capítulo | Redirige al primer mapa. |
+| `/capitulo-N/:slug` | Visor | Shell + mapa + capas + POI + modales. |
 | `/entramados` | Entramados | Organizaciones y logos del territorio. |
 | `/creditos` | Créditos | Autorías, agradecimientos y condiciones. |
 | `/dev` | Menú de desarrollo | Acceso a los 31 mapas y utilidades. |

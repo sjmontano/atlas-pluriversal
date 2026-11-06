@@ -24,7 +24,7 @@ export default defineMap({
     sb.ficha('FichasCap2/Entramado territorial Suarez con sus alternativas transformadoras.pdf'),
     sb.modal('galeria', 'cap2-galeria-suarez'),
     sb.descarga('MapasCap2/Mapa alternativas transformadoras suarez.png'),
-    sb.sintesis('/capitulo/2/chapter2-m-suarez'),
+    sb.sintesis('chapter2-m-suarez'),
   ],
   geo: { pgw: [0, 0.0000220378935, 0.000022038657, 0, -76.771441329681, 2.758437617084], width: 6300, height: 11200 },
   base: cld('v1761061326/geoImages/mwz79qubfmr0x5zqtzto.webp'),

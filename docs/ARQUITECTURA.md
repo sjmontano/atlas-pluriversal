@@ -121,8 +121,8 @@ main.tsx
 App.tsx (React Router)
  ├── /                     → InicioPage
  ├── /intro                → IntroMapPage
- ├── /capitulo/:n          → redirige al primer mapa del capítulo
- ├── /capitulo/:n/:mapId   → ChapterPage
+ ├── /capitulo-N           → redirige al primer mapa del capítulo
+ ├── /capitulo-N/:slug     → ChapterPage
  ├── /entramados           → EntramadosPage
  ├── /creditos             → CreditsPage
  └── /dev, /test/:mapId    → utilidades de desarrollo

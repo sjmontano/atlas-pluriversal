@@ -24,7 +24,7 @@ export default defineMap({
     sb.ficha('FichasCap2/Entramado territorial Villa Rica con sus alternativas transformadoras.pdf'),
     sb.modal('galeria', 'cap2-galeria-villa-rica'),
     sb.descarga('MapasCap2/Mapa alternativas transformadoras villa rica.png'),
-    sb.sintesis('/capitulo/2/chapter2-m-villa-rica'),
+    sb.sintesis('chapter2-m-villa-rica'),
   ],
   geo: { pgw: [0, 0.000055581180, 0.000055587544, 0, -76.549878031544, 2.974893043424], width: 4960, height: 8818 },
   base: cld('v1759512655/geoImages/pdxepthixmeebgei59yq.webp'),

@@ -159,7 +159,7 @@ export interface SubcuencaDef {
 export interface Encuadre {
   id: string
   name: string
-  /** Mapa destino (navegación URL-first: /capitulo/:n/:mapId).
+  /** Mapa destino (navegación URL-first: /capitulo-N/nombre).
    *  Opcional: sin él la etiqueta es estática no navegable
    *  (p. ej. los tramos de chapter3-humedales, port de v17 namesTramos). */
   targetMapId?: string

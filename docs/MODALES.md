@@ -77,7 +77,7 @@ en botones del `ToolRail`:
 - `type: 'modal'` + `target: '<modal-id>'` → abre el modal (si el id no
   existe, el click no hace nada).
 - `type: 'link'` + `href` → pestaña externa (fichas/descargas Drive, Sheets).
-- `type: 'goto'` + `to: '/capitulo/<n>/<mapId>'` → navega (síntesis).
+- `sb.sintesis('<mapId>')` (goto a `/capitulo-N/<slug>`) → navega (síntesis).
 
 Orden canónico v17: Presentación → Ficha → Galería → Descargar →
 Perfil → Árbol → Síntesis (solo los que existen por mapa).
