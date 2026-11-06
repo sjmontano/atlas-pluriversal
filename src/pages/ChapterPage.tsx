@@ -18,6 +18,7 @@ import { getMapContent, resolveMapUI } from '@content'
 import { chapterPath, getChapter, mapIdFromSlug, routeForMap } from '@data/chapters/chapters.ts'
 import { useChapterStore } from '@stores/chapterStore'
 import { useMapStore } from '@stores/mapStore'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import styles from './ChapterPage.module.css'
 
 export function ChapterEntry({ chapterId }: { chapterId: number }) {
@@ -66,6 +67,8 @@ export function ChapterPage({ chapterId }: { chapterId: number }) {
     () => (mapContent !== null ? resolveMapUI(mapContent) : null),
     [mapContent],
   )
+
+  useDocumentTitle(ui?.title ?? mapRef?.title)
 
   const railItems = useMemo(
     () => (ui !== null ? buildRailFromSidebar(ui.sidebar) : []),

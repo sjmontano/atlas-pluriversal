@@ -17,6 +17,7 @@ import { SectionHeader } from '@components/shell/SectionHeader'
 import { getModalById } from '@content/modals'
 import { useModalStore } from '@stores/modalStore'
 import styles from './CreditsPage.module.css'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 const BASE = '/assets/modal/entramados'
 const TOOLTIP_BG = '/assets/ui/tooltips/fondo-tooltip-4.webp'
@@ -40,6 +41,7 @@ const EQUIPOS: { modalId: string; label: string }[] = [
 ]
 
 export function CreditsPage() {
+  useDocumentTitle('Equipos de trabajo')
   const openModal = useModalStore((s) => s.openModal)
 
   const openById = (id: string) => {

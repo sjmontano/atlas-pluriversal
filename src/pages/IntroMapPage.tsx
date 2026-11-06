@@ -11,6 +11,7 @@ import { ShellLayout } from '@components/shell/ShellLayout'
 import { buildRailFromSidebar } from '@components/shell/toolRailItems.ts'
 import { getMapContent, resolveMapUI } from '@content'
 import { useChapterStore } from '@stores/chapterStore'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 export function IntroMapPage() {
   /* /intro no pertenece a ningún capítulo: ningún tab seleccionado,
@@ -21,6 +22,7 @@ export function IntroMapPage() {
 
   const mapContent = useMemo(() => getMapContent('intro'), [])
   const ui = useMemo(() => (mapContent !== null ? resolveMapUI(mapContent) : null), [mapContent])
+  useDocumentTitle(ui?.title ?? 'Iniciamos nuestro recorrido')
   const railItems = useMemo(() => (ui !== null ? buildRailFromSidebar(ui.sidebar) : []), [ui])
 
   return (

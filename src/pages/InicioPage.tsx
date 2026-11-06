@@ -15,6 +15,7 @@ import { ShellLayout } from '@components/shell/ShellLayout'
 import { HomeMarkers } from '@components/inicio/HomeMarkers'
 import { HomePanel } from '@components/inicio/HomePanel'
 import styles from './InicioPage.module.css'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 const HOME_BACKGROUND = '/assets/ui/inicio/background.png'
 /** Relación de aspecto nativa del fondo (1920×1080). */
@@ -31,6 +32,7 @@ const clamp = (v: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, v))
 
 export function InicioPage() {
+  useDocumentTitle()
   const viewportRef = useRef<HTMLDivElement>(null)
   const [viewport, setViewport] = useState<Offset>({ x: 0, y: 0 })
   const [offset, setOffset] = useState<Offset>({ x: 0, y: 0 })

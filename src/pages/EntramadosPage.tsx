@@ -17,6 +17,7 @@ import { SectionHeader } from '@components/shell/SectionHeader'
 import { getModalById } from '@content/modals'
 import { useModalStore } from '@stores/modalStore'
 import styles from './EntramadosPage.module.css'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 
 const BASE = '/assets/modal/entramados'
 
@@ -68,6 +69,7 @@ const SECCIONES: Seccion[] = [
 ]
 
 export function EntramadosPage() {
+  useDocumentTitle('Tejidos para el atlas')
   const openModal = useModalStore((s) => s.openModal)
 
   const openTerminos = () => {
