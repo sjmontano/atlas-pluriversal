@@ -174,6 +174,26 @@ describe('EncuadresManager (etiquetas canvas)', () => {
     expect(map.setPaintProperty).toHaveBeenCalledWith('atlas-encuadre-fill-e1', 'fill-opacity', 0)
   })
 
+  it('highlightOf ilumina el polígono de otro encuadre sin crear otro', async () => {
+    stubEnv()
+    const map = makeMap()
+    const encuadres: Encuadre[] = [
+      ENCUADRES[0]!,
+      { id: 'sin-poligono', name: 'Solo', targetMapId: 'm3', labelCoords: [-70, 3], highlightOf: 'e1' },
+    ]
+    await addEncuadres(map, encuadres, vi.fn())
+    expect(map.addLayer).not.toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'atlas-encuadre-fill-sin-poligono' }),
+    )
+    const onCalls = (map.on as ReturnType<typeof vi.fn>).mock.calls
+    const onMove = onCalls.find(([t, _a, b]) => t === 'mousemove' && b === undefined)?.[1] as (e: unknown) => void
+
+    onMove({ point: { x: 500, y: 500 } })
+    expect(map.setPaintProperty).toHaveBeenLastCalledWith('atlas-encuadre-fill-e1', 'fill-opacity', 0.25)
+    onMove({ point: { x: 900, y: 900 } })
+    expect(map.setPaintProperty).toHaveBeenLastCalledWith('atlas-encuadre-fill-e1', 'fill-opacity', 0)
+  })
+
   it('el área tocable nunca baja de 44px aunque lo visual sea menor', async () => {
     stubEnv()
     const map = makeMap()

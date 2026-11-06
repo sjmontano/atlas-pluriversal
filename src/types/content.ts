@@ -170,6 +170,10 @@ export interface Encuadre {
   labelCoords: [number, number]
   /** GeoJSON del polígono (archivo estático en /assets/geojson). */
   url?: string
+  /** Id de otro encuadre cuyo polígono se ilumina al hover de esta etiqueta.
+   *  Para encuadres sin polígono propio; no duplicar `url`: un clic en dos
+   *  polígonos superpuestos navegaría a dos mapas. */
+  highlightOf?: string
   /** Color del polígono/borde. Default: #5577af (como v17). */
   color?: string
   /** Ancho máximo de texto propio (px CSS). Si se omite, el global (220/175).

@@ -92,6 +92,9 @@ function revisarMapa(id: string, ids: Set<string>): string[] {
   for (const e of c.encuadres ?? []) {
     modal(`encuadre ${e.id}`, e.modalId)
     destino(`encuadre ${e.id}`, e.targetMapId)
+    if (e.highlightOf && !c.encuadres?.some((o) => o.id === e.highlightOf && o.url)) {
+      out.push(`${id}: encuadre ${e.id} ilumina ${e.highlightOf}, que no tiene polígono`)
+    }
   }
   return out
 }

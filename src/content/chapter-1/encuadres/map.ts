@@ -45,6 +45,7 @@ export default defineMap({
       name: 'Pliegues, llanuras y otras formas del paisaje',
       targetMapId: 'chapter1-formas-paisaje',
       labelCoords: [-72.2, 9.624437],
+      highlightOf: 'encuadre-un-rio-cauca',
     },
     {
       id: 'encuadre-un-rio-cauca',

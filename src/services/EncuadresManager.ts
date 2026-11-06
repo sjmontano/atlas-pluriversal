@@ -66,7 +66,8 @@ interface LabelBox {
   coords: [number, number]
   halfW: number
   halfH: number
-  hasPolygon: boolean
+  /** Encuadre cuyo polígono se ilumina al hover; null si no hay ninguno. */
+  highlightId: string | null
 }
 
 interface Tracked {
@@ -248,7 +249,7 @@ export async function addEncuadres(
           coords: encuadre.labelCoords,
           halfW: (normal.width * LABEL_ICON_SIZE) / 2,
           halfH: (normal.height * LABEL_ICON_SIZE) / 2,
-          hasPolygon,
+          highlightId: encuadre.highlightOf ?? (hasPolygon ? encuadre.id : null),
         })
       } catch {
         /* sin etiqueta canvas (WebGL sin imágenes): el polígono navega igual */
@@ -292,11 +293,11 @@ export async function addEncuadres(
     try {
       if (prev !== undefined) {
         map.setLayoutProperty(`${PREFIX}-label-${prev.id}`, 'icon-image', `${PREFIX}-img-${prev.id}`)
-        if (prev.hasPolygon) setPolygonHighlight(map, prev.id, false)
+        if (prev.highlightId !== null) setPolygonHighlight(map, prev.highlightId, false)
       }
       if (next !== undefined) {
         map.setLayoutProperty(`${PREFIX}-label-${next.id}`, 'icon-image', `${PREFIX}-img-${next.id}-hover`)
-        if (next.hasPolygon) setPolygonHighlight(map, next.id, true)
+        if (next.highlightId !== null) setPolygonHighlight(map, next.highlightId, true)
       }
       map.getCanvas().style.cursor = next?.targetMapId !== undefined ? 'pointer' : ''
     } catch { /* capa aún no lista */ }
