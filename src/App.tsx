@@ -83,6 +83,7 @@ export function App() {
             <Route key={c.id} path={chapterPath(c.id)}>
               <Route index element={<ChapterEntry chapterId={c.id} />} />
               <Route path=":slug" element={<ChapterPage chapterId={c.id} />} />
+              <Route path=":slug/:childSlug" element={<ChapterPage chapterId={c.id} />} />
             </Route>
           ))}
           <Route path="/entramados" element={<EntramadosPage />} />

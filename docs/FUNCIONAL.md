@@ -228,7 +228,7 @@ un estado comprensible y una imagen de respaldo.
 | `/` | Inicio | Presentación, POI de entrada, accesos a capítulos, entramados y créditos. |
 | `/intro` | Introducción | Mapa introductorio y sus modales. |
 | `/capitulo-N` | Entrada de capítulo | Redirige al primer mapa. |
-| `/capitulo-N/:slug` | Visor | Shell + mapa + capas + POI + modales. |
+| `/capitulo-N/:slug` y `/capitulo-N/:slug/:hijo` | Visor | Shell + mapa + capas + POI + modales. |
 | `/entramados` | Entramados | Organizaciones y logos del territorio. |
 | `/creditos` | Créditos | Autorías, agradecimientos y condiciones. |
 | `/dev` | Menú de desarrollo | Acceso a los 31 mapas y utilidades. |

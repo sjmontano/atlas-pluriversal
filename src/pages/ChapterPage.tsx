@@ -1,7 +1,7 @@
 /**
  * 🗺️ CHAPTER PAGE — Visor público de un mapa dentro del shell
  * ============================================================
- * Ruta `/capitulo-N/:slug`. Lee la config UI desde
+ * Rutas `/capitulo-N/:slug` y `/capitulo-N/:slug/:childSlug`. Lee la config UI desde
  * `map.ui` (map.ts) con fallback a CHAPTERS. Sincroniza
  * params ↔ stores (deep-linkable, atrás/adelante).
  *
@@ -15,7 +15,7 @@ import { AtlasMap } from '@components/map/AtlasMap.tsx'
 import { buildRailFromSidebar } from '@components/shell/toolRailItems.ts'
 import { ShellLayout } from '@components/shell/ShellLayout'
 import { getMapContent, resolveMapUI } from '@content'
-import { chapterPath, getChapter, mapIdFromSlug, routeForMap } from '@data/chapters/chapters.ts'
+import { chapterPath, getChapter, mapIdFromSlug, parentRoute, routeForMap } from '@data/chapters/chapters.ts'
 import { useChapterStore } from '@stores/chapterStore'
 import { useMapStore } from '@stores/mapStore'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
@@ -42,8 +42,8 @@ export function LegacyMapRedirect() {
 }
 
 export function ChapterPage({ chapterId }: { chapterId: number }) {
-  const { slug } = useParams<{ slug: string }>()
-  const mapId = mapIdFromSlug(chapterId, slug ?? '') ?? undefined
+  const { slug, childSlug } = useParams<{ slug: string; childSlug: string }>()
+  const mapId = mapIdFromSlug(chapterId, slug ?? '', childSlug) ?? undefined
   const chapter = getChapter(chapterId)
   const mapRef = chapter?.maps.find((m) => m.mapId === mapId)
 
@@ -78,14 +78,14 @@ export function ChapterPage({ chapterId }: { chapterId: number }) {
   if (chapter === null || mapRef === undefined) {
     return (
       <div className={styles.missing}>
-        <p>Mapa no encontrado: {chapterPath(chapterId)}/{String(slug)}</p>
+        <p>Mapa no encontrado: {chapterPath(chapterId)}/{[slug, childSlug].filter(Boolean).join('/')}</p>
         <Link className={styles.missingLink} to="/">← Volver al inicio</Link>
       </div>
     )
   }
 
   const isFirstMap = chapter.maps[0]?.mapId === mapRef.mapId
-  const backTo = isFirstMap ? '/intro' : chapterPath(chapter.id)
+  const backTo = parentRoute(mapRef.mapId) ?? (isFirstMap ? '/intro' : chapterPath(chapter.id))
 
   return (
     <ShellLayout

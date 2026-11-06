@@ -122,7 +122,7 @@ App.tsx (React Router)
  ├── /                     → InicioPage
  ├── /intro                → IntroMapPage
  ├── /capitulo-N           → redirige al primer mapa del capítulo
- ├── /capitulo-N/:slug     → ChapterPage
+ ├── /capitulo-N/:slug[/:hijo] → ChapterPage
  ├── /entramados           → EntramadosPage
  ├── /creditos             → CreditsPage
  └── /dev, /test/:mapId    → utilidades de desarrollo

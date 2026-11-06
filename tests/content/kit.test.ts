@@ -74,7 +74,7 @@ describe('sb', () => {
     [sb.presentacion('t'), "{\"id\":\"presentacion\",\"type\":\"modal\",\"icon\":\"presentation\",\"label\":\"Presentación\",\"frame\":\"1\",\"target\":\"t\"}"],
     [sb.ficha('FichasCap4/A b.pdf'), "{\"id\":\"ficha-tecnica\",\"type\":\"link\",\"icon\":\"fichatecnica\",\"label\":\"Ficha técnica\",\"frame\":\"3\",\"href\":\"/pdf/FichasTecnicas/FichasCap4/A b.pdf\"}"],
     [sb.descarga('MapasCap4/A.pdf'), "{\"id\":\"descargar\",\"type\":\"link\",\"icon\":\"download\",\"label\":\"Descargar\",\"frame\":\"3\",\"href\":\"/pdf/Descargables/MapasCap4/A.pdf\"}"],
-    [sb.sintesis('chapter4-problematicas'), "{\"id\":\"sintesis\",\"type\":\"goto\",\"icon\":\"sintesis\",\"label\":\"Síntesis\",\"frame\":\"2\",\"to\":\"/capitulo-4/problematicas\"}"],
+    [sb.sintesis('chapter4-problematicas'), "{\"id\":\"sintesis\",\"type\":\"goto\",\"icon\":\"sintesis\",\"label\":\"Síntesis\",\"frame\":\"2\",\"to\":\"/capitulo-4/bosque-comestible/problematicas\"}"],
     [sb.modal('perfil', 't'), "{\"id\":\"perfil\",\"type\":\"modal\",\"icon\":\"perfil\",\"label\":\"Perfil\",\"frame\":\"1\",\"target\":\"t\"}"],
     [sb.modal('mapa-arbol', 't'), "{\"id\":\"mapa-arbol\",\"type\":\"modal\",\"icon\":\"mapa-arbol\",\"label\":\"Mapa de árbol\",\"frame\":\"1\",\"target\":\"t\"}"],
     [sb.modal('galeria', 't'), "{\"id\":\"galeria\",\"type\":\"modal\",\"icon\":\"gallery\",\"label\":\"Galería de imágenes\",\"frame\":\"2\",\"target\":\"t\"}"],

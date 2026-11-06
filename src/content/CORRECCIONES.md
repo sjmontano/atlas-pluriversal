@@ -5,8 +5,11 @@ Guía para aplicar lo que piden los revisores. Cada mapa es un solo archivo.
 ## Qué archivo tocar
 
 La URL dice cuál es el mapa: `/capitulo-N/<slug>` corresponde a
-`src/content/chapter-N/<slug>/map.ts`. Los mapas de síntesis son la excepción:
-`/capitulo-2/sintesis-suarez` está en `chapter-2/m-suarez/map.ts`.
+`src/content/chapter-N/<slug>/map.ts`. Los mapas hijos cuelgan de su mapa padre:
+`/capitulo-2/suarez/sintesis` está en `chapter-2/m-suarez/map.ts`, y
+`/capitulo-4/bosque-comestible/problematicas` en `chapter-4/problematicas/map.ts`.
+El padre se declara con `parent` en `src/data/chapters/chapters.ts`; de ahí salen la
+URL y el botón de regreso.
 
 | Piden cambiar | Dónde |
 | --- | --- |

@@ -28,9 +28,9 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
       { mapId: 'chapter2-suarez', title: 'Suárez' },
       { mapId: 'chapter2-cali', title: 'Oriente de Cali' },
       { mapId: 'chapter2-villa-rica', title: 'Villa Rica' },
-      { mapId: 'chapter2-m-oriente-cali', title: 'Oriente de Cali (M)' },
-      { mapId: 'chapter2-m-villa-rica', title: 'Villa Rica (M)' },
-      { mapId: 'chapter2-m-suarez', title: 'Suárez (M)' },
+      { mapId: 'chapter2-m-oriente-cali', title: 'Oriente de Cali (M)', parent: 'chapter2-cali' },
+      { mapId: 'chapter2-m-villa-rica', title: 'Villa Rica (M)', parent: 'chapter2-villa-rica' },
+      { mapId: 'chapter2-m-suarez', title: 'Suárez (M)', parent: 'chapter2-suarez' },
     ],
   },
   {
@@ -65,7 +65,7 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
       { mapId: 'chapter4-la-virginia', title: 'La Virginia' },
       { mapId: 'chapter4-centro-agropecuario', title: 'Centro Agropecuario' },
       { mapId: 'chapter4-la-caicedo', title: 'La Caicedo' },
-      { mapId: 'chapter4-problematicas', title: 'Problemáticas Ambientales' },
+      { mapId: 'chapter4-problematicas', title: 'Problemáticas Ambientales', parent: 'chapter4-bosque-comestible' },
     ],
   },
 ]
@@ -91,19 +91,43 @@ export function chapterPath(chapterId: number): string {
 /**
  * Nombre de un mapa en la URL. Los ids internos no cambian porque de ellos
  * dependen las carpetas de tiles y el localStorage: chapter2-valle → valle,
- * chapter2-m-suarez → sintesis-suarez.
+ * chapter2-m-suarez → sintesis (cuelga de su mapa padre).
  */
 export function mapSlug(mapId: string): string {
-  return mapId.replace(/^chapter\d+-/, '').replace(/^m-/, 'sintesis-')
+  return mapId.replace(/^chapter\d+-/, '').replace(/^m-.*/, 'sintesis')
 }
 
-/** Ruta pública de un mapa: /capitulo-2/valle (null si no existe). */
+function findMap(mapId: string): { chapterId: number; ref: ChapterMapRef } | null {
+  for (const chapter of CHAPTERS) {
+    const ref = chapter.maps.find((m) => m.mapId === mapId)
+    if (ref !== undefined) return { chapterId: chapter.id, ref }
+  }
+  return null
+}
+
+/**
+ * Ruta pública de un mapa (null si no existe):
+ * /capitulo-2/suarez, y sus mapas hijos /capitulo-2/suarez/sintesis.
+ */
 export function routeForMap(mapId: string): string | null {
-  const chapter = CHAPTERS.find((c) => c.maps.some((m) => m.mapId === mapId))
-  return chapter !== undefined ? `${chapterPath(chapter.id)}/${mapSlug(mapId)}` : null
+  const found = findMap(mapId)
+  if (found === null) return null
+  const parent = found.ref.parent
+  const prefix = parent !== undefined ? `${mapSlug(parent)}/` : ''
+  return `${chapterPath(found.chapterId)}/${prefix}${mapSlug(mapId)}`
 }
 
-/** Id interno del mapa con ese nombre en la URL dentro de un capítulo. */
-export function mapIdFromSlug(chapterId: number, slug: string): string | null {
-  return getChapterMapIds(chapterId).find((mapId) => mapSlug(mapId) === slug) ?? null
+/** Ruta del mapa desde el que se entra a este; null si no tiene padre. */
+export function parentRoute(mapId: string): string | null {
+  const parent = findMap(mapId)?.ref.parent
+  return parent !== undefined ? routeForMap(parent) : null
+}
+
+/** Id interno del mapa en esa URL: /capitulo-N/:slug o /capitulo-N/:slug/:childSlug. */
+export function mapIdFromSlug(chapterId: number, slug: string, childSlug?: string): string | null {
+  const maps = getChapter(chapterId)?.maps ?? []
+  const top = maps.find((m) => m.parent === undefined && mapSlug(m.mapId) === slug)
+  if (childSlug === undefined) return top?.mapId ?? null
+  if (top === undefined) return null
+  return maps.find((m) => m.parent === top.mapId && mapSlug(m.mapId) === childSlug)?.mapId ?? null
 }

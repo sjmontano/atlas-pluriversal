@@ -2,6 +2,8 @@
 export type MiniMapKey = 'cuenca' | 'valle' | 'sur' | 'suarez' | 'villa-rica' | 'cali'
 
 export interface ChapterMapRef {
+  /** Mapa desde el que se entra: define su URL anidada y el botón de regreso. */
+  parent?: string
   mapId: string
   title: string
   /** Minimapa de este mapa. Default: 'cuenca'. */
