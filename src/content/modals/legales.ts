@@ -54,7 +54,7 @@ export const TERMINOS_MODAL: Modal = {
       type: 'list',
       id: 'tc-l1',
       items: [
-        'Se permite la descarga y uso con fines académicos, siempre que se cite adecuadamente la fuente.',
+        'Se permite la descarga y uso con fines académicos, trabajos educativos o proyectos científicos, investigativos, artísticos y culturales.',
         'No se permite el uso comercial, publicitario o institucional sin autorización previa por escrito.',
         'No está permitido modificar, transformar ni generar obras derivadas de los materiales.',
         'No se permite incorporar los materiales en productos editoriales impresos o digitales con fines distintos a los definidos aquí.',
@@ -90,7 +90,7 @@ export const TERMINOS_MODAL: Modal = {
     {
       type: 'paragraph',
       id: 'tc-p4',
-      text: 'Si utilizas el atlas en publicaciones académicas, trabajos educativos o proyectos científicos, investigativos, artísticos y culturales, por favor cita de la siguiente forma: Tejido de transicionantes por el valle alto del río Cauca. (2025). Atlas del sur del valle alto del río Cauca. Geopoéticas para las transiciones.',
+      text: 'Si utilizas el atlas en publicaciones académicas, trabajos educativos o proyectos científicos, investigativos, artísticos y culturales, por favor cita de la siguiente forma: Asociación Casa Cultural El Chontaduro (2025). Atlas del sur del valle alto del río Cauca. Geopoéticas para las transiciones.',
     },
     {
       type: 'heading',

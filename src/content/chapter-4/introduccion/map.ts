@@ -34,7 +34,7 @@ const POIS: Poi[] = [
 
 export default defineMap({
   id: 'chapter4-introduccion',
-  title: 'Actores, acciones, capacidades y poderes en los nodos del tejido',
+  title: 'Resistencias en transición',
   minimap: 'valle',
   zoomMax: 12,
   tiles: { mode: 'detail', source: 'cap4/intro-localizacion-fincas.png' },
@@ -53,6 +53,6 @@ export default defineMap({
     ['03-fincas-tradicionales--cu', 'Fincas tradicionales, cultivos diversos y bosques', 'fincaTradicional.svg'],
     ['04-cuerpos-de-agua', 'Cuerpos de agua', '/assets/legends/cap2-valle/riosPrincipales.svg'],
     ['05-curvas-de-nivel', 'Curvas de nivel', 'curvaNivel.svg'],
-    ['06-fincas-tradicionales-agr', 'Fincas tradicionales Agropalenke soberanía de vida', 'palenke.svg'],
+    ['06-fincas-tradicionales-agr', 'Sistema creativo de producción de alimentos', 'chapter4-cacao.svg'],
   ]),
 })

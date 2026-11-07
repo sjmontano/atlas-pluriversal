@@ -51,7 +51,7 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
   {
     id: 4,
     roman: 'IV',
-    title: 'IV. Actores, acciones, capacidades y poderes en los nodos del Tejido',
+    title: 'IV. Resistencias en transición',
     description: 'Actores, Acciones, Capacidades y Poderes',
     hoverImage: '/assets/ui/sidebar/tab-default-bg.webp',
     maps: [

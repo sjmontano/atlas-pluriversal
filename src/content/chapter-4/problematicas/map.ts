@@ -4,13 +4,13 @@ const base = cld('v1768342194/geoImages/yqwuuru4zw9jvfoa4cpl.webp')
 
 export default defineMap({
   id: 'chapter4-problematicas',
-  title: 'Humedales problemáticas',
+  title: 'Problemáticas humedal El Pondaje',
   minimap: 'valle',
   bearing: -30,
   zoomMax: 17,
   tiles: { mode: 'detail', source: 'cap4/pondaje-problematicas.png' },
   sidebar: [
-    sb.presentacion('cap4-presentacion-problematicas'),
+    //sb.presentacion('cap4-presentacion-problematicas'),
     sb.ficha('FichasCap4/Metadata_4_Cap_Agropalenke.pdf'),
     sb.descarga('MapasCap4/Humedales problematicas.png'),
   ],

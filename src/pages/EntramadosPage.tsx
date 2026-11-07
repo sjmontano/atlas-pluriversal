@@ -40,7 +40,7 @@ const SECCIONES: Seccion[] = [
       { src: `${BASE}/asomuafroyo.webp`, alt: 'asomuafroyo.webp' },
       { src: `${BASE}/guardia-cimarrona.webp`, alt: 'Guardia cimarrona.webp' },
       { src: `${BASE}/asoyoge.webp`, alt: 'Asoyoge.webp' },
-      { src: `${BASE}/plataforma-juventudes.webp`, alt: 'Plataforma de juventudes.webp' },
+      //{ src: `${BASE}/plataforma-juventudes.webp`, alt: 'Plataforma de juventudes.webp' },
     ],
   },
   {
@@ -50,7 +50,9 @@ const SECCIONES: Seccion[] = [
       { src: `${BASE}/uoafroc.webp`, alt: 'Uoafroc.webp' },
       { src: `${BASE}/consejo-comunitario-territorio.webp`, alt: 'Consejo comunitario territorio y.webp' },
       { src: `${BASE}/fundacion-huellas.webp`, alt: 'Colectivo socio juvenil huellas.webp' },
-      { src: `${BASE}/redmunorca.png`, alt: 'Redmunorca.png' },
+      //{ src: `${BASE}/redmunorca.png`, alt: 'Redmunorca.png' },cantoras de manato.jpeg
+      { src: `${BASE}/cantoras de manato.jpeg`, alt: 'cantoras de manato.jpeg' },
+      { src: `${BASE}/consejo comunitario del cantarito.png`, alt: 'Un río Cauca.webp' },
     ],
   },
   {
@@ -63,7 +65,9 @@ const SECCIONES: Seccion[] = [
       { src: `${BASE}/mujeres vencedoras.jpeg`, alt: 'Un río Cauca.webp' },
       { src: `${BASE}/lap.jpeg`, alt: 'Un río Cauca.webp' },
       { src: `${BASE}/la azotea de la abuela.jpeg`, alt: 'Un río Cauca.webp' },
-      { src: `${BASE}/chicas-comunicativas.webp`, alt: 'Un río Cauca.webp' },
+      { src: `${BASE}/chicas-comunicativas.png`, alt: 'Un río Cauca.webp' },
+      { src: `${BASE}/mujeres unidas por la vida.png`, alt: 'Un río Cauca.webp' },
+      { src: `${BASE}/matamba tierra.png`, alt: 'Un río Cauca.webp' },
     ],
   },
 ]
