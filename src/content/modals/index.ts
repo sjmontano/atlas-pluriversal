@@ -95,7 +95,7 @@ const AYUDA: Modal = {
   hideHeader: true,
   bodyFullBleed: true,
   theme: {
-    size: { width: '1000px', height: '700px' },
+    size: { width: '1400px', height: '700px' },
     bgFit: 'cover',
     noScrim: true,
   },
