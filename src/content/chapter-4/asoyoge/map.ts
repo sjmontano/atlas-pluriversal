@@ -19,8 +19,8 @@ export default defineMap({
   full: base,
   // Leyenda v17 (asoyoge, layerMenu.jsx): puramente informativa, sin ojos.
   legends: legendas('asoyoge-leyenda', '/assets/legends/cap4', 'Zonificación', 10, [
-    ['01-1-vivienda-y-espacios-as', '1.Vivienda y espacios asociados', 'viviendaEspaciosAsociados.svg'],
-    ['02-5-transformación-product', '5.Transformación productiva', 'transformacionProductiva.svg'],
+    ['01-1-vivienda-y-espacios-as', 'Vivienda y espacios asociados', 'viviendaEspaciosAsociados.svg'],
+    ['02-5-transformación-product', 'Transformación productiva', 'transformacionProductiva.svg'],
     ['03-delimitación', 'Delimitación', 'delimitacion.svg'],
     ['04-trocha', 'Trocha', 'trocha.svg'],
   ]),

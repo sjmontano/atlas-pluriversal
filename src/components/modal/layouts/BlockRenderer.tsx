@@ -197,7 +197,7 @@ function CarouselBlock({ block }: { block: Extract<ModalBlock, { type: 'carousel
   return (
     <div
       ref={containerRef}
-      className={`${styles.block} ${styles.carousel}`}
+      className={`${styles.block} ${styles.carousel}${block.navBelow ? ` ${styles.carouselNavBelow}` : ''}`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onKeyDown={handleKeyDown}

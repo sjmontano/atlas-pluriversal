@@ -17,7 +17,7 @@ export default defineMap({
   full: cld('v1765992502/geoImages/xndkrm7tpgdbw881co0v.png'),
   // Leyenda v17 (lasMercedes, layerMenu.jsx): puramente informativa, sin ojos.
   legends: legendas('las-mercedes-leyenda', '/assets/legends/cap4', 'Zonificación', 10, [
-    ['01-1-entrada-a-la-finca', '1.Entrada a la finca', 'entradaPredio.svg'],
+    ['01-1-entrada-a-la-finca', 'Entrada a la finca', 'entradaPredio.svg'],
     ['02-estanque-para-peces-que', 'Estanque para peces que se dañó', 'estanque.svg'],
     ['03-zonas-con-desechos-de-pl', 'Zonas con desechos de plastico y botellas de alcohol', 'zonaDesecho.svg'],
     ['04-vivienda-y-espacios-asoc', 'Vivienda y espacios asociados', 'viviendaEspaciosAsociados.svg'],
@@ -28,4 +28,6 @@ export default defineMap({
     ['09-finca-las-mercedes--lími', 'Finca Las Mercedes: límite', 'delimitacion.svg'],
     ['10-trocha', 'Trocha', 'trocha.svg'],
   ]),
+  
+  
 })

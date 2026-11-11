@@ -65,9 +65,9 @@ const SECCIONES: Seccion[] = [
       { src: `${BASE}/mujeres vencedoras.jpeg`, alt: 'Un río Cauca.webp' },
       { src: `${BASE}/lap.jpeg`, alt: 'Un río Cauca.webp' },
       { src: `${BASE}/la azotea de la abuela.jpeg`, alt: 'Un río Cauca.webp' },
-      { src: `${BASE}/chicas-comunicativas.png`, alt: 'Un río Cauca.webp' },
+      { src: `${BASE}/matambatierra.jpeg`, alt: 'Un río Cauca.webp' },
       { src: `${BASE}/mujeres unidas por la vida.png`, alt: 'Un río Cauca.webp' },
-      { src: `${BASE}/matamba tierra.png`, alt: 'Un río Cauca.webp' },
+      { src: `${BASE}/chicas-comunicativas.png`, alt: 'Un río Cauca.webp' },
     ],
   },
 ]

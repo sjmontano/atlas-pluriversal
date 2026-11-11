@@ -24,6 +24,7 @@ export default defineMap({
     ['05-cultivos-diversos', 'Cultivos diversos', 'cultivoDiverso.svg'],
     ['06-productivos-especiales', 'Productivos especiales', 'cultivoDiverso2.svg'],
     ['07-delimitación', 'Delimitación', 'delimitacion.svg'],
-    { id: '08-vía', name: 'Vía', icon: 'trocha.svg', group: '1.Vestigios de Casa' },
+    ['08-vía', 'Vía', 'trocha.svg'],
   ]),
+
 })

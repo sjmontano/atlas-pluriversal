@@ -105,7 +105,7 @@
 
 /* ── Carousel (slide transition estilo v17) ──────────────────────────── */
 .carousel {
-  width: 100%;
+  width: 90%;
   margin-left: auto;
   margin-right: auto;
   outline: none;
@@ -128,11 +128,10 @@
 .carouselTrackContainer {
   position: relative;
   width: 100%;
-  height: 52vh;
+  height: 55.5vh;
   border-radius: 8px;
   overflow: hidden;
   background: transparent;
-  box-shadow: 0 0.8vh 1.6vh rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
   touch-action: pan-y;
 }
@@ -149,7 +148,7 @@
   min-width: 100%;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   display: block;
 }
@@ -258,6 +257,34 @@
 
 .carouselNext {
   order: 2;
+}
+
+/* Flechas debajo del contenido (galerías cap. 2): grid con la imagen
+   arriba (columna completa) y prev/next abajo a izquierda y derecha,
+   igual que en CarouselFondo. Compuesto para ganarle a los media queries. */
+.carouselNavBelow .carouselInner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 15px;
+  row-gap: 10px;
+  align-items: center;
+}
+
+.carouselNavBelow .carouselContent {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.carouselNavBelow .carouselPrev {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+}
+
+.carouselNavBelow .carouselNext {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
 }
 
 /* ── Columns (estilo v17: flex 60/40) ────────────────────────────────── */

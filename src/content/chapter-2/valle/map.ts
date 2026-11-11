@@ -46,6 +46,11 @@ export default defineMap({
   geo: { pgw: [0, 0.000328128994, 0.000328152382, 0, -77.548017107743, 1.870309514817], width: 7015, height: 12472 },
   base: cld('v1759285334/geoImages/kbg62bjm983wn9p6xexl.webp'),
   full: cld('v1759285229/geoImages/nhbnbpekarmsu7ernhcj.webp'),
+  pois: [
+    node('poi-cap2-valle-suarez', 'Suárez', [-76.675597, 2.966693], 'chapter2-suarez'),
+    node('poi-cap2-valle-villa-rica', 'Villa Rica', [-76.464137, 3.179754], 'chapter2-villa-rica'),
+    node('poi-cap2-valle-cali', 'Oriente de Cali', [-76.464254, 3.441679], 'chapter2-cali'),
+  ],
   layers: [
     nodeLayer('nodo-suarez', 'Nodo Suárez', '/data/nodos/suarez.geojson', '#ffaf25'),
     nodeLayer('nodo-villa-rica', 'Nodo Villa Rica', '/data/nodos/villa-rica.geojson', '#ffea2b'),
@@ -69,9 +74,5 @@ export default defineMap({
     ['nodo-villa-rica', 'Nodo-entramado territorial Villa Rica', 'villaRica.svg'],
     ['nodo-cali', 'Nodo-entramado territorial Oriente de Cali', 'cali.svg'],
   ]),
-  pois: [
-    node('poi-cap2-valle-suarez', 'Suárez', [-76.675597, 2.966693], 'chapter2-suarez'),
-    node('poi-cap2-valle-villa-rica', 'Villa Rica', [-76.464137, 3.179754], 'chapter2-villa-rica'),
-    node('poi-cap2-valle-cali', 'Oriente de Cali', [-76.464254, 3.441679], 'chapter2-cali'),
-  ],
+  
 })

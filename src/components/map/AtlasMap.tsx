@@ -202,34 +202,30 @@ export function AtlasMap({ mapId, controllerRef, layerMenuOffsetTop = false, hid
 
   useEffect(() => {
     const map = mapRef.current
-    if (!map || !mapBuilt || !layers) return
+    if (!map || !mapBuilt) return
     let cancelled = false
-    const needed = layers.filter((layer) => layer.visibleByDefault || visibleLayers.has(layer.id))
+    const needed = (layers ?? []).filter((layer) => layer.visibleByDefault || visibleLayers.has(layer.id))
     void prepareLayerImages(map, needed).then((images) => {
       if (cancelled) return
-      syncLayers(map, mapId, layers, groups, { visibleLayers, opacities }, { hitArea: layerTooltips, images })
-    })
-    return () => { cancelled = true }
-  }, [mapRef, mapId, layers, groups, visibleLayers, opacities, mapBuilt, layerTooltips])
-
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map || !mapBuilt || !pois) return
-    /* Subcuencas (port v17): hover en el POI muestra su cuenca.
-     * Las capas viven fuera del menú (SubcuencaManager) y van DEBAJO de los
-     * puntos: se agregan antes que addPois. */
-    const subcuencas = content?.subcuencas ?? null
-    if (subcuencas) void addSubcuencas(map, subcuencas)
-    addPois(map, mapId, pois, handlePoiClick, {
-      static: lowPowerMode,
-      onHover: subcuencas
-        ? (poi) => highlightSubcuenca(map, poi ? subcuencaSlugOfModal(poi.modalId) : null)
-        : undefined,
+      /* 1) Capas GeoJSON primero */
+      syncLayers(map, mapId, layers ?? [], groups, { visibleLayers, opacities }, { hitArea: layerTooltips, images })
+      /* 2) POIs después: así los puntos quedan encima de las geometrías */
+      if (pois) {
+        const subcuencas = content?.subcuencas ?? null
+        if (subcuencas) void addSubcuencas(map, subcuencas)
+        addPois(map, mapId, pois, handlePoiClick, {
+          static: lowPowerMode,
+          onHover: subcuencas
+            ? (poi) => highlightSubcuenca(map, poi ? subcuencaSlugOfModal(poi.modalId) : null)
+            : undefined,
+        })
+      }
     })
     return () => {
+      cancelled = true
       removeSubcuencas(map)
     }
-  }, [mapRef, mapId, pois, mapBuilt, lowPowerMode, handlePoiClick, content])
+  }, [mapRef, mapId, layers, groups, visibleLayers, opacities, mapBuilt, layerTooltips, pois, handlePoiClick, lowPowerMode, content])
 
   /* Click en capa → modal (cuencas Tejidos del Agua, Voz del río…)
    * Hover en capa → etiqueta con el nombre (opt-in por mapa:

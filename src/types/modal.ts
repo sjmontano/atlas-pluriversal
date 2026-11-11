@@ -25,6 +25,9 @@ export type ModalBlock =
     type: 'carousel'
     id: string
     images: { src: string; alt: string; description?: string }[]
+    /** Flechas debajo del contenido (estilo CarouselFondo): prev abajo-izq,
+     *  next abajo-der, en vez de a los lados de la imagen. */
+    navBelow?: boolean
   }
   | { type: 'columns'; id: string; main: ModalBlock[]; aside?: ModalBlock[] }
   | { type: 'meta'; id: string; data: Record<string, string> }
