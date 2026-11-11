@@ -40,4 +40,5 @@ export default defineMap({
     arrow('poi-cap2-cali-red-mujeres-1', 6, 'Red de mujeres y organizaciones del Oriente', [-76.480056, 3.447839], '/assets/pois/photos/organizaciones/mujeres-del-oriente.webp', 280, 'cap2-at-red-mujeres'),
     arrow('poi-cap2-cali-red-mujeres-2', 6, 'Red de mujeres y organizaciones del Oriente', [-76.521509, 3.435984], '/assets/pois/photos/organizaciones/mujeres-del-oriente.webp', 270, 'cap2-at-red-mujeres'),
   ],
+  
 })

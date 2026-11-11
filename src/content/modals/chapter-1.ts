@@ -214,6 +214,7 @@ const PERFIL_CUENCA: Modal = {
   fullBleed: true,
   bodyFullBleed: true,
   theme: {
+    size: { width: '1000px', height: '700px' },
     bgColor: '#f2eee7',
     bodyMaxWidth: '100%',
     contentMarginRight: '0',

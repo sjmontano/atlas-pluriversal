@@ -129,6 +129,7 @@ export function CreditsPage() {
         <div className={styles.logos}>
           <img src={`${BASE}/logo-credits-1.webp`} alt="Logo Unriocauca" className={styles.logo1} />
           <img src={`${BASE}/logo-credits-2.webp`} alt="Logo Accn" className={styles.logo2} />
+          <img src={`${BASE}/logo-credits-3.png`} alt="Logo one project" className={styles.logo2} />
         </div>
 
         <section className={styles.footer}>

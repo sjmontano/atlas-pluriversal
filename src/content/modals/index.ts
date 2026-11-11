@@ -88,33 +88,24 @@ const FICHA_TECNICA: Modal = {
 const AYUDA: Modal = {
   id: 'ayuda',
   section: 'legales',
-  /* Igual al modal del perfil (cap1-perfil-cuenca, encuadres): mismo
-   * fullBleed + CarouselFondo (flechas abajo), pero en variante `full`
-   * (100vw × 100dvh) en vez de `xl` (80vw × 90vh) → más grande. */
   variant: 'full',
   title: 'Ayuda',
   highlight: 'Sobre el Atlas',
   icon: 'info',
   hideHeader: true,
-  fullBleed: true,
   bodyFullBleed: true,
   theme: {
-    bgColor: '#f2eee7',
-    bodyMaxWidth: '100%',
-    contentMarginRight: '0',
-    blockSpacing: '0',
+    size: { width: '1000px', height: '700px' },
+    bgFit: 'cover',
+    noScrim: true,
   },
   body: [
     {
-      /* Con fullBleed este carrusel se renderiza con CarouselFondo. */
-      type: 'carousel',
-      id: 'ayuda-carousel',
-      images: [
-        { src: '/assets/modal/chapter-2/galeria/cali/cali1.webp', alt: 'Cali 1' },
-        { src: '/assets/modal/chapter-2/galeria/cali/cali2.webp', alt: 'Cali 2' },
-        { src: '/assets/modal/chapter-2/galeria/cali/cali4.webp', alt: 'Cali 3' },
-        { src: '/assets/modal/chapter-2/galeria/cali/cali5.webp', alt: 'Cali 4' },
-      ],
+      type: 'video',
+      id: 'p1',
+      src: '/assets/video/prueba.mp4',
+      width: 'full',
+      autoPlay: true,
     },
   ],
   trigger: {

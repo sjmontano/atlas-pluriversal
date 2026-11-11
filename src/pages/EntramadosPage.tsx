@@ -40,6 +40,7 @@ const SECCIONES: Seccion[] = [
       { src: `${BASE}/asomuafroyo.webp`, alt: 'asomuafroyo.webp' },
       { src: `${BASE}/guardia-cimarrona.webp`, alt: 'Guardia cimarrona.webp' },
       { src: `${BASE}/asoyoge.webp`, alt: 'Asoyoge.webp' },
+      { src: `${BASE}/rios vivos.jpeg`, alt: 'rios vivos.jpeg' },
       //{ src: `${BASE}/plataforma-juventudes.webp`, alt: 'Plataforma de juventudes.webp' },
     ],
   },
