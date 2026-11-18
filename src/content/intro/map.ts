@@ -84,6 +84,6 @@ export default defineMap({
   config: { dragPan: false, scrollZoom: false },
   oceanLabels: [
     { id: 'oceano-pacifico', name: 'OCÉANO PACÍFICO', coords: [-78.45, 6.3] },
-    { id: 'mar-caribe', name: 'MAR CARIBE', coords: [-76.5319, 10.85] },
+    { id: 'mar-caribe', name: 'MAR CARIBE', coords: [-76.5319, 10.79] },
   ],
 })
