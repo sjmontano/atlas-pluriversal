@@ -59,6 +59,6 @@ export default defineMap({
    * Colombia completa. Coordenadas originales de v17. */
   oceanLabels: [
     { id: 'oceano-pacifico', name: 'OCÉANO PACÍFICO', coords: [-78.45, 6.3] },
-    { id: 'mar-caribe', name: 'MAR CARIBE', coords: [-76.5319, 10.85] },
+    { id: 'mar-caribe', name: 'MAR CARIBE', coords: [-76.5319, 10.79] },
   ],
 })
