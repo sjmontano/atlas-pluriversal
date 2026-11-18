@@ -36,7 +36,7 @@ export default defineMap({
     arrow('poi-cap2-cali-huerta', 2, 'Huerta Madre La Laguna', [-76.486928, 3.433676], cld('v1761792935/geoImages/lnyyorgnj7zmdzzi93p1.webp'), 90, 'cap2-at-red-nativos'),
     arrow('poi-cap2-cali-chicas', 3, 'Chicas Comunicativas', [-76.495767, 3.413626], '/assets/pois/photos/organizaciones/chicas-comunicativas.webp', 140, 'cap2-at-chicas-comunicativas'),
     //arrow('poi-cap2-cali-afroyoga-1', 4, 'Afro Yoga', [-76.506431, 3.390553], cld('v1761791824/geoImages/gk60hbzfh98apd8uuekk.webp'), 140, 'cap2-at-afro-yoga'),
-    arrow('poi-cap2-cali-afroyoga-2', 4, 'Afro Yoga', [-76.509365, 3.451428], cld('v1761791824/geoImages/gk60hbzfh98apd8uuekk.webp'), 90, 'cap2-at-afro-yoga'),
+    arrow('poi-cap2-cali-afroyoga-2', 4, 'Afro Yoga',  [-76.509365, 3.455102], cld('v1761791824/geoImages/gk60hbzfh98apd8uuekk.webp'), 90, 'cap2-at-afro-yoga'),
     //arrow('poi-cap2-cali-afroyoga-3', 4, 'Afro Yoga', [-76.489738, 3.45103], cld('v1761791824/geoImages/gk60hbzfh98apd8uuekk.webp'), 140, 'cap2-at-afro-yoga'),
     arrow('poi-cap2-cali-matamba', 5, 'Revista Afro Juvenil Matamba', [-76.486678, 3.432277], cld('v1761794790/geoImages/mecisufjjucxdzzalslg.webp'), 270, 'cap2-at-matamba'),
     arrow('poi-cap2-cali-red-mujeres-1', 6, 'Red de mujeres y organizaciones del Oriente', [-76.480056, 3.447839], '/assets/pois/photos/organizaciones/mujeres-del-oriente.webp', 280, 'cap2-at-red-mujeres'),
