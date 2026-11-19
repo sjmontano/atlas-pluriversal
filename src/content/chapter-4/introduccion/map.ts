@@ -34,7 +34,7 @@ const POIS: Poi[] = [
 
 export default defineMap({
   id: 'chapter4-introduccion',
-  title: 'Resistencias en transición',
+  title: 'Reexistencias en transición',
   minimap: 'valle',
   zoomMax: 12,
   tiles: { mode: 'detail', source: 'cap4/intro-localizacion-fincas.png' },

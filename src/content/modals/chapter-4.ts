@@ -11,7 +11,7 @@ const CAP4_INTRO: Modal = {
   id: 'cap4-intro',
   section: 'capitulo-4',
   variant: 'large',
-  title: 'Resistencias en transición',
+  title: 'Reexistencias en transición',
   highlight: 'Capitulo IV',
   icon: 'presentation',
   body: paragraphs(

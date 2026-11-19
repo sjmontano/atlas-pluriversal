@@ -51,7 +51,7 @@ export const CHAPTERS: ReadonlyArray<Chapter> = [
   {
     id: 4,
     roman: 'IV',
-    title: 'IV. Resistencias en transición',
+    title: 'IV. Reexistencias en transición',
     description: 'Actores, Acciones, Capacidades y Poderes',
     hoverImage: '/assets/ui/sidebar/tab-default-bg.webp',
     maps: [
